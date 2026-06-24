@@ -90,7 +90,7 @@ export default function LoginPage() {
     const { error: err } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (err) { setError(t.error); return; }
-    router.push("/home");
+    router.push("/explore");
   }
 
   return (

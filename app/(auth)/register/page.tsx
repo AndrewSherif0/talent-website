@@ -79,6 +79,87 @@ const STEPS = [
   { n: 7, label: "صورتك"   },
 ];
 
+// ─── Translations ─────────────────────────────────────────────────────────────
+type Lang = "ar" | "en";
+type Mode = "dark" | "light";
+
+const TX = {
+  ar: {
+    haveAccount: "عندك حساب؟", login: "سجل دخول",
+    steps: ["الأكونت","نوعك","بياناتك","تخصصك","مظهرك","سوشيال","صورتك"],
+    talent: "✦ موهبة / كريتور", client: "🏢 براند / عميل",
+    step1Title: "إنشاء حسابك 🔐", step1Sub: "ابدأ رحلتك على منصة Talents",
+    step2Title: "إنت مين؟ 🎯",    step2Sub: "اختار النوع الأقرب لشغلك",
+    step3Title: "معلوماتك الأساسية 📝", step3Sub: "دي البيانات اللي هتتعرف بيها على المنصة",
+    step4Title: "تخصصك وبيوك ✍️", step4Sub: "قول للبراندات إيه اللي بتعمله",
+    step5Title: "بياناتك الشخصية 📋", step5Sub: "بتساعد البراندات يلاقوا التالنت المناسب — كلها اختياري",
+    step6Title: "سوشيال ميديا 📱", step6Sub: "حط لينكاتك وعدد الفولورز — اختياري بس بيزود فرصك",
+    step7Title: "صورتك الشخصية 📸", step7Sub: "صورة واضحة لوشك بتزود فرصك x3 عند البراندات",
+    emailLabel: "البريد الإلكتروني", passLabel: "كلمة المرور (8 أحرف على الأقل)",
+    fullName: "الاسم الكامل *", handleLabel: "الـ Handle (اسم المستخدم) *",
+    handleHint: "رابطك: talents.com/your-handle", city: "المدينة",
+    gender: "النوع *", male: "ذكر", female: "أنثى", other: "أخرى",
+    bio: "البيو (عن نفسك)", bioPlaceholder: "عرّف نفسك في جملتين...",
+    mainCat: "الكاتيجوري الرئيسية *", workType: "نوع الشغل اللي بتعمله (اختار أكتر من واحد)",
+    ageRange: "الفئة العمرية", height: "الطول (سم)", weight: "الوزن (كجم)",
+    shoeSize: "مقاس الحذاء", languages: "اللغات",
+    hairColor: "لون الشعر", eyeColor: "لون العين",
+    replyTime: "وقت الرد المعتاد", followers: "الفولورز",
+    summary: "ملخص بياناتك", uploadPhoto: "رفع صورة", changePhoto: "تغيير",
+    uploading: "جاري...", clickToUpload: "اضغط", next: "التالي →", back: "← رجوع",
+    submit: "🚀 ابدأ رحلتك على Talents", saving: "جاري الحفظ...", loading: "جاري...",
+    skip: "تخطي هذه الخطوة →", stepOf: (s: number) => `خطوة ${s} من 7`,
+    stepNum: (s: number) => `الخطوة ${s} من 7`, lastStep: "الخطوة الأخيرة 🎉",
+    requiredFields: "الرجاء إكمال الحقول المطلوبة *",
+    sessionExpired: "انتهت الجلسة، ارجع وسجل مرة أخرى",
+    namePH: "مثلاً: مايا خالد", handlePH: "مثلاً: maya-khaled", cityPH: "مثلاً: القاهرة",
+    heightPH: "170", weightPH: "60", shoePH: "39", langPH: "عربي، إنجليزي",
+    typeLabel: { ugc: "بتعمل محتوى للبراندات", influencer: "عندك جمهور على السوشيال ميديا", model: "تصوير وفاشون وإعلانات", host: "فعاليات وتقديم وبودكاست" },
+  },
+  en: {
+    haveAccount: "Have an account?", login: "Sign in",
+    steps: ["Account","Type","Info","Specialty","Appearance","Social","Photo"],
+    talent: "✦ Talent / Creator", client: "🏢 Brand / Client",
+    step1Title: "Create your account 🔐", step1Sub: "Start your journey on Talents",
+    step2Title: "Who are you? 🎯",         step2Sub: "Choose the type closest to your work",
+    step3Title: "Basic information 📝",    step3Sub: "This is how brands will find you",
+    step4Title: "Your specialty ✍️",       step4Sub: "Tell brands what you do",
+    step5Title: "Personal details 📋",     step5Sub: "Helps brands find the right talent — all optional",
+    step6Title: "Social media 📱",         step6Sub: "Add your links and followers — optional but helps",
+    step7Title: "Profile photo 📸",        step7Sub: "A clear photo increases your chances x3 with brands",
+    emailLabel: "Email", passLabel: "Password (at least 8 characters)",
+    fullName: "Full name *", handleLabel: "Handle (username) *",
+    handleHint: "Your link: talents.com/your-handle", city: "City",
+    gender: "Gender *", male: "Male", female: "Female", other: "Other",
+    bio: "Bio (about yourself)", bioPlaceholder: "Describe yourself in two sentences...",
+    mainCat: "Main category *", workType: "Type of work you do (select multiple)",
+    ageRange: "Age range", height: "Height (cm)", weight: "Weight (kg)",
+    shoeSize: "Shoe size", languages: "Languages",
+    hairColor: "Hair color", eyeColor: "Eye color",
+    replyTime: "Average reply time", followers: "Followers",
+    summary: "Your summary", uploadPhoto: "Upload photo", changePhoto: "Change",
+    uploading: "Uploading...", clickToUpload: "Click", next: "Next →", back: "← Back",
+    submit: "🚀 Start your journey on Talents", saving: "Saving...", loading: "Loading...",
+    skip: "Skip this step →", stepOf: (s: number) => `Step ${s} of 7`,
+    stepNum: (s: number) => `Step ${s} of 7`, lastStep: "Last step 🎉",
+    requiredFields: "Please complete the required fields *",
+    sessionExpired: "Session expired, please go back and register again",
+    namePH: "e.g. Maya Khaled", handlePH: "e.g. maya-khaled", cityPH: "e.g. Cairo",
+    heightPH: "170", weightPH: "60", shoePH: "39", langPH: "Arabic, English",
+    typeLabel: { ugc: "Creating content for brands", influencer: "You have a social media audience", model: "Photography, fashion & ads", host: "Events, presenting & podcasts" },
+  },
+};
+
+const CATEGORIES_AR = ["فاشون وموضة","جمال وسكين كير","طعام ومطبخ","رياضة وفيتنس","تكنولوجيا","سفر وسياحة","ترفيه وكوميديا","لايف ستايل","تعليم","أطفال وعائلة","ألعاب فيديو","موسيقى وفن"];
+const CATEGORIES_EN = ["Fashion","Beauty & Skincare","Food & Kitchen","Sports & Fitness","Technology","Travel","Entertainment","Lifestyle","Education","Kids & Family","Gaming","Music & Art"];
+const HAIR_AR = ["أسود","بني","بلوند","أحمر","رمادي","أشقر"];
+const HAIR_EN = ["Black","Brown","Blonde","Red","Grey","Light Blonde"];
+const EYE_AR  = ["بني","أخضر","أزرق","رمادي","أسود","عسلي"];
+const EYE_EN  = ["Brown","Green","Blue","Grey","Black","Hazel"];
+const REPLY_AR = ["خلال ساعة","خلال 3 ساعات","خلال 24 ساعة","خلال 48 ساعة"];
+const REPLY_EN = ["Within 1 hour","Within 3 hours","Within 24 hours","Within 48 hours"];
+const AGE_RANGES_ALL = ["18-22","23-27","28-32","33-38","39-45","45+"];
+
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function RegisterPage() {
   const router = useRouter();
@@ -88,7 +169,35 @@ export default function RegisterPage() {
   const [uploading, setUploading] = useState(false);
   const [showPass,  setShowPass]  = useState(false);
   const [error,     setError]     = useState("");
+  const [userId,    setUserId]    = useState<string | null>(null);
+  const [lang,      setLang]      = useState<Lang>("ar");
+  const [mode,      setMode]      = useState<Mode>("dark");
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const tx   = TX[lang];
+  const dark = mode === "dark";
+  const dir  = lang === "ar" ? "rtl" : "ltr";
+
+  // Theme colors
+  const BG      = dark ? "#0a0a0a"  : "#f5f5f0";
+  const CARD    = dark ? "#111111"  : "#ffffff";
+  const BORDER  = dark ? "#2a2a2a"  : "#e2e8f0";
+  const INP     = dark ? "#1a1a1a"  : "#f8fafc";
+  const TEXT    = dark ? "#f1f5f9"  : "#0f172a";
+  const MUTED   = dark ? "#6b7280"  : "#64748b";
+  const SUBMUTED= dark ? "#475569"  : "#94a3b8";
+  const CHIPBG  = dark ? "#1a1a1a"  : "#f1f5f9";
+
+  const CATS     = lang === "ar" ? CATEGORIES_AR : CATEGORIES_EN;
+  const HAIRS    = lang === "ar" ? HAIR_AR : HAIR_EN;
+  const EYES     = lang === "ar" ? EYE_AR  : EYE_EN;
+  const REPLIES  = lang === "ar" ? REPLY_AR : REPLY_EN;
+  const GENDERS_T = [
+    { v: "male",   l: tx.male },
+    { v: "female", l: tx.female },
+    { v: "other",  l: tx.other },
+  ];
+  const TALENT_TYPES_T = TALENT_TYPES.map(t => ({ ...t, desc: tx.typeLabel[t.id as keyof typeof tx.typeLabel] }));
 
   const set = (k: keyof FormData, v: any) => setForm(f => ({ ...f, [k]: v }));
   const toggleSpecialty = (s: string) =>
@@ -121,41 +230,42 @@ export default function RegisterPage() {
     setUploading(false);
   };
 
-  const handleNext = async () => {
-    if (!canProceed()) { setError("الرجاء إكمال الحقول المطلوبة *"); return; }
+  const handleNext = () => {
+    if (!canProceed()) { setError(tx.requiredFields); return; }
     setError("");
-    if (step === 1) {
-      setLoading(true);
-      const supabase = createClient();
-      const { error: err } = await supabase.auth.signUp({
-        email: form.email, password: form.password,
-        options: { data: { role: form.role } },
-      });
-      setLoading(false);
-      if (err) { setError(err.message); return; }
-      if (form.role === "client") { await saveClientProfile(); return; }
-    }
     setStep((step + 1) as Step);
-  };
-
-  const saveClientProfile = async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("profiles").upsert({
-      id: user.id, role: "client",
-      handle: form.email.split("@")[0].toLowerCase(),
-      full_name: form.email.split("@")[0],
-    });
-    router.push("/home");
   };
 
   const handleSubmit = async () => {
     setLoading(true); setError("");
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
+
+      // Create auth user now (all data collected)
+      const { data, error: signUpErr } = await supabase.auth.signUp({
+        email: form.email, password: form.password,
+        options: { data: { role: form.role } },
+      });
+      if (signUpErr) { setError(signUpErr.message); setLoading(false); return; }
+      const id = data.user?.id;
+      if (!id) { setError(tx.sessionExpired); setLoading(false); return; }
+
+      // Client: save minimal profile and go
+      if (form.role === "client") {
+        await fetch("/api/profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: id, role: "client",
+            profileData: {
+              handle:    form.email.split("@")[0].toLowerCase(),
+              full_name: form.email.split("@")[0],
+            },
+          }),
+        });
+        router.push("/explore");
+        return;
+      }
 
       const social_links: Record<string, string> = {};
       if (form.height)             social_links.height              = form.height;
@@ -175,29 +285,44 @@ export default function RegisterPage() {
       if (form.linkedinFollowers)  social_links.linkedin_followers  = form.linkedinFollowers;
       if (form.avgReplyTime)       social_links.avg_reply_time      = form.avgReplyTime;
 
-      await supabase.from("profiles").upsert({
-        id:          user.id,
-        handle:      form.handle.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-        full_name:   form.fullName,
-        avatar_url:  form.avatarUrl || null,
-        role:        "talent",
-        city:        form.city  || null,
-        bio:         form.bio   || null,
-        category:    form.category,
-        specialties: form.specialties,
-        gender:      form.gender || null,
-        social_links,
+      // gender + Arabic category label stored in social_links for display
+      if (form.gender)   social_links.gender        = form.gender;
+      if (form.category) social_links.category_ar   = form.category;
+
+      // talent_category enum only has: "ugc" | "fashion"
+      const categoryEn = form.talentType === "model" ? "fashion" : "ugc";
+
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: id,
+          role: "talent",
+          // profiles table: id, handle, full_name, avatar_url, city, bio, role
+          profileData: {
+            handle:     form.handle.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+            full_name:  form.fullName,
+            avatar_url: form.avatarUrl || null,
+            city:       form.city || null,
+            bio:        form.bio  || null,
+          },
+          // talent_profiles table: category, specialties, social_links, bio, packages, availability, profile_views
+          talentProfileData: {
+            category:     categoryEn,
+            specialties:  form.specialties,
+            social_links,
+            bio:          form.bio        || null,
+            packages:     [],
+            availability: "available",
+            profile_views: 0,
+          },
+        }),
       });
 
-      await supabase.from("talent_profiles").upsert({
-        user_id:       user.id,
-        talent_type:   form.talentType,
-        packages:      [],
-        availability:  "available",
-        profile_views: 0,
-      });
+      const result = await res.json();
+      if (!res.ok) { setError(result.error ?? "حدث خطأ"); setLoading(false); return; }
 
-      router.push("/home");
+      router.push("/explore");
     } catch (e: any) {
       setError(e.message ?? "حدث خطأ، حاول مرة أخرى");
     }
@@ -210,27 +335,41 @@ export default function RegisterPage() {
   return (
     <div style={{
       minHeight: "100vh",
-      backgroundColor: "#0a0a0a",
+      backgroundColor: BG,
       display: "flex", flexDirection: "column", alignItems: "center",
       padding: "32px 16px 48px",
       fontFamily: "'Cairo', sans-serif",
-      direction: "rtl",
+      direction: dir,
     }}>
 
       {/* Header */}
       <div style={{ width: "100%", maxWidth: "640px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
         <Image src="/assets/logo.png" alt="Talents" width={110} height={32} style={{ objectFit: "contain" }} />
-        <Link href="/login" style={{ color: "#6b7280", fontSize: "13px", textDecoration: "none" }}>
-          عندك حساب؟{" "}<span style={{ color: GOLD, fontWeight: 700 }}>سجل دخول</span>
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {/* Lang + Mode toggles */}
+          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} style={{
+            background: INP, border: `1px solid ${BORDER}`, borderRadius: "6px",
+            padding: "4px 10px", cursor: "pointer", color: MUTED,
+            fontSize: "12px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
+          }}>
+            {lang === "ar" ? "EN" : "ع"}
+          </button>
+          <button onClick={() => setMode(dark ? "light" : "dark")} style={{
+            background: INP, border: `1px solid ${BORDER}`, borderRadius: "6px",
+            padding: "4px 10px", cursor: "pointer", fontSize: "13px",
+          }}>
+            {dark ? "☀️" : "🌙"}
+          </button>
+          <Link href="/login" style={{ color: MUTED, fontSize: "13px", textDecoration: "none" }}>
+            {tx.haveAccount}{" "}<span style={{ color: GOLD, fontWeight: 700 }}>{tx.login}</span>
+          </Link>
+        </div>
       </div>
 
       {/* Progress steps */}
       <div style={{ width: "100%", maxWidth: "640px", marginBottom: "28px" }}>
-        {/* Bar + circles */}
         <div style={{ position: "relative", marginBottom: "10px" }}>
-          {/* Track */}
-          <div style={{ position: "absolute", top: "15px", left: 0, right: 0, height: "3px", backgroundColor: "#1e293b", borderRadius: "2px", zIndex: 0 }}>
+          <div style={{ position: "absolute", top: "15px", left: 0, right: 0, height: "3px", backgroundColor: BORDER, borderRadius: "2px", zIndex: 0 }}>
             <div style={{
               height: "100%", borderRadius: "2px",
               backgroundColor: GOLD,
@@ -239,15 +378,14 @@ export default function RegisterPage() {
               boxShadow: `0 0 8px ${GOLD_GLW}`,
             }} />
           </div>
-          {/* Circles */}
           <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-            {STEPS.map(s => (
+            {STEPS.map((s, i) => (
               <div key={s.n} style={{
                 width: "30px", height: "30px", borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: "12px", fontWeight: 700, transition: "all 0.3s",
-                backgroundColor: step >= s.n ? GOLD : "#1e293b",
-                color:           step >= s.n ? "#000" : "#475569",
+                backgroundColor: step >= s.n ? GOLD : (dark ? "#1e293b" : "#e2e8f0"),
+                color:           step >= s.n ? "#000" : SUBMUTED,
                 border:          step === s.n ? `2px solid ${GOLD}` : "2px solid transparent",
                 boxShadow:       step === s.n ? `0 0 10px ${GOLD_GLW}` : "none",
               }}>
@@ -256,16 +394,15 @@ export default function RegisterPage() {
             ))}
           </div>
         </div>
-        {/* Labels below the bar */}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          {STEPS.map(s => (
-            <span key={s.n} style={{
+          {tx.steps.map((label, i) => (
+            <span key={i} style={{
               width: "30px", textAlign: "center",
               fontSize: "10px", fontWeight: 700,
-              color: step >= s.n ? GOLD : "#94a3b8",
+              color: step >= i + 1 ? GOLD : SUBMUTED,
               display: "block",
             }}>
-              {s.label}
+              {label}
             </span>
           ))}
         </div>
@@ -274,8 +411,8 @@ export default function RegisterPage() {
       {/* Card */}
       <div style={{
         width: "100%", maxWidth: "640px",
-        backgroundColor: "#111111",
-        border: "1px solid #2a2a2a",
+        backgroundColor: CARD,
+        border: `1px solid ${BORDER}`,
         borderRadius: "20px",
         padding: "40px",
       }}>
@@ -292,63 +429,41 @@ export default function RegisterPage() {
         {/* ── STEP 1 ── */}
         {step === 1 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 1 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              إنشاء حسابك 🔐
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              ابدأ رحلتك على منصة Talents
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(1)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step1Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step1Sub}</p>
 
-            <div style={{ display: "flex", borderRadius: "10px", overflow: "hidden", border: "1px solid #2a2a2a", marginBottom: "24px" }}>
-              {([["talent", "✦ موهبة / كريتور"], ["client", "🏢 براند / عميل"]] as [Role, string][]).map(([r, l]) => (
+            <div style={{ display: "flex", borderRadius: "10px", overflow: "hidden", border: `1px solid ${BORDER}`, marginBottom: "24px" }}>
+              {([["talent", tx.talent], ["client", tx.client]] as [Role, string][]).map(([r, l]) => (
                 <button key={r} onClick={() => set("role", r)} style={{
                   flex: 1, padding: "11px",
                   backgroundColor: form.role === r ? GOLD : "transparent",
-                  color: form.role === r ? "#000" : "#6b7280",
+                  color: form.role === r ? "#000" : MUTED,
                   border: "none", cursor: "pointer",
                   fontSize: "14px", fontWeight: 700,
                   fontFamily: "'Cairo', sans-serif", transition: "all 0.2s",
-                }}>
-                  {l}
-                </button>
+                }}>{l}</button>
               ))}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <FInput label="البريد الإلكتروني" placeholder="example@email.com"
-                type="email" value={form.email} dir="ltr"
-                onChange={v => set("email", v)} />
-
+              <TInput label={tx.emailLabel} placeholder="example@email.com" type="email"
+                value={form.email} dir="ltr" onChange={v => set("email", v)}
+                inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
               <div>
-                <label style={labelStyle}>كلمة المرور (8 أحرف على الأقل)</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "6px" }}>{tx.passLabel}</label>
                 <div style={{ position: "relative" }}>
-                  <input
-                    type={showPass ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={e => set("password", e.target.value)}
-                    dir="ltr"
-                    style={{ ...inputStyle, paddingLeft: "40px" }}
-                  />
-                  <button onClick={() => setShowPass(!showPass)} style={{
-                    position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none", cursor: "pointer", color: "#6b7280", fontSize: "14px",
-                  }}>
+                  <input type={showPass ? "text" : "password"} placeholder="••••••••"
+                    value={form.password} onChange={e => set("password", e.target.value)} dir="ltr"
+                    style={{ width: "100%", padding: "10px 14px 10px 40px", backgroundColor: INP, border: `1px solid ${BORDER}`, borderRadius: "8px", color: TEXT, fontSize: "14px", outline: "none", boxSizing: "border-box", fontFamily: "'Cairo', sans-serif" }} />
+                  <button onClick={() => setShowPass(!showPass)} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: "14px" }}>
                     {showPass ? "🙈" : "👁"}
                   </button>
                 </div>
                 {form.password.length > 0 && (
                   <div style={{ display: "flex", gap: "4px", marginTop: "6px" }}>
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} style={{
-                        flex: 1, height: "3px", borderRadius: "2px", transition: "background-color 0.2s",
-                        backgroundColor: form.password.length >= i * 2
-                          ? i <= 1 ? "#ef4444" : i === 2 ? "#f59e0b" : GOLD
-                          : "#1e293b",
-                      }} />
+                    {[1,2,3,4].map(i => (
+                      <div key={i} style={{ flex: 1, height: "3px", borderRadius: "2px", transition: "background-color 0.2s", backgroundColor: form.password.length >= i * 2 ? (i <= 1 ? "#ef4444" : i === 2 ? "#f59e0b" : GOLD) : BORDER }} />
                     ))}
                   </div>
                 )}
@@ -357,72 +472,54 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* ── STEP 2: Talent type ── */}
+        {/* ── STEP 2 ── */}
         {step === 2 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 2 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              إنت مين؟ 🎯
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              اختار النوع الأقرب لشغلك
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(2)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step2Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step2Sub}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-              {TALENT_TYPES.map(t => (
+              {TALENT_TYPES_T.map(t => (
                 <button key={t.id} onClick={() => set("talentType", t.id as TalentType)} style={{
-                  backgroundColor: form.talentType === t.id ? GOLD_BG : "#1a1a1a",
-                  border: `2px solid ${form.talentType === t.id ? GOLD : "#2a2a2a"}`,
+                  backgroundColor: form.talentType === t.id ? GOLD_BG : INP,
+                  border: `2px solid ${form.talentType === t.id ? GOLD : BORDER}`,
                   borderRadius: "14px", padding: "20px 16px",
-                  cursor: "pointer", textAlign: "right", transition: "all 0.2s",
+                  cursor: "pointer", textAlign: dir === "rtl" ? "right" : "left", transition: "all 0.2s",
                   boxShadow: form.talentType === t.id ? `0 0 16px ${GOLD_BG}` : "none",
                 }}>
                   <div style={{ fontSize: "32px", marginBottom: "8px" }}>{t.icon}</div>
-                  <p style={{ color: "#f1f5f9", fontSize: "15px", fontWeight: 700, margin: "0 0 4px" }}>{t.label}</p>
-                  <p style={{ color: "#6b7280", fontSize: "12px", margin: 0 }}>{t.desc}</p>
+                  <p style={{ color: TEXT, fontSize: "15px", fontWeight: 700, margin: "0 0 4px" }}>{t.label}</p>
+                  <p style={{ color: MUTED, fontSize: "12px", margin: 0 }}>{t.desc}</p>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* ── STEP 3: Basic info ── */}
+        {/* ── STEP 3 ── */}
         {step === 3 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 3 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              معلوماتك الأساسية 📝
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              دي البيانات اللي هتتعرف بيها على المنصة
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(3)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step3Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step3Sub}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <FInput label="الاسم الكامل *" placeholder="مثلاً: مايا خالد"
-                value={form.fullName} onChange={v => set("fullName", v)} />
-              <FInput label="الـ Handle (اسم المستخدم) *" placeholder="مثلاً: maya-khaled"
-                value={form.handle} dir="ltr"
+              <TInput label={tx.fullName} placeholder={tx.namePH} value={form.fullName} onChange={v => set("fullName", v)} inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
+              <TInput label={tx.handleLabel} placeholder={tx.handlePH} value={form.handle} dir="ltr"
                 onChange={v => set("handle", v.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                hint="رابطك: talents.com/maya-khaled" />
-              <FInput label="المدينة" placeholder="مثلاً: القاهرة"
-                value={form.city} onChange={v => set("city", v)} />
+                hint={tx.handleHint} inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
+              <TInput label={tx.city} placeholder={tx.cityPH} value={form.city} onChange={v => set("city", v)} inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
               <div>
-                <label style={labelStyle}>النوع *</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.gender}</label>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  {GENDERS.map(g => (
+                  {GENDERS_T.map(g => (
                     <button key={g.v} onClick={() => set("gender", g.v)} style={{
                       flex: 1, padding: "10px",
-                      backgroundColor: form.gender === g.v ? GOLD : "#1a1a1a",
-                      color: form.gender === g.v ? "#000" : "#94a3b8",
-                      border: `1px solid ${form.gender === g.v ? GOLD : "#2a2a2a"}`,
-                      borderRadius: "8px", cursor: "pointer",
-                      fontSize: "13px", fontWeight: 700,
+                      backgroundColor: form.gender === g.v ? GOLD : INP,
+                      color: form.gender === g.v ? "#000" : MUTED,
+                      border: `1px solid ${form.gender === g.v ? GOLD : BORDER}`,
+                      borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 700,
                       fontFamily: "'Cairo', sans-serif", transition: "all 0.2s",
-                    }}>
-                      {g.l}
-                    </button>
+                    }}>{g.l}</button>
                   ))}
                 </div>
               </div>
@@ -430,40 +527,35 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* ── STEP 4: Bio & Specialties ── */}
+        {/* ── STEP 4 ── */}
         {step === 4 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 4 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              تخصصك وبيوك ✍️
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              قول للبراندات إيه اللي بتعمله
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(4)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step4Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step4Sub}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div>
-                <label style={labelStyle}>البيو (عن نفسك)</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "6px" }}>{tx.bio}</label>
                 <textarea value={form.bio} onChange={e => set("bio", e.target.value)} rows={3}
-                  placeholder="عرّف نفسك في جملتين..."
-                  style={{ ...inputStyle, resize: "vertical", lineHeight: "1.7" }} />
+                  placeholder={tx.bioPlaceholder}
+                  style={{ width: "100%", padding: "10px 14px", backgroundColor: INP, border: `1px solid ${BORDER}`, borderRadius: "8px", color: TEXT, fontSize: "14px", outline: "none", boxSizing: "border-box", fontFamily: "'Cairo', sans-serif", resize: "vertical", lineHeight: "1.7" }} />
               </div>
               <div>
-                <label style={labelStyle}>الكاتيجوري الرئيسية *</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.mainCat}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {CATEGORIES.map(c => (
-                    <Chip key={c} label={c} active={form.category === c} onClick={() => set("category", c)} />
+                  {CATS.map((c, i) => (
+                    <TChip key={c} label={c} active={form.category === CATEGORIES_AR[i]}
+                      onClick={() => set("category", CATEGORIES_AR[i])} inp={INP} border={BORDER} muted={MUTED} />
                   ))}
                 </div>
               </div>
               {form.talentType && (
                 <div>
-                  <label style={labelStyle}>نوع الشغل اللي بتعمله (اختار أكتر من واحد)</label>
+                  <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.workType}</label>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {(SPECIALTIES_MAP[form.talentType] ?? []).map(s => (
-                      <Chip key={s} label={s} active={form.specialties.includes(s)}
-                        onClick={() => toggleSpecialty(s)} outline />
+                      <TChip key={s} label={s} active={form.specialties.includes(s)}
+                        onClick={() => toggleSpecialty(s)} outline inp={INP} border={BORDER} muted={MUTED} />
                     ))}
                   </div>
                 </div>
@@ -472,52 +564,42 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* ── STEP 5: Physical ── */}
+        {/* ── STEP 5 ── */}
         {step === 5 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 5 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              بياناتك الشخصية 📋
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              بتساعد البراندات يلاقوا التالنت المناسب — كلها اختياري
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(5)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step5Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step5Sub}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div>
-                <label style={labelStyle}>الفئة العمرية</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.ageRange}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {AGE_RANGES.map(a => (
-                    <Chip key={a} label={a} active={form.ageRange === a} onClick={() => set("ageRange", a)} />
+                  {AGE_RANGES_ALL.map(a => (
+                    <TChip key={a} label={a} active={form.ageRange === a} onClick={() => set("ageRange", a)} inp={INP} border={BORDER} muted={MUTED} />
                   ))}
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                <FInput label="الطول (سم)" placeholder="170" value={form.height}
-                  onChange={v => set("height", v)} dir="ltr" />
-                <FInput label="الوزن (كجم)" placeholder="60" value={form.weight}
-                  onChange={v => set("weight", v)} dir="ltr" />
-                <FInput label="مقاس الحذاء" placeholder="39" value={form.shoeSize}
-                  onChange={v => set("shoeSize", v)} dir="ltr" />
-                <FInput label="اللغات" placeholder="عربي، إنجليزي" value={form.languages}
-                  onChange={v => set("languages", v)} />
+                <TInput label={tx.height} placeholder={tx.heightPH} value={form.height} onChange={v => set("height", v)} dir="ltr" inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
+                <TInput label={tx.weight} placeholder={tx.weightPH} value={form.weight} onChange={v => set("weight", v)} dir="ltr" inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
+                <TInput label={tx.shoeSize} placeholder={tx.shoePH} value={form.shoeSize} onChange={v => set("shoeSize", v)} dir="ltr" inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
+                <TInput label={tx.languages} placeholder={tx.langPH} value={form.languages} onChange={v => set("languages", v)} inp={INP} border={BORDER} text={TEXT} muted={MUTED} />
               </div>
               <div>
-                <label style={labelStyle}>لون الشعر</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.hairColor}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {HAIR_COLORS.map(c => (
-                    <Chip key={c} label={c} active={form.hairColor === c}
-                      onClick={() => set("hairColor", c)} outline />
+                  {HAIRS.map((c, i) => (
+                    <TChip key={c} label={c} active={form.hairColor === HAIR_AR[i]}
+                      onClick={() => set("hairColor", HAIR_AR[i])} outline inp={INP} border={BORDER} muted={MUTED} />
                   ))}
                 </div>
               </div>
               <div>
-                <label style={labelStyle}>لون العين</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.eyeColor}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {EYE_COLORS.map(c => (
-                    <Chip key={c} label={c} active={form.eyeColor === c}
-                      onClick={() => set("eyeColor", c)} outline />
+                  {EYES.map((c, i) => (
+                    <TChip key={c} label={c} active={form.eyeColor === EYE_AR[i]}
+                      onClick={() => set("eyeColor", EYE_AR[i])} outline inp={INP} border={BORDER} muted={MUTED} />
                   ))}
                 </div>
               </div>
@@ -525,18 +607,12 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* ── STEP 6: Social ── */}
+        {/* ── STEP 6 ── */}
         {step === 6 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة 6 من 7
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              سوشيال ميديا 📱
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              حط لينكاتك وعدد الفولورز — اختياري بس بيزود فرصك
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.stepNum(6)}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step6Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step6Sub}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {([
                 { platform: "Instagram", icon: "📸", uk: "instagram"  as keyof FormData, fk: "instagramFollowers" as keyof FormData, ph: "instagram.com/username" },
@@ -544,28 +620,27 @@ export default function RegisterPage() {
                 { platform: "YouTube",   icon: "▶️", uk: "youtube"    as keyof FormData, fk: "youtubeFollowers"   as keyof FormData, ph: "youtube.com/@channel" },
                 { platform: "LinkedIn",  icon: "💼", uk: "linkedin"   as keyof FormData, fk: "linkedinFollowers"  as keyof FormData, ph: "linkedin.com/in/name" },
               ]).map(s => (
-                <div key={s.platform} style={{
-                  backgroundColor: "#1a1a1a", border: "1px solid #2a2a2a",
-                  borderRadius: "12px", padding: "14px",
-                }}>
+                <div key={s.platform} style={{ backgroundColor: INP, border: `1px solid ${BORDER}`, borderRadius: "12px", padding: "14px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
                     <span style={{ fontSize: "18px" }}>{s.icon}</span>
-                    <span style={{ color: "#f1f5f9", fontSize: "14px", fontWeight: 700 }}>{s.platform}</span>
+                    <span style={{ color: TEXT, fontSize: "14px", fontWeight: 700 }}>{s.platform}</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 110px", gap: "8px" }}>
                     <input placeholder={s.ph} value={form[s.uk] as string}
-                      onChange={e => set(s.uk, e.target.value)} dir="ltr" style={inputStyle} />
-                    <input placeholder="الفولورز" value={form[s.fk] as string}
-                      onChange={e => set(s.fk, e.target.value)} dir="ltr" style={inputStyle} />
+                      onChange={e => set(s.uk, e.target.value)} dir="ltr"
+                      style={{ width: "100%", padding: "10px 14px", backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "8px", color: TEXT, fontSize: "14px", outline: "none", boxSizing: "border-box", fontFamily: "'Cairo', sans-serif" }} />
+                    <input placeholder={tx.followers} value={form[s.fk] as string}
+                      onChange={e => set(s.fk, e.target.value)} dir="ltr"
+                      style={{ width: "100%", padding: "10px 14px", backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "8px", color: TEXT, fontSize: "14px", outline: "none", boxSizing: "border-box", fontFamily: "'Cairo', sans-serif" }} />
                   </div>
                 </div>
               ))}
               <div>
-                <label style={labelStyle}>وقت الرد المعتاد</label>
+                <label style={{ color: MUTED, fontSize: "13px", display: "block", marginBottom: "8px" }}>{tx.replyTime}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {REPLY_TIMES.map(r => (
-                    <Chip key={r} label={r} active={form.avgReplyTime === r}
-                      onClick={() => set("avgReplyTime", r)} outline />
+                  {REPLIES.map((r, i) => (
+                    <TChip key={r} label={r} active={form.avgReplyTime === REPLY_AR[i]}
+                      onClick={() => set("avgReplyTime", REPLY_AR[i])} outline inp={INP} border={BORDER} muted={MUTED} />
                   ))}
                 </div>
               </div>
@@ -573,76 +648,56 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* ── STEP 7: Photo + Summary ── */}
+        {/* ── STEP 7 ── */}
         {step === 7 && (
           <div>
-            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>
-              الخطوة الأخيرة 🎉
-            </p>
-            <h2 style={{ color: "#f1f5f9", fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>
-              صورتك الشخصية 📸
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
-              صورة واضحة لوشك بتزود فرصك x3 عند البراندات
-            </p>
+            <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "3px", marginBottom: "6px" }}>{tx.lastStep}</p>
+            <h2 style={{ color: TEXT, fontSize: "26px", fontWeight: 800, margin: "0 0 6px" }}>{tx.step7Title}</h2>
+            <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step7Sub}</p>
             <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", flexShrink: 0 }}>
                 <div onClick={() => fileRef.current?.click()} style={{
                   width: "130px", height: "130px", borderRadius: "50%",
-                  border: `2px dashed ${form.avatarUrl ? GOLD : "#2a2a2a"}`,
+                  border: `2px dashed ${form.avatarUrl ? GOLD : BORDER}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", overflow: "hidden",
-                  backgroundColor: "#1a1a1a",
-                  boxShadow: form.avatarUrl ? `0 0 20px ${GOLD_BG}` : "none",
-                  transition: "all 0.3s",
+                  cursor: "pointer", overflow: "hidden", backgroundColor: INP,
+                  boxShadow: form.avatarUrl ? `0 0 20px ${GOLD_BG}` : "none", transition: "all 0.3s",
                 }}>
                   {form.avatarUrl ? (
-                    <img src={form.avatarUrl} alt="avatar"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={form.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : uploading ? (
-                    <span style={{ color: GOLD, fontSize: "12px" }}>رفع...</span>
+                    <span style={{ color: GOLD, fontSize: "12px" }}>{tx.uploading}</span>
                   ) : (
-                    <div style={{ textAlign: "center", color: "#475569" }}>
+                    <div style={{ textAlign: "center", color: MUTED }}>
                       <div style={{ fontSize: "28px" }}>📷</div>
-                      <p style={{ margin: "4px 0 0", fontSize: "11px" }}>اضغط</p>
+                      <p style={{ margin: "4px 0 0", fontSize: "11px" }}>{tx.clickToUpload}</p>
                     </div>
                   )}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
                   onChange={e => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f); }} />
                 <button onClick={() => fileRef.current?.click()} disabled={uploading} style={{
-                  padding: "7px 16px", backgroundColor: "#1a1a1a",
-                  border: "1px solid #2a2a2a", borderRadius: "8px",
-                  cursor: "pointer", color: "#94a3b8", fontSize: "12px",
+                  padding: "7px 16px", backgroundColor: INP, border: `1px solid ${BORDER}`,
+                  borderRadius: "8px", cursor: "pointer", color: MUTED, fontSize: "12px",
                   fontFamily: "'Cairo', sans-serif",
                 }}>
-                  {uploading ? "جاري..." : form.avatarUrl ? "تغيير" : "رفع صورة"}
+                  {uploading ? tx.uploading : form.avatarUrl ? tx.changePhoto : tx.uploadPhoto}
                 </button>
               </div>
-
-              <div style={{
-                flex: 1, backgroundColor: "#1a1a1a",
-                border: `1px solid ${GOLD}`,
-                borderRadius: "14px", padding: "16px",
-              }}>
-                <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "2px", marginBottom: "10px" }}>
-                  ملخص بياناتك
-                </p>
+              <div style={{ flex: 1, backgroundColor: INP, border: `1px solid ${GOLD}`, borderRadius: "14px", padding: "16px" }}>
+                <p style={{ color: GOLD, fontSize: "11px", fontWeight: 700, letterSpacing: "2px", marginBottom: "10px" }}>{tx.summary}</p>
                 {[
-                  { l: "النوع",      v: TALENT_TYPES.find(t => t.id === form.talentType)?.label ?? "" },
-                  { l: "الاسم",      v: form.fullName },
-                  { l: "الـ Handle", v: form.handle ? `@${form.handle}` : "" },
-                  { l: "المدينة",    v: form.city },
-                  { l: "الكاتيجوري",v: form.category },
-                  { l: "Instagram",  v: form.instagram },
-                  { l: "TikTok",     v: form.tiktok },
+                  { l: lang === "ar" ? "النوع"      : "Type",     v: TALENT_TYPES.find(t => t.id === form.talentType)?.label ?? "" },
+                  { l: lang === "ar" ? "الاسم"      : "Name",     v: form.fullName },
+                  { l: "Handle",                                   v: form.handle ? `@${form.handle}` : "" },
+                  { l: lang === "ar" ? "المدينة"    : "City",     v: form.city },
+                  { l: lang === "ar" ? "الكاتيجوري": "Category",  v: form.category },
+                  { l: "Instagram",                                v: form.instagram },
+                  { l: "TikTok",                                   v: form.tiktok },
                 ].filter(r => r.v).map((r, i) => (
-                  <div key={i} style={{
-                    display: "flex", justifyContent: "space-between",
-                    padding: "5px 0", borderBottom: "1px solid #2a2a2a",
-                  }}>
-                    <span style={{ color: "#6b7280", fontSize: "12px" }}>{r.l}</span>
-                    <span style={{ color: "#f1f5f9", fontSize: "12px", fontWeight: 600, direction: "ltr" }}>{r.v}</span>
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${BORDER}` }}>
+                    <span style={{ color: MUTED, fontSize: "12px" }}>{r.l}</span>
+                    <span style={{ color: TEXT, fontSize: "12px", fontWeight: 600, direction: "ltr" }}>{r.v}</span>
                   </div>
                 ))}
               </div>
@@ -654,109 +709,73 @@ export default function RegisterPage() {
         <div style={{ display: "flex", gap: "12px", marginTop: "32px" }}>
           {step > 1 && (
             <button onClick={() => setStep((step - 1) as Step)} style={{
-              flex: 1, padding: "12px",
-              backgroundColor: "#1a1a1a",
-              border: "1px solid #2a2a2a",
-              borderRadius: "10px", cursor: "pointer",
-              color: "#94a3b8", fontSize: "14px", fontWeight: 600,
-              fontFamily: "'Cairo', sans-serif",
-            }}>
-              ← رجوع
-            </button>
+              flex: 1, padding: "12px", backgroundColor: INP, border: `1px solid ${BORDER}`,
+              borderRadius: "10px", cursor: "pointer", color: MUTED,
+              fontSize: "14px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
+            }}>{tx.back}</button>
           )}
-
           {step < 7 ? (
             <button onClick={handleNext} disabled={loading} style={{
               flex: 2, padding: "13px",
-              backgroundColor: canProceed() ? GOLD : "#1e293b",
+              backgroundColor: canProceed() ? GOLD : (dark ? "#1e293b" : "#e2e8f0"),
               border: "none", borderRadius: "10px",
               cursor: loading ? "wait" : canProceed() ? "pointer" : "not-allowed",
-              color: canProceed() ? "#000" : "#475569",
+              color: canProceed() ? "#000" : SUBMUTED,
               fontSize: "15px", fontWeight: 800,
               fontFamily: "'Cairo', sans-serif", transition: "all 0.2s",
               boxShadow: canProceed() ? `0 4px 15px ${GOLD_GLW}` : "none",
-            }}>
-              {loading ? "جاري..." : "التالي →"}
-            </button>
+            }}>{loading ? tx.loading : tx.next}</button>
           ) : (
             <button onClick={handleSubmit} disabled={loading} style={{
-              flex: 2, padding: "14px",
-              backgroundColor: GOLD,
-              border: "none", borderRadius: "10px",
-              cursor: loading ? "wait" : "pointer",
+              flex: 2, padding: "14px", backgroundColor: GOLD, border: "none",
+              borderRadius: "10px", cursor: loading ? "wait" : "pointer",
               color: "#000", fontSize: "15px", fontWeight: 800,
-              fontFamily: "'Cairo', sans-serif",
-              boxShadow: `0 4px 20px ${GOLD_GLW}`,
-            }}>
-              {loading ? "جاري الحفظ..." : "🚀 ابدأ رحلتك على Talents"}
-            </button>
+              fontFamily: "'Cairo', sans-serif", boxShadow: `0 4px 20px ${GOLD_GLW}`,
+            }}>{loading ? tx.saving : tx.submit}</button>
           )}
         </div>
 
         {step >= 5 && step < 7 && (
           <button onClick={() => setStep((step + 1) as Step)} style={{
             width: "100%", marginTop: "12px", padding: "8px",
-            background: "none", border: "none",
-            color: "#475569", fontSize: "12px",
-            cursor: "pointer", fontFamily: "'Cairo', sans-serif",
-          }}>
-            تخطي هذه الخطوة →
-          </button>
+            background: "none", border: "none", color: SUBMUTED,
+            fontSize: "12px", cursor: "pointer", fontFamily: "'Cairo', sans-serif",
+          }}>{tx.skip}</button>
         )}
       </div>
 
-      <p style={{ color: "#475569", fontSize: "12px", marginTop: "16px" }}>
-        خطوة {step} من 7
-      </p>
+      <p style={{ color: SUBMUTED, fontSize: "12px", marginTop: "16px" }}>{tx.stepOf(step)}</p>
     </div>
   );
 }
 
-// ─── Shared styles ────────────────────────────────────────────────────────────
-const labelStyle: React.CSSProperties = {
-  color: "#6b7280", fontSize: "13px", display: "block", marginBottom: "6px",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "10px 14px",
-  backgroundColor: "#1a1a1a",
-  border: "1px solid #2a2a2a",
-  borderRadius: "8px", color: "#f1f5f9",
-  fontSize: "14px", outline: "none",
-  boxSizing: "border-box",
-  fontFamily: "'Cairo', sans-serif",
-};
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-function FInput({ label, placeholder, value, onChange, hint, dir, type }: {
+// ─── Sub-components (theme-aware) ─────────────────────────────────────────────
+function TInput({ label, placeholder, value, onChange, hint, dir, type, inp, border, text, muted }: {
   label: string; placeholder: string; value: string;
   onChange: (v: string) => void; hint?: string; dir?: string; type?: string;
+  inp: string; border: string; text: string; muted: string;
 }) {
   return (
     <div>
-      <label style={labelStyle}>{label}</label>
+      <label style={{ color: muted, fontSize: "13px", display: "block", marginBottom: "6px" }}>{label}</label>
       <input type={type ?? "text"} placeholder={placeholder} value={value}
         onChange={e => onChange(e.target.value)} dir={dir ?? "rtl"}
-        style={inputStyle} />
-      {hint && <p style={{ color: "#475569", fontSize: "11px", margin: "4px 0 0" }}>{hint}</p>}
+        style={{ width: "100%", padding: "10px 14px", backgroundColor: inp, border: `1px solid ${border}`, borderRadius: "8px", color: text, fontSize: "14px", outline: "none", boxSizing: "border-box", fontFamily: "'Cairo', sans-serif" }} />
+      {hint && <p style={{ color: muted, fontSize: "11px", margin: "4px 0 0" }}>{hint}</p>}
     </div>
   );
 }
 
-function Chip({ label, active, onClick, outline }: {
+function TChip({ label, active, onClick, outline, inp, border, muted }: {
   label: string; active: boolean; onClick: () => void; outline?: boolean;
+  inp: string; border: string; muted: string;
 }) {
-  const GOLD = "#FFB800";
   return (
     <button onClick={onClick} style={{
       padding: "6px 14px",
-      backgroundColor: active
-        ? outline ? "rgba(255,184,0,0.12)" : GOLD
-        : "#1a1a1a",
-      color: active
-        ? outline ? GOLD : "#000"
-        : "#94a3b8",
-      border: `1px solid ${active ? GOLD : "#2a2a2a"}`,
+      backgroundColor: active ? (outline ? "rgba(255,184,0,0.12)" : "#FFB800") : inp,
+      color:           active ? (outline ? "#FFB800" : "#000") : muted,
+      border: `1px solid ${active ? "#FFB800" : border}`,
       borderRadius: "20px", cursor: "pointer",
       fontSize: "12px", fontWeight: 600,
       fontFamily: "'Cairo', sans-serif", transition: "all 0.2s",
