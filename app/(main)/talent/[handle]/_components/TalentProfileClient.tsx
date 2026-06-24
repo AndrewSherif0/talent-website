@@ -1,6 +1,8 @@
 "use client";
+"use client";
 import { useState } from "react";
 import { ProfileThemeContext, TX, type Lang, type Theme } from "./ProfileThemeContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import PerformanceSnapshot  from "./main/PerformanceSnapshot";
 import TalentHeader         from "./main/TalentHeader";
 import ProfileTabs          from "./main/ProfileTabs";
@@ -19,6 +21,7 @@ export default function TalentProfileClient({ talent, brands, reviews, topBookin
   const [activeTab, setActiveTab] = useState("overview");
   const [lang, setLang] = useState<Lang>("ar");
   const [mode, setMode] = useState<"dark" | "light">("dark");
+  const isMobile = useIsMobile();
 
   const dark = mode === "dark";
   const dir  = lang === "ar" ? "rtl" : "ltr";
@@ -81,7 +84,7 @@ export default function TalentProfileClient({ talent, brands, reviews, topBookin
             topBooking={topBooking}
           />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px", alignItems: "start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", gap: "16px", alignItems: "start" }}>
             <div>
               <TalentHeader talent={talent} />
               <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
@@ -102,7 +105,7 @@ export default function TalentProfileClient({ talent, brands, reviews, topBookin
               )}
             </div>
 
-            <div style={{ position: "sticky", top: "76px" }}>
+            <div style={{ position: isMobile ? "static" : "sticky", top: "76px" }}>
               <AvailabilitySidebar availability={talent.availability} />
               <AboutSidebar talent={talent} />
               <SocialProof socialLinks={talent.social_links} />

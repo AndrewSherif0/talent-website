@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { usePathname } from "next/navigation";
-
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type Lang = "ar" | "en";
 type Mode = "dark" | "light";
@@ -31,18 +31,20 @@ const TX = {
 };
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const [lang,      setLang]      = useState<Lang>("ar");
-  const [mode,      setMode]      = useState<Mode>("dark");
-  const [hoveredHref, setHovered] = useState<string | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [initials,  setInitials]  = useState("م");
+  const pathname  = usePathname();
+  const isMobile  = useIsMobile();
+
+  const [lang,        setLang]      = useState<Lang>("ar");
+  const [mode,        setMode]      = useState<Mode>("dark");
+  const [hoveredHref, setHovered]   = useState<string | null>(null);
+  const [avatarUrl,   setAvatarUrl] = useState<string | null>(null);
+  const [initials,    setInitials]  = useState("م");
+  const [menuOpen,    setMenuOpen]  = useState(false);
 
   const dark = mode === "dark";
   const dir  = lang === "ar" ? "rtl" : "ltr";
   const t    = TX[lang];
 
-  // Theme colors
   const BG     = dark ? "#090e1a"  : "#ffffff";
   const BORDER = dark ? "#1e293b"  : "#e2e8f0";
   const SEARCH = dark ? "#0d1527"  : "#f1f5f9";
@@ -56,34 +58,33 @@ export default function Navbar() {
     supabase.auth.getUser().then(async ({ data }) => {
       const user = data.user;
       if (!user) return;
-
       const { data: profile } = await supabase
         .from("profiles")
         .select("avatar_url, full_name, handle")
         .eq("id", user.id)
         .maybeSingle();
-
       if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
       if (profile?.full_name)  setInitials(profile.full_name.charAt(0).toUpperCase());
     });
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const links = NAV_LINKS[lang];
 
   return (
     <>
       <style>{`
-        @keyframes underline-in {
-          from { transform: scaleX(0); }
-          to   { transform: scaleX(1); }
-        }
+        @keyframes underline-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
       <nav style={{
         position: "fixed", top: 0, right: 0, left: 0, zIndex: 50,
         height: "60px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 24px",
+        padding: isMobile ? "0 14px" : "0 24px",
         backgroundColor: BG,
         borderBottom: `1px solid ${BORDER}`,
         backdropFilter: "blur(12px)",
@@ -92,113 +93,106 @@ export default function Navbar() {
       }}>
 
         {/* Logo + Search */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Link href="/explore" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}   
-              style={{ height: "32px", width: "auto", objectFit: "contain" }} priority 
-              />
+            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}
+              style={{ height: "28px", width: "auto", objectFit: "contain" }} priority />
           </Link>
 
-          <div style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            backgroundColor: SEARCH, border: `1px solid ${BORDER}`,
-            borderRadius: "8px", padding: "6px 12px", width: "220px",
-          }}>
-            <svg width="14" height="14" fill="none" stroke={MUTED} strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-              <circle cx="11" cy="11" r="7" />
-              <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-            </svg>
-            <input type="text" placeholder={t.search} style={{
-              background: "transparent", border: "none", outline: "none",
-              color: INP, fontSize: "13px", width: "100%", direction: dir,
-              fontFamily: "'Cairo', sans-serif",
-            }} />
-          </div>
+          {/* Search — desktop only */}
+          {!isMobile && (
+            <div style={{
+              display: "flex", alignItems: "center", gap: "8px",
+              backgroundColor: SEARCH, border: `1px solid ${BORDER}`,
+              borderRadius: "8px", padding: "6px 12px", width: "220px",
+            }}>
+              <svg width="14" height="14" fill="none" stroke={MUTED} strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <circle cx="11" cy="11" r="7" />
+                <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+              </svg>
+              <input type="text" placeholder={t.search} style={{
+                background: "transparent", border: "none", outline: "none",
+                color: INP, fontSize: "13px", width: "100%", direction: dir,
+                fontFamily: "'Cairo', sans-serif",
+              }} />
+            </div>
+          )}
         </div>
 
-        {/* Nav Links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-          {links.map((item) => {
-            const isActive  = pathname === item.href;
-            const isHovered = hoveredHref === item.href;
-            const highlight = isActive || isHovered;
-            return (
-              <Link key={item.href} href={item.href}
-                onMouseEnter={() => setHovered(item.href)}
-                onMouseLeave={() => setHovered(null)}
-                style={{
-                  position: "relative",
-                  color: highlight ? GOLD : MUTED,
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: highlight ? 700 : 500,
-                  whiteSpace: "nowrap",
-                  paddingBottom: "4px",
-                  transition: "color 0.2s, font-weight 0.2s",
-                }}
-              >
-                {item.label}
-                {/* Animated underline */}
-                <span style={{
-                  position: "absolute", bottom: 0, right: 0, left: 0,
-                  height: "2px", backgroundColor: GOLD,
-                  borderRadius: "2px",
-                  transform: highlight ? "scaleX(1)" : "scaleX(0)",
-                  transformOrigin: dir === "rtl" ? "right" : "left",
-                  transition: "transform 0.25s ease",
-                }} />
-              </Link>
-            );
-          })}
-        </div>
+        {/* Desktop Nav Links */}
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+            {links.map((item) => {
+              const isActive  = pathname === item.href;
+              const isHovered = hoveredHref === item.href;
+              const highlight = isActive || isHovered;
+              return (
+                <Link key={item.href} href={item.href}
+                  onMouseEnter={() => setHovered(item.href)}
+                  onMouseLeave={() => setHovered(null)}
+                  style={{
+                    position: "relative",
+                    color: highlight ? GOLD : MUTED,
+                    textDecoration: "none", fontSize: "14px",
+                    fontWeight: highlight ? 700 : 500,
+                    whiteSpace: "nowrap", paddingBottom: "4px",
+                    transition: "color 0.2s",
+                  }}>
+                  {item.label}
+                  <span style={{
+                    position: "absolute", bottom: 0, right: 0, left: 0,
+                    height: "2px", backgroundColor: GOLD, borderRadius: "2px",
+                    transform: highlight ? "scaleX(1)" : "scaleX(0)",
+                    transformOrigin: dir === "rtl" ? "right" : "left",
+                    transition: "transform 0.25s ease",
+                  }} />
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         {/* Right controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "4px" : "6px" }}>
 
           {/* Lang toggle */}
           <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} style={{
             background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
-            padding: "4px 10px", cursor: "pointer",
-            color: MUTED, fontSize: "12px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
+            padding: "4px 8px", cursor: "pointer",
+            color: MUTED, fontSize: "11px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
           }}>
-            {lang === "ar" ? "عربي" : "English"}
+            {lang === "ar" ? "EN" : "ع"}
           </button>
 
           {/* Mode toggle */}
           <button onClick={() => setMode(dark ? "light" : "dark")} style={{
             background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
-            padding: "4px 8px", cursor: "pointer", fontSize: "13px",
+            padding: "4px 7px", cursor: "pointer", fontSize: "12px",
           }}>
             {dark ? "☀️" : "🌙"}
           </button>
 
-          {/* Messages */}
-          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: MUTED, display: "flex" }}>
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </button>
+          {/* Notifications — desktop only */}
+          {!isMobile && (
+            <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: MUTED, display: "flex", position: "relative" }}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span style={{
+                position: "absolute", top: "4px", left: "4px",
+                width: "16px", height: "16px", backgroundColor: "#FF6B2B", borderRadius: "50%",
+                fontSize: "10px", fontWeight: 700, color: "#fff",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>3</span>
+            </button>
+          )}
 
-          {/* Notifications */}
-          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: MUTED, display: "flex", position: "relative" }}>
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span style={{
-              position: "absolute", top: "4px", left: "4px",
-              width: "16px", height: "16px",
-              backgroundColor: "#FF6B2B", borderRadius: "50%",
-              fontSize: "10px", fontWeight: 700, color: "#fff",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>3</span>
-          </button>
-
-          {/* Avatar from DB → links to own profile */}
+          {/* Avatar */}
           <Link href="/profile" style={{
-            width: "34px", height: "34px", borderRadius: "50%",
+            width: "32px", height: "32px", borderRadius: "50%",
             border: `2px solid ${GOLD}`,
             backgroundColor: dark ? "#111c35" : "#fff8e1",
-            color: GOLD, fontSize: "13px", fontWeight: 700,
+            color: GOLD, fontSize: "12px", fontWeight: 700,
             display: "flex", alignItems: "center", justifyContent: "center",
             overflow: "hidden", textDecoration: "none", flexShrink: 0,
             transition: "box-shadow 0.2s",
@@ -206,27 +200,105 @@ export default function Navbar() {
             onMouseEnter={e => (e.currentTarget.style.boxShadow = `0 0 0 3px rgba(255,184,0,0.35)`)}
             onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
           >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="avatar"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : initials}
+            {avatarUrl
+              ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : initials}
           </Link>
 
-          {/* CTA */}
+          {/* Book CTA — desktop only */}
+          {!isMobile && (
+            <Link href="/book" style={{
+              backgroundColor: GOLD, color: "#000",
+              fontWeight: 700, fontSize: "14px",
+              padding: "8px 18px", borderRadius: "8px",
+              textDecoration: "none", whiteSpace: "nowrap",
+              transition: "opacity 0.2s",
+            }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+            >
+              {t.book}
+            </Link>
+          )}
+
+          {/* Hamburger — mobile only */}
+          {isMobile && (
+            <button onClick={() => setMenuOpen(o => !o)} style={{
+              background: "none", border: `1px solid ${BORDER}`, borderRadius: "6px",
+              padding: "7px 8px", cursor: "pointer",
+              display: "flex", flexDirection: "column", gap: "4px",
+            }}>
+              {[0, 1, 2].map(i => (
+                <span key={i} style={{
+                  display: "block", width: "18px", height: "2px",
+                  backgroundColor: menuOpen ? GOLD : MUTED,
+                  borderRadius: "2px", transition: "background 0.2s",
+                  transform: menuOpen && i === 0 ? "rotate(45deg) translate(4px,4px)"
+                            : menuOpen && i === 2 ? "rotate(-45deg) translate(4px,-4px)"
+                            : menuOpen && i === 1 ? "scaleX(0)" : "none",
+                  transformOrigin: "center",
+                }} />
+              ))}
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile slide-down menu */}
+      {isMobile && menuOpen && (
+        <div style={{
+          position: "fixed", top: "60px", left: 0, right: 0, zIndex: 49,
+          backgroundColor: BG, borderBottom: `1px solid ${BORDER}`,
+          padding: "14px 16px 20px",
+          direction: dir, fontFamily: "'Cairo', sans-serif",
+          animation: "slideDown 0.2s ease",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+        }}>
+          {/* Mobile search */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            backgroundColor: SEARCH, border: `1px solid ${BORDER}`,
+            borderRadius: "8px", padding: "10px 14px", marginBottom: "8px",
+          }}>
+            <svg width="14" height="14" fill="none" stroke={MUTED} strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+            </svg>
+            <input type="text" placeholder={t.search} style={{
+              background: "transparent", border: "none", outline: "none",
+              color: INP, fontSize: "14px", width: "100%",
+              fontFamily: "'Cairo', sans-serif",
+            }} />
+          </div>
+
+          {/* Nav links */}
+          {links.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link key={item.href} href={item.href} style={{
+                display: "block", padding: "14px 4px",
+                borderBottom: `1px solid ${BORDER}`,
+                color: isActive ? GOLD : TEXT,
+                textDecoration: "none", fontSize: "15px",
+                fontWeight: isActive ? 700 : 500,
+              }}>
+                {item.label}
+              </Link>
+            );
+          })}
+
+          {/* Book CTA */}
           <Link href="/book" style={{
+            display: "block", marginTop: "16px", textAlign: "center",
             backgroundColor: GOLD, color: "#000",
-            fontWeight: 700, fontSize: "14px",
-            padding: "8px 18px", borderRadius: "8px",
-            textDecoration: "none", whiteSpace: "nowrap",
-            transition: "opacity 0.2s",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
-          >
+            fontWeight: 700, fontSize: "15px",
+            padding: "13px", borderRadius: "10px",
+            textDecoration: "none",
+          }}>
             {t.book}
           </Link>
         </div>
-      </nav>
+      )}
 
       <div style={{ height: "60px" }} />
     </>

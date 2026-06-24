@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type Lang = "ar" | "en";
 type Mode = "dark" | "light";
@@ -61,8 +62,9 @@ const floatingTalents = [
 ];
 
 export default function LoginPage() {
-  const router   = useRouter();
-  const supabase = createClient();
+  const router    = useRouter();
+  const supabase  = createClient();
+  const isMobile  = useIsMobile();
 
   const [lang,     setLang]     = useState<Lang>("ar");
   const [mode,     setMode]     = useState<Mode>("dark");
@@ -95,15 +97,16 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: "100vh", display: "flex",
+      minHeight: "100vh", display: "flex", flexDirection: "row",
       backgroundColor: bg, fontFamily: "'Cairo', sans-serif", direction: dir,
     }}>
 
       {/* ── FORM SIDE ── */}
       <div style={{
-        width: "42%", minWidth: "380px",
+        width: isMobile ? "100%" : "42%",
+        minWidth: isMobile ? "unset" : "380px",
         display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "48px 56px", position: "relative",
+        padding: isMobile ? "32px 24px" : "48px 56px", position: "relative",
         backgroundColor: card,
       }}>
 
@@ -221,7 +224,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* ── BRANDING SIDE ── */}
+      {/* ── BRANDING SIDE — desktop only ── */}
+      {!isMobile && (
       <div style={{
         flex: 1, position: "relative", overflow: "hidden",
         backgroundColor: "#0a0a0a",
@@ -288,6 +292,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

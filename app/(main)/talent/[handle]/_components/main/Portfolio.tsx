@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useTheme, TX } from "../ProfileThemeContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type PortfolioItem = {
   id: string; url: string | null;
@@ -16,6 +17,7 @@ export default function Portfolio({ items: initial, isOwn }: { items: PortfolioI
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { lang, CARD, BORDER, ELV, TEXT, MUTED, GOLD, GOLD_BG } = useTheme();
+  const isMobile = useIsMobile();
   const tx = TX[lang];
 
   const FILTERS = [
@@ -157,7 +159,7 @@ export default function Portfolio({ items: initial, isOwn }: { items: PortfolioI
             : tx.noPortfolio}
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: "8px" }}>
           {filtered.slice(0, 6).map((item) => (
             <div key={item.id} style={{
               aspectRatio: "4/3", backgroundColor: ELV,

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type Lang = "ar" | "en";
 type Mode = "dark" | "light";
@@ -131,6 +132,7 @@ export default function MyProfilePage() {
   const [caption,   setCaption]   = useState("");
   const [form,      setForm]      = useState<any>({});
 
+  const isMobile = useIsMobile();
   const dark = mode === "dark";
   const dir  = lang === "ar" ? "rtl" : "ltr";
   const tx   = TX[lang];
@@ -339,7 +341,7 @@ export default function MyProfilePage() {
         {/* ══════════════════ VIEW MODE ══════════════════ */}
         {!edit && (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "20px", alignItems: "start", marginBottom: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "260px 1fr", gap: "20px", alignItems: "start", marginBottom: "24px" }}>
 
               {/* Left — avatar card */}
             <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "16px", padding: "24px", textAlign: "center" }}>
@@ -348,9 +350,9 @@ export default function MyProfilePage() {
                   ? <img src={profile.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : <span style={{ color: GOLD, fontSize: "36px", fontWeight: 800 }}>{profile.full_name?.[0] ?? "?"}</span>}
               </div>
-              <h2 style={{ color: TEXT, fontSize: "18px", fontWeight: 800, margin: "0 0 4px" }}>{profile.full_name}</h2>
-              {profile.handle && <p style={{ color: GOLD, fontSize: "13px", margin: "0 0 6px" }}>@{profile.handle}</p>}
-                {profile.city   && <p style={{ color: MUTED, fontSize: "13px", margin: "0 0 12px" }}>📍 {profile.city}</p>}
+              <h2 style={{ color: TEXT, fontSize: "14px", fontWeight: 800, margin: "0 0 4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", maxWidth: "100%" }}>{profile.full_name}</h2>
+              {profile.handle && <p style={{ color: GOLD, fontSize: "12px", margin: "0 0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", maxWidth: "100%" }}>@{profile.handle}</p>}
+              {profile.city   && <p style={{ color: MUTED, fontSize: "12px", margin: "0 0 12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", maxWidth: "100%" }}>📍 {profile.city}</p>}
               <span style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}44`, borderRadius: "6px", padding: "3px 12px", fontSize: "12px", fontWeight: 700 }}>
                 {profile.role === "talent" ? tx.talent : tx.client}
               </span>
@@ -428,7 +430,7 @@ export default function MyProfilePage() {
             <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "16px", padding: "24px" }}>
 
               {/* Header */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", justifyContent: "space-between", marginBottom: "16px", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <h2 style={{ color: TEXT, fontSize: "17px", fontWeight: 800, margin: 0 }}>
                     {tx.portfolio}
@@ -441,13 +443,13 @@ export default function MyProfilePage() {
                 </div>
 
                 {/* Upload buttons */}
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                   {/* Caption input */}
                   <input
                     value={caption}
                     onChange={e => setCaption(e.target.value)}
                     placeholder={tx.captionPlaceholder}
-                    style={{ padding: "7px 12px", backgroundColor: ELV, border: `1px solid ${BORDER}`, borderRadius: "7px", color: TEXT, fontSize: "12px", outline: "none", width: "170px", fontFamily: "'Cairo', sans-serif" }}
+                    style={{ padding: "7px 12px", backgroundColor: ELV, border: `1px solid ${BORDER}`, borderRadius: "7px", color: TEXT, fontSize: "12px", outline: "none", width: isMobile ? "100%" : "170px", fontFamily: "'Cairo', sans-serif", boxSizing: "border-box" }}
                   />
                   {/* Photo upload */}
                   <input ref={photoRef} type="file" accept="image/*" style={{ display: "none" }}
@@ -509,7 +511,7 @@ export default function MyProfilePage() {
                   {tx.noMedia}
                 </div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
                   {filteredMedia.map(item => (
                     <MediaCard
                       key={item.id}
@@ -546,7 +548,7 @@ export default function MyProfilePage() {
             </div>
 
             <EditCard title={tx.accountInfo} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "14px" }}>
                 <Field label={tx.fullName} val={form.full_name} onChange={(v: string) => setF("full_name", v)} inp={inp} lbl={lbl} />
                 <Field label={tx.handle}   val={form.handle}    onChange={(v: string) => setF("handle", v.toLowerCase().replace(/[^a-z0-9-]/g,""))} inp={inp} lbl={lbl} dir="ltr" />
                 <Field label={tx.city}     val={form.city}      onChange={(v: string) => setF("city", v)} inp={inp} lbl={lbl} />
@@ -568,7 +570,7 @@ export default function MyProfilePage() {
             </EditCard>
 
             <EditCard title={tx.socialLinks} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "14px" }}>
                 <Field label="Instagram" val={form.instagram} onChange={(v: string) => setF("instagram", v)} inp={inp} lbl={lbl} dir="ltr" />
                 <Field label="TikTok"    val={form.tiktok}    onChange={(v: string) => setF("tiktok", v)}    inp={inp} lbl={lbl} dir="ltr" />
                 <Field label="YouTube"   val={form.youtube}   onChange={(v: string) => setF("youtube", v)}   inp={inp} lbl={lbl} dir="ltr" />
@@ -578,7 +580,7 @@ export default function MyProfilePage() {
 
             {tp && (
               <EditCard title={tx.physicalInfo} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "14px" }}>
                   <Field label={tx.height}    val={form.height}     onChange={(v: string) => setF("height", v)}     inp={inp} lbl={lbl} dir="ltr" />
                   <Field label={tx.weight}    val={form.weight}     onChange={(v: string) => setF("weight", v)}     inp={inp} lbl={lbl} dir="ltr" />
                   <Field label={tx.hairColor} val={form.hair_color} onChange={(v: string) => setF("hair_color", v)} inp={inp} lbl={lbl} />

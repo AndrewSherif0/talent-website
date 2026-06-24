@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useTheme, TX } from "../ProfileThemeContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function TalentHeader({ talent }: { talent: any }) {
   const [saved, setSaved] = useState(false);
   const { lang, dark, CARD, BORDER, ELV, TEXT, SUB, MUTED, GOLD, GOLD_BG } = useTheme();
+  const isMobile = useIsMobile();
   const tx = TX[lang];
 
   const badges = [tx.verified, tx.fastResponse, tx.professional];
@@ -12,8 +14,8 @@ export default function TalentHeader({ talent }: { talent: any }) {
   return (
     <div style={{
       backgroundColor: CARD, border: `1px solid ${BORDER}`,
-      borderRadius: "12px", padding: "20px", marginBottom: "16px",
-      display: "flex", gap: "20px",
+      borderRadius: "12px", padding: isMobile ? "16px" : "20px", marginBottom: "16px",
+      display: "flex", flexDirection: isMobile ? "column" : "row", gap: "16px",
     }}>
       {/* Photo */}
       <div style={{ position: "relative", flexShrink: 0 }}>
@@ -89,7 +91,7 @@ export default function TalentHeader({ talent }: { talent: any }) {
       </div>
 
       {/* Actions */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexShrink: 0, width: "160px" }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flexWrap: "wrap", gap: "8px", flexShrink: 0, width: isMobile ? "100%" : "160px" }}>
         <button style={{
           backgroundColor: GOLD, color: "#000", border: "none",
           borderRadius: "8px", padding: "12px",
