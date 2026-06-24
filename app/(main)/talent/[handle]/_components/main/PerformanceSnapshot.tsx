@@ -1,11 +1,23 @@
-const stats = [
-  { icon: "👁", value: "2.1M+", label: "مشاهدات الحملات", change: "+38%" },
-  { icon: "📈", value: "4.8%", label: "متوسط CTR",        change: "+17%" },
-  { icon: "💰", value: "+176%", label: "زيادة في المبيعات", change: "+21%" },
-  { icon: "🤝", value: "98%",  label: "براندات عادت للتعاون", change: "+14%" },
-];
+type Props = {
+  profileViews:   number;
+  avgRating:      number;
+  totalBookings:  number;
+  totalReviews:   number;
+  topBooking?:    any;
+};
 
-export default function PerformanceSnapshot({ talent }: { talent?: any }) {
+export default function PerformanceSnapshot({
+  profileViews, avgRating, totalBookings, totalReviews, topBooking,
+}: Props) {
+  const stats = [
+    { icon: "👁",  value: profileViews >= 1000 ? `${(profileViews / 1000).toFixed(1)}K+` : String(profileViews), label: "مشاهدات الملف" },
+    { icon: "⭐",  value: avgRating ? avgRating.toFixed(1) : "—", label: "متوسط التقييم" },
+    { icon: "📦",  value: String(totalBookings), label: "حملة مكتملة" },
+    { icon: "💬",  value: String(totalReviews),  label: "تقييم" },
+  ];
+
+  const brandName = topBooking?.client_profiles?.profiles?.full_name ?? null;
+
   return (
     <div style={{
       backgroundColor: "var(--bg-card)",
@@ -15,7 +27,8 @@ export default function PerformanceSnapshot({ talent }: { talent?: any }) {
       marginBottom: "16px",
     }}>
       <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-        {/* Stats grid */}
+
+        {/* Stats */}
         <div style={{ flex: 1 }}>
           <p style={{ color: "var(--color-teal)", fontSize: "12px", fontWeight: 700, marginBottom: "12px" }}>
             📊 نتائج حقيقية تحققها
@@ -25,63 +38,59 @@ export default function PerformanceSnapshot({ talent }: { talent?: any }) {
               <div key={i} style={{
                 backgroundColor: "var(--bg-elevated)",
                 border: "1px solid var(--bg-border)",
-                borderRadius: "10px",
-                padding: "12px",
-                textAlign: "center",
+                borderRadius: "10px", padding: "12px", textAlign: "center",
               }}>
                 <div style={{ fontSize: "20px", marginBottom: "4px" }}>{s.icon}</div>
                 <div style={{ color: "var(--color-teal)", fontSize: "20px", fontWeight: 900 }}>{s.value}</div>
-                <div style={{ color: "var(--text-muted)", fontSize: "11px", margin: "4px 0" }}>{s.label}</div>
-                <div style={{ color: "#22c55e", fontSize: "11px", fontWeight: 700 }}>{s.change}</div>
+                <div style={{ color: "var(--text-muted)", fontSize: "11px", marginTop: "4px" }}>{s.label}</div>
               </div>
             ))}
           </div>
           <p style={{ color: "var(--text-muted)", fontSize: "11px", marginTop: "10px" }}>
-            * بناءً على آخر 18 حملة مكتملة
+            * بناءً على آخر {totalBookings} حملة مكتملة
           </p>
         </div>
 
         {/* Top Campaign */}
-        <div style={{
-          width: "260px",
-          backgroundColor: "var(--bg-elevated)",
-          border: "1px solid var(--bg-border)",
-          borderRadius: "10px",
-          padding: "14px",
-          flexShrink: 0,
-        }}>
-          <p style={{ color: "var(--color-gold)", fontSize: "11px", fontWeight: 700, marginBottom: "8px" }}>
-            🏆 Top Campaign
-          </p>
-          <p style={{ color: "var(--text-primary)", fontSize: "14px", fontWeight: 700, marginBottom: "10px" }}>
-            Noon Summer Collection
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "10px" }}>
-            <div style={{ textAlign: "center" }}>
-              <p style={{ color: "var(--text-muted)", fontSize: "11px" }}>Before</p>
-              <p style={{ color: "var(--text-secondary)", fontSize: "16px", fontWeight: 700 }}>1.3%</p>
-            </div>
-            <div style={{ color: "var(--text-muted)" }}>→</div>
-            <div style={{ textAlign: "center" }}>
-              <p style={{ color: "var(--text-muted)", fontSize: "11px" }}>After</p>
-              <p style={{ color: "var(--text-primary)", fontSize: "16px", fontWeight: 700 }}>3.6%</p>
-            </div>
-            <div style={{ color: "var(--color-teal)", fontSize: "18px", fontWeight: 900, marginRight: "auto" }}>
-              +176% CTR
+        {topBooking ? (
+          <div style={{
+            width: "240px", flexShrink: 0,
+            backgroundColor: "var(--bg-elevated)",
+            border: "1px solid var(--bg-border)",
+            borderRadius: "10px", padding: "14px",
+          }}>
+            <p style={{ color: "var(--color-gold)", fontSize: "11px", fontWeight: 700, marginBottom: "8px" }}>
+              🏆 Top Campaign
+            </p>
+            <p style={{ color: "var(--text-primary)", fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>
+              {brandName ?? topBooking.job_type ?? "حملة مكتملة"}
+            </p>
+            <p style={{ color: "var(--text-muted)", fontSize: "12px", marginBottom: "10px" }}>
+              💰 {topBooking.fee ? `${Number(topBooking.fee).toLocaleString()} EGP` : "—"}
+            </p>
+            <div style={{
+              backgroundColor: "rgba(0,201,177,0.08)",
+              borderRadius: "6px", padding: "8px",
+              color: "var(--color-teal)", fontSize: "12px", fontWeight: 700, textAlign: "center",
+            }}>
+              ✓ مكتملة عبر Talents
             </div>
           </div>
-          <button style={{
-            width: "100%", padding: "8px",
-            backgroundColor: "transparent",
-            border: "1px solid var(--color-teal)",
-            borderRadius: "8px",
-            color: "var(--color-teal)",
-            fontSize: "12px", fontWeight: 700,
-            cursor: "pointer",
+        ) : (
+          <div style={{
+            width: "240px", flexShrink: 0,
+            backgroundColor: "var(--bg-elevated)",
+            border: "1px solid var(--bg-border)",
+            borderRadius: "10px", padding: "14px",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: "8px",
           }}>
-            عرض دراسة الحالة كاملة
-          </button>
-        </div>
+            <p style={{ color: "var(--color-gold)", fontSize: "11px", fontWeight: 700 }}>🏆 Top Campaign</p>
+            <p style={{ color: "var(--text-muted)", fontSize: "12px", textAlign: "center" }}>
+              لا توجد حملات مكتملة بعد
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

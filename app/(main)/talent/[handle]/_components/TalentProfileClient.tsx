@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import PerformanceSnapshot from "./main/PerformanceSnapshot";
-import TalentHeader        from "./main/TalentHeader";
+import PerformanceSnapshot  from "./main/PerformanceSnapshot";
+import TalentHeader         from "./main/TalentHeader";
 import ProfileTabs         from "./main/ProfileTabs";
 import Portfolio           from "./main/Portfolio";
 import PackagesSection     from "./main/PackagesSection";
@@ -12,10 +12,11 @@ import ReviewsSidebar      from "./sidebar/ReviewsSidebar";
 import BrandsSidebar       from "./sidebar/BrandsSidebar";
 import AskTalent           from "./sidebar/AskTalent";
 
-export default function TalentProfileClient({ talent, brands, reviews }: {
-  talent:  any;
-  brands:  any[];
-  reviews: any[];
+export default function TalentProfileClient({ talent, brands, reviews, topBooking }: {
+  talent:     any;
+  brands:     any[];
+  reviews:    any[];
+  topBooking: any;
 }) {
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -27,16 +28,17 @@ export default function TalentProfileClient({ talent, brands, reviews }: {
         الرئيسية › {talent.category} › {talent.name}
       </p>
 
-      {/* Performance snapshot */}
-      <PerformanceSnapshot talent={talent} />
+      {/* Performance */}
+      <PerformanceSnapshot
+        profileViews={talent.profile_views}
+        avgRating={talent.avg_rating}
+        totalBookings={talent.total_bookings}
+        totalReviews={talent.total_reviews}
+        topBooking={topBooking}
+      />
 
-      {/* 2-col layout — sidebar right, main left (RTL = sidebar يمين) */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 320px",
-        gap: "16px",
-        alignItems: "start",
-      }}>
+      {/* 2-col layout */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px", alignItems: "start" }}>
 
         {/* ── MAIN ── */}
         <div>
@@ -51,13 +53,9 @@ export default function TalentProfileClient({ talent, brands, reviews }: {
           )}
           {["shoots", "verified", "reviews"].includes(activeTab) && (
             <div style={{
-              backgroundColor: "var(--bg-card)",
-              border: "1px solid var(--bg-border)",
-              borderRadius: "12px",
-              padding: "40px",
-              textAlign: "center",
-              color: "var(--text-muted)",
-              fontSize: "14px",
+              backgroundColor: "var(--bg-card)", border: "1px solid var(--bg-border)",
+              borderRadius: "12px", padding: "40px",
+              textAlign: "center", color: "var(--text-muted)", fontSize: "14px",
             }}>
               قريباً...
             </div>
@@ -69,7 +67,11 @@ export default function TalentProfileClient({ talent, brands, reviews }: {
           <AvailabilitySidebar availability={talent.availability} />
           <AboutSidebar talent={talent} />
           <SocialProof socialLinks={talent.social_links} />
-          <ReviewsSidebar reviews={reviews} avgRating={talent.avg_rating} totalReviews={talent.total_reviews} />
+          <ReviewsSidebar
+            reviews={reviews}
+            avgRating={talent.avg_rating}
+            totalReviews={talent.total_reviews}
+          />
           <BrandsSidebar brands={brands} />
           <AskTalent name={talent.name.split(" ")[0]} />
         </div>

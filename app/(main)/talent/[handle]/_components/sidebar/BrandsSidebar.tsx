@@ -1,36 +1,39 @@
-export default function BrandsSidebar({ brands }: { brands?: any[] }) {
-  const list = brands && brands.length > 0
-    ? brands
-    : [{ full_name: "noon" }, { full_name: "Samsung" }, { full_name: "H&M" }, { full_name: "L'Oreal" }, { full_name: "adidas" }, { full_name: "SHEIN" }];
+type Brand = { full_name: string; avatar_url: string | null };
+
+export default function BrandsSidebar({ brands }: { brands: Brand[] }) {
+  if (brands.length === 0) return null;
+
   return (
     <div style={{
-      backgroundColor: "var(--bg-card)",
-      border: "1px solid var(--bg-border)",
-      borderRadius: "12px",
-      padding: "16px",
-      marginBottom: "12px",
+      backgroundColor: "var(--bg-card)", border: "1px solid var(--bg-border)",
+      borderRadius: "12px", padding: "16px", marginBottom: "12px",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-        <h4 style={{ color: "var(--text-primary)", fontSize: "14px", fontWeight: 700, margin: 0 }}>
-          براندات تعاملت معها
-        </h4>
-        <button style={{ background: "none", border: "none", color: "var(--color-teal)", fontSize: "12px", cursor: "pointer", fontFamily: "'Cairo', sans-serif" }}>
-          عرض الكل
-        </button>
-      </div>
+      <h4 style={{ color: "var(--text-primary)", fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>
+        براندات تعاملت معها
+      </h4>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
-        {list.map((b: any, i: number) => (
+        {brands.map((b, i) => (
           <div key={i} style={{
-            backgroundColor: "var(--bg-elevated)",
-            border: "1px solid var(--bg-border)",
-            borderRadius: "8px",
-            padding: "10px",
-            textAlign: "center",
-            fontSize: "12px",
-            fontWeight: 700,
-            color: "var(--text-secondary)",
+            backgroundColor: "var(--bg-elevated)", border: "1px solid var(--bg-border)",
+            borderRadius: "8px", padding: "10px", textAlign: "center",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
           }}>
-            {b.full_name ?? b}
+            {b.avatar_url ? (
+              <img src={b.avatar_url} alt={b.full_name}
+                style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }} />
+            ) : (
+              <div style={{
+                width: "32px", height: "32px", borderRadius: "50%",
+                backgroundColor: "rgba(0,201,177,0.15)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "13px", fontWeight: 700, color: "var(--color-teal)",
+              }}>
+                {b.full_name[0]}
+              </div>
+            )}
+            <span style={{ color: "var(--text-secondary)", fontSize: "11px", fontWeight: 600, textAlign: "center", lineHeight: 1.2 }}>
+              {b.full_name}
+            </span>
           </div>
         ))}
       </div>
