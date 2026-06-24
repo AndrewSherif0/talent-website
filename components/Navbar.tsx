@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { usePathname } from "next/navigation";
 
+
 type Lang = "ar" | "en";
 type Mode = "dark" | "light";
 
@@ -58,9 +59,9 @@ export default function Navbar() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("avatar_url, full_name")
+        .select("avatar_url, full_name, handle")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
       if (profile?.full_name)  setInitials(profile.full_name.charAt(0).toUpperCase());
@@ -92,9 +93,10 @@ export default function Navbar() {
 
         {/* Logo + Search */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}
-              style={{ height: "32px", width: "auto", objectFit: "contain" }} priority />
+          <Link href="/explore" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}   
+              style={{ height: "32px", width: "auto", objectFit: "contain" }} priority 
+              />
           </Link>
 
           <div style={{
@@ -159,7 +161,7 @@ export default function Navbar() {
             padding: "4px 10px", cursor: "pointer",
             color: MUTED, fontSize: "12px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
           }}>
-            {lang === "ar" ? "EN" : "ع"}
+            {lang === "ar" ? "عربي" : "English"}
           </button>
 
           {/* Mode toggle */}
@@ -191,21 +193,24 @@ export default function Navbar() {
             }}>3</span>
           </button>
 
-          {/* Avatar from DB */}
-          <button style={{
+          {/* Avatar from DB → links to own profile */}
+          <Link href="/profile" style={{
             width: "34px", height: "34px", borderRadius: "50%",
             border: `2px solid ${GOLD}`,
             backgroundColor: dark ? "#111c35" : "#fff8e1",
             color: GOLD, fontSize: "13px", fontWeight: 700,
-            cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            overflow: "hidden", padding: 0,
-          }}>
+            overflow: "hidden", textDecoration: "none", flexShrink: 0,
+            transition: "box-shadow 0.2s",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.boxShadow = `0 0 0 3px rgba(255,184,0,0.35)`)}
+            onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
+          >
             {avatarUrl ? (
               <img src={avatarUrl} alt="avatar"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : initials}
-          </button>
+          </Link>
 
           {/* CTA */}
           <Link href="/book" style={{
