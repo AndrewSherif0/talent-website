@@ -2,169 +2,227 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { usePathname } from "next/navigation";
 
-const navLinks = [
-  { label: "استكشاف", href: "/explore" },
-  { label: "المجتمع", href: "/community" },
-  { label: "وظائف", href: "/jobs" },
-  { label: "للشركات", href: "/brands" },
-];
+type Lang = "ar" | "en";
+type Mode = "dark" | "light";
+
+const NAV_LINKS = {
+  ar: [
+    { label: "استكشاف", href: "/explore" },
+    { label: "المجتمع", href: "/community" },
+    { label: "وظائف",   href: "/jobs" },
+    { label: "للشركات", href: "/brands" },
+  ],
+  en: [
+    { label: "Explore",   href: "/explore" },
+    { label: "Community", href: "/community" },
+    { label: "Jobs",      href: "/jobs" },
+    { label: "Brands",    href: "/brands" },
+  ],
+};
+
+const TX = {
+  ar: { search: "ابحث عن مواهب أو خدمات...", book: "احجز الآن" },
+  en: { search: "Search talents or services...", book: "Book Now" },
+};
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [lang,      setLang]      = useState<Lang>("ar");
+  const [mode,      setMode]      = useState<Mode>("dark");
+  const [hoveredHref, setHovered] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [initials,  setInitials]  = useState("م");
+
+  const dark = mode === "dark";
+  const dir  = lang === "ar" ? "rtl" : "ltr";
+  const t    = TX[lang];
+
+  // Theme colors
+  const BG     = dark ? "#090e1a"  : "#ffffff";
+  const BORDER = dark ? "#1e293b"  : "#e2e8f0";
+  const SEARCH = dark ? "#0d1527"  : "#f1f5f9";
+  const TEXT   = dark ? "#f1f5f9"  : "#0f172a";
+  const MUTED  = dark ? "#94a3b8"  : "#64748b";
+  const INP    = dark ? "#f1f5f9"  : "#0f172a";
+  const GOLD   = "#FFB800";
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      const user = data.user;
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("avatar_url, full_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
+      if (profile?.full_name)  setInitials(profile.full_name.charAt(0).toUpperCase());
+    });
+  }, []);
+
+  const links = NAV_LINKS[lang];
 
   return (
     <>
+      <style>{`
+        @keyframes underline-in {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+      `}</style>
+
       <nav style={{
-        position: "fixed",
-        top: 0,
-        right: 0,
-        left: 0,
-        zIndex: 50,
+        position: "fixed", top: 0, right: 0, left: 0, zIndex: 50,
         height: "60px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 24px",
-        backgroundColor: "#090e1a",
-        borderBottom: "1px solid #1e293b",
+        backgroundColor: BG,
+        borderBottom: `1px solid ${BORDER}`,
         backdropFilter: "blur(12px)",
-        direction: "rtl",
+        direction: dir,
+        transition: "background-color 0.3s, border-color 0.3s",
       }}>
 
-        {/* RIGHT: Logo + Search */}
+        {/* Logo + Search */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
-            <Image
-              src="/assets/logo.png"
-              alt="Talents"
-              width={110}
-              height={32}
-              style={{ height: "32px", width: "auto", objectFit: "contain" }}
-              priority
-            />
+          <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}
+              style={{ height: "32px", width: "auto", objectFit: "contain" }} priority />
           </Link>
 
-          {/* Search bar */}
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            backgroundColor: "#0d1527",
-            border: "1px solid #1e293b",
-            borderRadius: "8px",
-            padding: "6px 12px",
-            width: "220px",
+            display: "flex", alignItems: "center", gap: "8px",
+            backgroundColor: SEARCH, border: `1px solid ${BORDER}`,
+            borderRadius: "8px", padding: "6px 12px", width: "220px",
           }}>
-            <svg width="14" height="14" fill="none" stroke="#475569" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+            <svg width="14" height="14" fill="none" stroke={MUTED} strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
               <circle cx="11" cy="11" r="7" />
               <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
             </svg>
-            <input
-              type="text"
-              placeholder="ابحث عن مواهب أو خدمات..."
-              style={{
-                background: "transparent",
-                border: "none",
-                outline: "none",
-                color: "#f1f5f9",
-                fontSize: "13px",
-                width: "100%",
-                direction: "rtl",
-              }}
-            />
+            <input type="text" placeholder={t.search} style={{
+              background: "transparent", border: "none", outline: "none",
+              color: INP, fontSize: "13px", width: "100%", direction: dir,
+              fontFamily: "'Cairo', sans-serif",
+            }} />
           </div>
         </div>
 
-        {/* CENTER: Nav Links */}
+        {/* Nav Links */}
         <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-          {navLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                color: "#94a3b8",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#f1f5f9")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#94a3b8")}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {links.map((item) => {
+            const isActive  = pathname === item.href;
+            const isHovered = hoveredHref === item.href;
+            const highlight = isActive || isHovered;
+            return (
+              <Link key={item.href} href={item.href}
+                onMouseEnter={() => setHovered(item.href)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  position: "relative",
+                  color: highlight ? GOLD : MUTED,
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: highlight ? 700 : 500,
+                  whiteSpace: "nowrap",
+                  paddingBottom: "4px",
+                  transition: "color 0.2s, font-weight 0.2s",
+                }}
+              >
+                {item.label}
+                {/* Animated underline */}
+                <span style={{
+                  position: "absolute", bottom: 0, right: 0, left: 0,
+                  height: "2px", backgroundColor: GOLD,
+                  borderRadius: "2px",
+                  transform: highlight ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: dir === "rtl" ? "right" : "left",
+                  transition: "transform 0.25s ease",
+                }} />
+              </Link>
+            );
+          })}
         </div>
 
-        {/* LEFT: Icons + CTA */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {/* Right controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+
+          {/* Lang toggle */}
+          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} style={{
+            background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
+            padding: "4px 10px", cursor: "pointer",
+            color: MUTED, fontSize: "12px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
+          }}>
+            {lang === "ar" ? "EN" : "ع"}
+          </button>
+
+          {/* Mode toggle */}
+          <button onClick={() => setMode(dark ? "light" : "dark")} style={{
+            background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
+            padding: "4px 8px", cursor: "pointer", fontSize: "13px",
+          }}>
+            {dark ? "☀️" : "🌙"}
+          </button>
+
           {/* Messages */}
-          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: "#94a3b8", display: "flex" }}>
+          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: MUTED, display: "flex" }}>
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </button>
 
           {/* Notifications */}
-          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: "#94a3b8", display: "flex", position: "relative" }}>
+          <button style={{ background: "none", border: "none", cursor: "pointer", padding: "8px", color: MUTED, display: "flex", position: "relative" }}>
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             <span style={{
-              position: "absolute",
-              top: "4px",
-              left: "4px",
-              width: "16px",
-              height: "16px",
-              backgroundColor: "#FF6B2B",
-              borderRadius: "50%",
-              fontSize: "10px",
-              fontWeight: 700,
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              position: "absolute", top: "4px", left: "4px",
+              width: "16px", height: "16px",
+              backgroundColor: "#FF6B2B", borderRadius: "50%",
+              fontSize: "10px", fontWeight: 700, color: "#fff",
+              display: "flex", alignItems: "center", justifyContent: "center",
             }}>3</span>
           </button>
 
-          {/* Avatar */}
+          {/* Avatar from DB */}
           <button style={{
-            width: "34px",
-            height: "34px",
-            borderRadius: "50%",
-            border: "2px solid #00C9B1",
-            backgroundColor: "#111c35",
-            color: "#00C9B1",
-            fontSize: "13px",
-            fontWeight: 700,
+            width: "34px", height: "34px", borderRadius: "50%",
+            border: `2px solid ${GOLD}`,
+            backgroundColor: dark ? "#111c35" : "#fff8e1",
+            color: GOLD, fontSize: "13px", fontWeight: 700,
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>م</button>
+            display: "flex", alignItems: "center", justifyContent: "center",
+            overflow: "hidden", padding: 0,
+          }}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="avatar"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : initials}
+          </button>
 
           {/* CTA */}
           <Link href="/book" style={{
-            backgroundColor: "#00C9B1",
-            color: "#000",
-            fontWeight: 700,
-            fontSize: "14px",
-            padding: "8px 18px",
-            borderRadius: "8px",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-            transition: "background-color 0.2s",
-          }}>
-            احجز الآن
+            backgroundColor: GOLD, color: "#000",
+            fontWeight: 700, fontSize: "14px",
+            padding: "8px 18px", borderRadius: "8px",
+            textDecoration: "none", whiteSpace: "nowrap",
+            transition: "opacity 0.2s",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+          >
+            {t.book}
           </Link>
         </div>
       </nav>
 
-      {/* Spacer */}
       <div style={{ height: "60px" }} />
     </>
   );
