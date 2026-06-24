@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
       const { data: items } = await adminClient
         .from("portfolio_items")
         .select("id, url, media_type, caption, sort_order")
-        .eq("talent_profile_id", talentProfile.id)
+        .eq("talent_id", talentProfile.id)
         .order("sort_order", { ascending: true });
       portfolioItems = items ?? [];
     }

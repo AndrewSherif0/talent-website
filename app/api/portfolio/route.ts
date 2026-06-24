@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await adminClient
     .from("portfolio_items")
-    .insert({ talent_profile_id: tp.id, url, media_type: media_type ?? "photo", caption: caption ?? null, sort_order: 0, is_approved: true })
+    .insert({ talent_id: tp.id, url, media_type: media_type ?? "photo", caption: caption ?? null, sort_order: 0, is_approved: true })
     .select()
     .single();
 
