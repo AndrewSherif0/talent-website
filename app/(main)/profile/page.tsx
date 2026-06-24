@@ -41,7 +41,7 @@ const TX = {
     socialLinks: "السوشيال ميديا",
     physicalInfo: "البيانات الشخصية",
     accountInfo: "بيانات الحساب",
-    height: "الطول (سم)",
+      height: "الطول (سم)",
     weight: "الوزن (كجم)",
     hairColor: "لون الشعر",
     eyeColor: "لون العين",
@@ -120,14 +120,14 @@ export default function MyProfilePage() {
 
   const [profile,   setProfile]   = useState<any>(null);
   const [tp,        setTp]        = useState<any>(null);
-  const [media,     setMedia]     = useState<MediaItem[]>([]);
+   const [media,     setMedia]     = useState<MediaItem[]>([]);
   const [filter,    setFilter]    = useState<"all"|"photo"|"video">("all");
   const [status,    setStatus]    = useState<"loading"|"ready"|"none">("loading");
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [mediaUploading, setMediaUploading] = useState(false);
+   const [mediaUploading, setMediaUploading] = useState(false);
   const [saveMsg,   setSaveMsg]   = useState("");
-  const [uploadErr, setUploadErr] = useState("");
+ const [uploadErr, setUploadErr] = useState("");
   const [caption,   setCaption]   = useState("");
   const [form,      setForm]      = useState<any>({});
 
@@ -188,7 +188,7 @@ export default function MyProfilePage() {
       const res  = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, { method: "POST", body: fd });
       const data = await res.json();
       if (data.secure_url) {
-        setForm((f: any) => ({ ...f, avatar_url: data.secure_url }));
+      setForm((f: any) => ({ ...f, avatar_url: data.secure_url }));
       } else {
         setUploadErr(data.error?.message ?? "فشل الرفع — تحقق من إعدادات Cloudinary");
       }
@@ -342,79 +342,87 @@ export default function MyProfilePage() {
             <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "20px", alignItems: "start", marginBottom: "24px" }}>
 
               {/* Left — avatar card */}
-              <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "16px", padding: "24px", textAlign: "center" }}>
-                <div style={{ width: "110px", height: "110px", borderRadius: "50%", border: `3px solid ${GOLD}`, margin: "0 auto 14px", overflow: "hidden", backgroundColor: ELV, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px ${GOLD_GLW}` }}>
-                  {profile.avatar_url
-                    ? <img src={profile.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "16px", padding: "24px", textAlign: "center" }}>
+              <div style={{ width: "110px", height: "110px", borderRadius: "50%", border: `3px solid ${GOLD}`, margin: "0 auto 14px", overflow: "hidden", backgroundColor: ELV, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px ${GOLD_GLW}` }}>
+                {profile.avatar_url
+                  ? <img src={profile.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : <span style={{ color: GOLD, fontSize: "36px", fontWeight: 800 }}>{profile.full_name?.[0] ?? "?"}</span>}
-                </div>
-                <h2 style={{ color: TEXT, fontSize: "18px", fontWeight: 800, margin: "0 0 4px" }}>{profile.full_name}</h2>
-                {profile.handle && <p style={{ color: GOLD, fontSize: "13px", margin: "0 0 6px" }}>@{profile.handle}</p>}
+              </div>
+              <h2 style={{ color: TEXT, fontSize: "18px", fontWeight: 800, margin: "0 0 4px" }}>{profile.full_name}</h2>
+              {profile.handle && <p style={{ color: GOLD, fontSize: "13px", margin: "0 0 6px" }}>@{profile.handle}</p>}
                 {profile.city   && <p style={{ color: MUTED, fontSize: "13px", margin: "0 0 12px" }}>📍 {profile.city}</p>}
-                <span style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}44`, borderRadius: "6px", padding: "3px 12px", fontSize: "12px", fontWeight: 700 }}>
-                  {profile.role === "talent" ? tx.talent : tx.client}
-                </span>
-                {createdAt && <p style={{ color: MUTED, fontSize: "11px", marginTop: "12px" }}>📅 {tx.member} {createdAt}</p>}
-                {tp && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "16px", borderTop: `1px solid ${BORDER}`, paddingTop: "16px" }}>
-                    {[
-                      { label: tx.profileViews, val: tp.profile_views ?? 0 },
-                      { label: tx.avgRating,    val: tp.avg_rating ? Number(tp.avg_rating).toFixed(1) : "—" },
-                      { label: tx.bookings,     val: tp.total_bookings ?? 0 },
-                      { label: lang === "ar" ? "تقييمات" : "Reviews", val: tp.total_reviews ?? 0 },
-                    ].map((s, i) => (
-                      <div key={i} style={{ backgroundColor: ELV, borderRadius: "8px", padding: "10px 6px", textAlign: "center" }}>
-                        <p style={{ color: GOLD, fontSize: "18px", fontWeight: 900, margin: 0 }}>{String(s.val)}</p>
-                        <p style={{ color: MUTED, fontSize: "10px", margin: 0 }}>{s.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Right — details */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {(profile.bio || tp?.bio) && (
-                  <Section title={lang === "ar" ? "البيو" : "Bio"} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-                    <p style={{ color: SUB, fontSize: "14px", lineHeight: 1.8, margin: 0 }}>{profile.bio ?? tp?.bio}</p>
-                  </Section>
-                )}
-                {tp && (
-                  <Section title={lang === "ar" ? "معلومات التالنت" : "Talent Info"} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-                    <Row label={lang === "ar" ? "الكاتيجوري" : "Category"} val={tp.category} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
-                    <Row label={tx.availability} val={tp.availability === "available" ? tx.available : tx.unavailable} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
-                    {tp.specialties?.length > 0 && (
-                      <div style={{ paddingTop: "10px" }}>
-                        <p style={{ color: MUTED, fontSize: "12px", marginBottom: "8px" }}>{tx.specialties}</p>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          {tp.specialties.map((s: string, i: number) => (
-                            <span key={i} style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}33`, borderRadius: "16px", padding: "3px 10px", fontSize: "12px", fontWeight: 600 }}>{s}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </Section>
-                )}
-                {tp && Object.keys(sl).some(k => ["height","weight","hair_color","eye_color","languages","age_range"].includes(k) && sl[k]) && (
-                  <Section title={tx.physicalInfo} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-                    {[["height",tx.height],["weight",tx.weight],["hair_color",tx.hairColor],["eye_color",tx.eyeColor],["languages",tx.languages],["age_range",tx.ageRange]].filter(([k]) => sl[k]).map(([k,l], i) => (
-                      <Row key={i} label={l} val={sl[k]} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
-                    ))}
-                  </Section>
-                )}
-                {tp && ["instagram","tiktok","youtube","linkedin"].some(k => sl[k]) && (
-                  <Section title={tx.socialLinks} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
-                    {[["instagram","📸"],["tiktok","🎵"],["youtube","▶️"],["linkedin","💼"]].filter(([k]) => sl[k]).map(([k,icon], i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 0", borderBottom: `1px solid ${BORDER}` }}>
-                        <span style={{ fontSize: "16px" }}>{icon}</span>
-                        <span style={{ color: SUB, fontSize: "13px", textTransform: "capitalize" }}>{k}</span>
-                        <span style={{ color: GOLD, fontSize: "13px", fontWeight: 700, marginRight: "auto", direction: "ltr" }}>{sl[k]}</span>
-                      </div>
-                    ))}
-                  </Section>
-                )}
-              </div>
+              <span style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}44`, borderRadius: "6px", padding: "3px 12px", fontSize: "12px", fontWeight: 700 }}>
+                {profile.role === "talent" ? tx.talent : tx.client}
+              </span>
+              {createdAt && <p style={{ color: MUTED, fontSize: "11px", marginTop: "12px" }}>📅 {tx.member} {createdAt}</p>}
+              {tp && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "16px", borderTop: `1px solid ${BORDER}`, paddingTop: "16px" }}>
+                  {[
+                    { label: tx.profileViews, val: tp.profile_views ?? 0 },
+                    { label: tx.avgRating,    val: tp.avg_rating ? Number(tp.avg_rating).toFixed(1) : "—" },
+                    { label: tx.bookings,     val: tp.total_bookings ?? 0 },
+                    { label: lang === "ar" ? "تقييمات" : "Reviews", val: tp.total_reviews ?? 0 },
+                  ].map((s, i) => (
+                    <div key={i} style={{ backgroundColor: ELV, borderRadius: "8px", padding: "10px 6px", textAlign: "center" }}>
+                      <p style={{ color: GOLD, fontSize: "18px", fontWeight: 900, margin: 0 }}>{String(s.val)}</p>
+                      <p style={{ color: MUTED, fontSize: "10px", margin: 0 }}>{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Right — details */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              {/* Bio */}
+              {(profile.bio || tp?.bio) && (
+                <Section title={lang === "ar" ? "البيو" : "Bio"} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
+                  <p style={{ color: SUB, fontSize: "14px", lineHeight: 1.8, margin: 0 }}>{profile.bio ?? tp?.bio}</p>
+                </Section>
+              )}
+
+              {/* Talent info */}
+              {tp && (
+                <Section title={lang === "ar" ? "معلومات التالنت" : "Talent Info"} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
+                  <Row label={lang === "ar" ? "الكاتيجوري" : "Category"} val={tp.category} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
+                  <Row label={tx.availability} val={tp.availability === "available" ? tx.available : tx.unavailable} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
+                  {tp.specialties?.length > 0 && (
+                    <div style={{ paddingTop: "10px" }}>
+                      <p style={{ color: MUTED, fontSize: "12px", marginBottom: "8px" }}>{tx.specialties}</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {tp.specialties.map((s: string, i: number) => (
+                          <span key={i} style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}33`, borderRadius: "16px", padding: "3px 10px", fontSize: "12px", fontWeight: 600 }}>{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Section>
+              )}
+
+              {/* Physical info */}
+              {tp && Object.keys(sl).some(k => ["height","weight","hair_color","eye_color","languages","age_range"].includes(k) && sl[k]) && (
+                <Section title={tx.physicalInfo} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
+                  {[["height",tx.height],["weight",tx.weight],["hair_color",tx.hairColor],["eye_color",tx.eyeColor],["languages",tx.languages],["age_range",tx.ageRange]].filter(([k]) => sl[k]).map(([k,l], i) => (
+                    <Row key={i} label={l} val={sl[k]} MUTED={MUTED} TEXT={TEXT} BORDER={BORDER} />
+                  ))}
+                </Section>
+              )}
+
+              {/* Social */}
+              {tp && ["instagram","tiktok","youtube","linkedin"].some(k => sl[k]) && (
+                <Section title={tx.socialLinks} CARD={CARD} BORDER={BORDER} TEXT={TEXT} GOLD={GOLD}>
+                  {[["instagram","📸"],["tiktok","🎵"],["youtube","▶️"],["linkedin","💼"]].filter(([k]) => sl[k]).map(([k,icon], i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 0", borderBottom: `1px solid ${BORDER}` }}>
+                      <span style={{ fontSize: "16px" }}>{icon}</span>
+                      <span style={{ color: SUB, fontSize: "13px", textTransform: "capitalize" }}>{k}</span>
+                      <span style={{ color: GOLD, fontSize: "13px", fontWeight: 700, marginRight: "auto", direction: "ltr" }}>{sl[k]}</span>
+                    </div>
+                  ))}
+                </Section>
+              )}
+            </div>
+          </div>
 
             {/* ══ PORTFOLIO SECTION ══ */}
             <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "16px", padding: "24px" }}>
@@ -429,7 +437,7 @@ export default function MyProfilePage() {
                     <span style={{ backgroundColor: GOLD_BG, color: GOLD, border: `1px solid ${GOLD}33`, borderRadius: "6px", padding: "2px 8px", fontSize: "12px", fontWeight: 700 }}>
                       {media.length}
                     </span>
-                  )}
+        )}
                 </div>
 
                 {/* Upload buttons */}
@@ -650,6 +658,7 @@ function Section({ title, children, CARD, BORDER, TEXT, GOLD }: any) {
     </div>
   );
 }
+
 function EditCard({ title, children, CARD, BORDER, TEXT, GOLD }: any) {
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: "14px", padding: "22px" }}>
@@ -658,14 +667,16 @@ function EditCard({ title, children, CARD, BORDER, TEXT, GOLD }: any) {
     </div>
   );
 }
+
 function Row({ label, val, MUTED, TEXT, BORDER }: any) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${BORDER}` }}>
       <span style={{ color: MUTED, fontSize: "13px" }}>{label}</span>
       <span style={{ color: TEXT, fontSize: "13px", fontWeight: 600 }}>{val}</span>
-    </div>
+      </div>
   );
 }
+
 function Field({ label, val, onChange, inp, lbl, dir }: any) {
   return (
     <div>
