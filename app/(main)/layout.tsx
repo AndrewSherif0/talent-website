@@ -1,9 +1,29 @@
+import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/Navbar";
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+
+  let initialAvatarUrl: string | null = null;
+  let initialFullName: string | null = null;
+
+  if (session?.user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("avatar_url, full_name")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (profile) {
+      initialAvatarUrl = profile.avatar_url;
+      initialFullName = profile.full_name;
+    }
+  }
+
   return (
     <>
-      <Navbar />
+      <Navbar initialAvatarUrl={initialAvatarUrl} initialFullName={initialFullName} />
       <main style={{ paddingTop: "60px" }}>{children}</main>
     </>
   );

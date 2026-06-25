@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { adminClient } from "@/lib/supabase/admin";
 
 type Lang = "ar" | "en";
 type Mode = "dark" | "light";
@@ -30,16 +30,23 @@ const TX = {
   en: { search: "Search talents or services...", book: "Book Now" },
 };
 
-export default function Navbar() {
+export default function Navbar({
+  initialAvatarUrl: _initialAvatarUrl,
+  initialFullName: _initialFullName,
+}: {
+  initialAvatarUrl?: string | null;
+  initialFullName?: string | null;
+}) {
   const pathname  = usePathname();
   const isMobile  = useIsMobile();
 
   const [lang,        setLang]      = useState<Lang>("ar");
   const [mode,        setMode]      = useState<Mode>("dark");
   const [hoveredHref, setHovered]   = useState<string | null>(null);
-  const [avatarUrl,   setAvatarUrl] = useState<string | null>(null);
-  const [initials,    setInitials]  = useState("م");
-  const [menuOpen,    setMenuOpen]  = useState(false);
+  const [avatarUrl,    setAvatarUrl]    = useState<string | null>(_initialAvatarUrl ?? null);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
+  const [initialLoad,  setInitialLoad]  = useState(!_initialAvatarUrl);
+  const [menuOpen,     setMenuOpen]     = useState(false);
 
   const dark = mode === "dark";
   const dir  = lang === "ar" ? "rtl" : "ltr";
@@ -52,20 +59,18 @@ export default function Navbar() {
   const MUTED  = dark ? "#94a3b8"  : "#64748b";
   const INP    = dark ? "#f1f5f9"  : "#0f172a";
   const GOLD   = "#FFB800";
-
+  
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data }) => {
-      const user = data.user;
-      if (!user) return;
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("avatar_url, full_name, handle")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
-      if (profile?.full_name)  setInitials(profile.full_name.charAt(0).toUpperCase());
-    });
+    (async () => {
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) return;
+        const { profile } = await res.json();
+        if (profile?.avatar_url) { setAvatarUrl(profile.avatar_url); }
+        else                    { setAvatarLoaded(true); }
+        setInitialLoad(false);
+      } catch { setInitialLoad(false); setAvatarLoaded(true); }
+    })();
   }, []);
 
   // Close mobile menu on route change
@@ -78,6 +83,7 @@ export default function Navbar() {
       <style>{`
         @keyframes underline-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes navSpin { to { transform: rotate(360deg); } }
       `}</style>
 
       <nav style={{
@@ -188,7 +194,7 @@ export default function Navbar() {
           )}
 
           {/* Avatar */}
-          <Link href="/profile" style={{
+          <Link href="/profile/me" style={{
             width: "32px", height: "32px", borderRadius: "50%",
             border: `2px solid ${GOLD}`,
             backgroundColor: dark ? "#111c35" : "#fff8e1",
@@ -200,9 +206,18 @@ export default function Navbar() {
             onMouseEnter={e => (e.currentTarget.style.boxShadow = `0 0 0 3px rgba(255,184,0,0.35)`)}
             onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
           >
-            {avatarUrl
-              ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : initials}
+            {(initialLoad || !avatarLoaded) && (
+              <div style={{ width: "14px", height: "14px", borderRadius: "50%", border: `2px solid ${GOLD}44`, borderTopColor: GOLD, animation: "navSpin 0.7s linear infinite" }} />
+            )}
+            {avatarUrl && (
+              <img
+                src={avatarUrl}
+                alt="avatar"
+                onLoad={() => setAvatarLoaded(true)}
+                onError={() => setAvatarLoaded(true)}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: avatarLoaded ? "block" : "none" }}
+              />
+            )}
           </Link>
 
           {/* Book CTA — desktop only */}
