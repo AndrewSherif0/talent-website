@@ -54,7 +54,7 @@ export default function Navbar({
   const MUTED  = dark ? "#94a3b8"  : "#64748b";
   const INP    = dark ? "#f1f5f9"  : "#0f172a";
   const GOLD   = "#FFB800";
-  
+
   useEffect(() => {
     (async () => {
       try {
@@ -96,8 +96,19 @@ export default function Navbar({
         {/* Logo + Search */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Link href="/explore" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <Image src="/assets/logo.png" alt="Talents" width={110} height={32}
-              style={{ height: "28px", width: "auto", objectFit: "contain" }} priority />
+             <Image
+              // تم تعديل الشرط هنا مباشرة داخل الـ src ليتم تحديث الصورة فور تغير قيمة dark بشكل ديناميكي
+              src={dark ? "/assets/logo-dark.png" : "/assets/logo-light.png"}
+              alt="Talents"
+              width={110}
+              height={32}
+              style={{
+                height: "28px",
+                width: "auto",
+                objectFit: "contain",
+              }}
+              priority
+            />
           </Link>
 
           {/* Search — desktop only */}
