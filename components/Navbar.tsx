@@ -112,7 +112,7 @@ export default function Navbar({
           </Link>
 
           {/* Search — desktop only */}
-          {!isMobile && (
+          {/* {!isMobile && (
             <div style={{
               display: "flex", alignItems: "center", gap: "8px",
               backgroundColor: SEARCH, border: `1px solid ${BORDER}`,
@@ -128,7 +128,7 @@ export default function Navbar({
                 fontFamily: "'Cairo', sans-serif",
               }} />
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Desktop Nav Links */}
