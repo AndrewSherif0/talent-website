@@ -99,6 +99,7 @@ export interface TalentData {
   id: string;
   name: string;
   handle: string;
+  avatarUrl: string | null;
   title: string;
   location: string;
   memberSince: string;

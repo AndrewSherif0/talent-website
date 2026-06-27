@@ -49,6 +49,7 @@ function transformTalentData(profile: RawProfile, tp: RawTalentProfile | null, s
     id: profile.id,
     name: profile.full_name ?? "Talent",
     handle: profile.handle ?? "",
+    avatarUrl: profile.avatar_url ?? null,
     title: (sl.title as string) ?? "Gold Model",
     location: profile.city ? `${profile.city}، مصر` : "القاهرة، مصر",
     memberSince: (sl.member_since as string) ?? profile.created_at?.slice(0, 4) ?? "2022",

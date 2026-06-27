@@ -58,15 +58,12 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
             position: "relative",
             border: `1px solid ${BORDER}`,
           }}>
-            {talent.bio ? (
-              <div style={{
-                width: 72, height: 72, borderRadius: "50%",
-                backgroundColor: "rgba(0,210,106,0.2)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 36, fontWeight: 900, color: GREEN,
-              }}>
-                {displayName.charAt(0).toUpperCase()}
-              </div>
+            {talent.avatarUrl ? (
+              <img
+                src={talent.avatarUrl}
+                alt={displayName}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
             ) : (
               <div style={{
                 width: 72, height: 72, borderRadius: "50%",
