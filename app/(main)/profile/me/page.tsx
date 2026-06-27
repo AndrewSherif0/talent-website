@@ -170,6 +170,7 @@ export default function DashboardPage() {
   const [edit,          setEdit]          = useState(false);
   const [saving,        setSaving]        = useState(false);
   const [saveMsg,       setSaveMsg]       = useState("");
+  const [saveErr,       setSaveErr]       = useState("");
   const [uploading,     setUploading]     = useState(false);
   const [mediaUploading,setMediaUploading]= useState(false);
   const [caption,       setCaption]       = useState("");
@@ -271,7 +272,8 @@ export default function DashboardPage() {
       languages: form.languages, age_range: form.age_range,
       usage_addons: addons,
     };
-    await fetch("/api/profile", {
+    setSaveErr("");
+    const res = await fetch("/api/profile", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: session.user.id,
@@ -280,8 +282,15 @@ export default function DashboardPage() {
         ...(tp ? { talentProfileData: { category: tp.category, specialties: tp.specialties ?? [], social_links, bio: form.bio, availability: form.availability, packages, profile_views: tp.profile_views ?? 0 } } : {}),
       }),
     });
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      setSaveErr(json.error ?? "حدث خطأ أثناء الحفظ");
+      setSaving(false);
+      return;
+    }
     setProfile((p: any) => ({ ...p, full_name: form.full_name, handle: form.handle, city: form.city, bio: form.bio, avatar_url: form.avatar_url }));
-    if (tp) setTp((t: any) => ({ ...t, social_links, availability: form.availability }));
+    if (tp) setTp((t: any) => ({ ...t, social_links, availability: form.availability, packages }));
+    setAddons(addons);
     setSaving(false);
     setSaveMsg(t.saved);
     setTimeout(() => { setSaveMsg(""); setEdit(false); }, 1500);
@@ -356,11 +365,12 @@ export default function DashboardPage() {
             }}
           >
             <span style={{ color: TEXT, fontSize: 14, fontWeight: 700 }}>{t.editProfile}</span>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setEdit(false)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", backgroundColor: "transparent", border: `1px solid ${BORDER}`, borderRadius: 8, color: MUTED, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Cairo',sans-serif" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              {saveErr && <span style={{ color: "#ef4444", fontSize: 12, fontWeight: 600 }}>{saveErr}</span>}
+              <button onClick={() => { setEdit(false); setSaveErr(""); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", backgroundColor: "transparent", border: `1px solid ${BORDER}`, borderRadius: 8, color: MUTED, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Cairo',sans-serif" }}>
                 <X size={14} />{t.cancel}
               </button>
-              <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 20px", backgroundColor: GREEN, border: "none", borderRadius: 8, color: "#000", fontSize: 13, fontWeight: 800, cursor: saving ? "wait" : "pointer", fontFamily: "'Cairo',sans-serif" }}>
+              <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 20px", backgroundColor: saveErr ? "#ef4444" : GREEN, border: "none", borderRadius: 8, color: "#000", fontSize: 13, fontWeight: 800, cursor: saving ? "wait" : "pointer", fontFamily: "'Cairo',sans-serif" }}>
                 <Save size={14} />{saveMsg || (saving ? t.saving : t.saveChanges)}
               </button>
             </div>

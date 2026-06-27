@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (role === "talent" && talentProfileData) {
       const { error: talentErr } = await adminClient
         .from("talent_profiles")
-        .upsert({ user_id: userId, ...talentProfileData });
+        .upsert({ user_id: userId, ...talentProfileData }, { onConflict: "user_id" });
 
       if (talentErr) {
         return NextResponse.json({ error: `talent_profiles: ${talentErr.message}` }, { status: 500 });
