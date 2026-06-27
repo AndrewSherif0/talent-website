@@ -72,6 +72,10 @@ const TX = {
     escrowTitle:    "نظام الدفع الآمن (Escrow)",
     escrowSteps:    ["الدفع محجوز","تسليم العمل","الموافقة","الإفراج عن الأموال"],
     viewPublic:     "عرض الصفحة العامة",
+    brands:         "العلامات التجارية المتعاونة",
+    brandPlaceholder: "اسم البراند...",
+    addBrand:       "إضافة",
+    noBrands:       "لا توجد علامات تجارية بعد",
     packages:       "الباقات والأسعار",
     addPackage:     "إضافة باقة",
     pkgName:        "اسم الباقة",
@@ -134,6 +138,10 @@ const TX = {
     escrowTitle:    "Secure Payment System (Escrow)",
     escrowSteps:    ["Payment Held","Work Delivery","Approval","Fund Release"],
     viewPublic:     "View Public Page",
+    brands:         "Collaborated Brands",
+    brandPlaceholder: "Brand name...",
+    addBrand:       "Add",
+    noBrands:       "No brands yet",
     packages:       "Packages & Pricing",
     addPackage:     "Add Package",
     pkgName:        "Package Name",
@@ -180,6 +188,8 @@ export default function DashboardPage() {
   const [form,          setForm]          = useState<any>({});
   const [packages,      setPackages]      = useState<PkgItem[]>([]);
   const [addons,        setAddons]        = useState<AddonItem[]>([]);
+  const [brands,        setBrands]        = useState<string[]>([]);
+  const [newBrand,      setNewBrand]      = useState("");
 
   useEffect(() => {
     (async () => {
@@ -192,6 +202,7 @@ export default function DashboardPage() {
       setMedia(portfolioItems ?? []);
       setPackages(talentProf?.packages ?? []);
       setAddons(talentProf?.social_links?.usage_addons ?? []);
+      setBrands(talentProf?.social_links?.brands ?? []);
       const sl = (talentProf?.social_links ?? {}) as Record<string,string>;
       setForm({
         full_name:    prof.full_name    ?? "",
@@ -271,6 +282,7 @@ export default function DashboardPage() {
       hair_color: form.hair_color, eye_color: form.eye_color,
       languages: form.languages, age_range: form.age_range,
       usage_addons: addons,
+      brands,
     };
     setSaveErr("");
     const res = await fetch("/api/profile", {
@@ -291,6 +303,7 @@ export default function DashboardPage() {
     setProfile((p: any) => ({ ...p, full_name: form.full_name, handle: form.handle, city: form.city, bio: form.bio, avatar_url: form.avatar_url }));
     if (tp) setTp((t: any) => ({ ...t, social_links, availability: form.availability, packages }));
     setAddons(addons);
+    setBrands(brands);
     setSaving(false);
     setSaveMsg(t.saved);
     setTimeout(() => { setSaveMsg(""); setEdit(false); }, 1500);
@@ -778,6 +791,45 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+
+            {/* Collaborated Brands */}
+            <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22 }}>
+              <h3 style={{ color: TEXT, fontSize: 16, fontWeight: 800, margin: "0 0 16px" }}>{t.brands}</h3>
+              {edit && (
+                <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                  <input
+                    value={newBrand}
+                    onChange={e => setNewBrand(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter" && newBrand.trim()) {
+                        setBrands(bs => [...bs, newBrand.trim()]);
+                        setNewBrand("");
+                      }
+                    }}
+                    placeholder={t.brandPlaceholder}
+                    style={{ ...inp, flex: 1 }}
+                  />
+                  <button
+                    onClick={() => { if (newBrand.trim()) { setBrands(bs => [...bs, newBrand.trim()]); setNewBrand(""); } }}
+                    style={{ padding: "0 16px", backgroundColor: GREEN, border: "none", borderRadius: 8, color: "#000", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "'Cairo',sans-serif", flexShrink: 0 }}
+                  >{t.addBrand}</button>
+                </div>
+              )}
+              {brands.length === 0 ? (
+                <p style={{ color: MUTED, fontSize: 13 }}>{t.noBrands}</p>
+              ) : (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {brands.map((b, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, backgroundColor: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: "4px 12px 4px 6px" }}>
+                      <span style={{ color: TEXT, fontSize: 13, fontWeight: 600 }}>{b}</span>
+                      {edit && (
+                        <button onClick={() => setBrands(bs => bs.filter((_, j) => j !== i))} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center", padding: 0, fontSize: 14, lineHeight: 1 }}>✕</button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Trust */}
             <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22 }}>

@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import {
   fetchTalentByHandle,
   fetchPortfolioByTalentId,
-  fetchBrandsByTalentProfileId,
 } from "@/features/talent-profile/services/talent-profile.service";
 import { transformTalentPageData } from "@/features/talent-profile/transformers/talent-profile.transformer";
 import TalentModelProfile from "@/app/(main)/talent/[handle]/_components/TalentModelProfile";
@@ -21,12 +20,9 @@ export default async function UserProfilePage({
     ? profile.talent_profiles[0]
     : profile.talent_profiles;
 
-  const [rawPortfolio, brands] = await Promise.all([
-    tp?.id ? fetchPortfolioByTalentId(tp.id) : Promise.resolve([]),
-    tp?.id ? fetchBrandsByTalentProfileId(tp.id) : Promise.resolve([]),
-  ]);
+  const rawPortfolio = tp?.id ? await fetchPortfolioByTalentId(tp.id) : [];
 
-  const data = transformTalentPageData(profile, tp ?? null, rawPortfolio, brands);
+  const data = transformTalentPageData(profile, tp ?? null, rawPortfolio);
 
   return (
     <TalentModelProfile

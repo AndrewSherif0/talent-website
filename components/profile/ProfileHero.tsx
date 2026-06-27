@@ -65,16 +65,16 @@ export default function ProfileHero({
         className
       )}
     >
-      <div className="grid grid-cols-[220px_1fr_360px] gap-6 h-[260px]">
+      <div className="grid grid-cols-[220px_1fr_360px] gap-6 h-260px">
         {/* ── Column 1: Profile Image ── */}
-        <div className="relative h-[260px] w-[220px] rounded-[14px] overflow-hidden group">
+        <div className="relative h-260px w-220px rounded-[14px] overflow-hidden group">
           <Image
             src={avatarUrl || images[0]}
             alt={name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-lg px-2.5 py-1">
             <span className="text-white text-xs font-medium">1/{images.length}</span>
           </div>

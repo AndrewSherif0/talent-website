@@ -158,17 +158,28 @@ function transformPortfolioItems(raw: RawPortfolioItem[]): PortfolioItem[] {
 
 // ─── Main transformer ─────────────────────────────────────────────────────────
 
+function transformBrands(sl: Record<string, unknown>): BrandItem[] {
+  const raw = sl.brands;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  return (raw as string[]).filter(Boolean).map((name, i) => ({
+    id: `sl-${i}`,
+    name,
+    logo_url: null,
+    year_collaborated: null,
+    sort_order: i,
+  }));
+}
+
 export function transformTalentPageData(
   profile: RawProfile,
   tp: RawTalentProfile | null,
-  rawPortfolio: RawPortfolioItem[],
-  brands: BrandItem[]
+  rawPortfolio: RawPortfolioItem[]
 ): TalentPageData {
   const sl = (tp?.social_links ?? {}) as Record<string, unknown>;
 
   return {
     talent: transformTalentData(profile, tp, sl),
-    brands,
+    brands: transformBrands(sl),
     reviews: transformReviews(sl),
     experience: transformExperience(sl),
     packages: transformPackages(tp?.packages),
