@@ -170,7 +170,7 @@ export default function ProfileClient({ profile, isOwner = false }: ProfileClien
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-[2] bg-[#00D26A] hover:bg-[#00E676] text-black font-bold rounded-xl py-2.5 text-sm transition-colors flex items-center justify-center gap-2"
+                  className="flex-2 bg-[#00D26A] hover:bg-[#00E676] text-black font-bold rounded-xl py-2.5 text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   <Save size={16} />
                   حفظ التغييرات

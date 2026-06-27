@@ -2,15 +2,12 @@
 import { ShieldCheck } from "lucide-react";
 import { useSite } from "@/contexts/SiteContext";
 
-const features = [
-  "مدفوعات آمنة 100%",
-  "حماية الضمان المالي (Escrow)",
-  "مراجعة يدوية لكل طلب",
-  "حل سريع للنزاعات",
-];
-
 export default function TrustCard() {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
+  const features = ar
+    ? ["مدفوعات آمنة 100%", "حماية الضمان المالي (Escrow)", "مراجعة يدوية لكل طلب", "حل سريع للنزاعات"]
+    : ["100% Secure Payments", "Financial Guarantee (Escrow)", "Manual Review for Every Order", "Fast Dispute Resolution"];
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -19,7 +16,7 @@ export default function TrustCard() {
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
         <ShieldCheck size={18} color={GREEN} />
-        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>الأمان والثقة</h3>
+        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>{ar ? "الأمان والثقة" : "Safety & Trust"}</h3>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {features.map((f, i) => (

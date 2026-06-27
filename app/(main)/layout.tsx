@@ -25,7 +25,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <SiteProvider>
       <Navbar initialAvatarUrl={initialAvatarUrl} initialFullName={initialFullName} />
-      <main style={{ paddingTop: "60px" }}>{children}</main>
+      <main style={{ }}>{children}</main>
     </SiteProvider>
   );
 }

@@ -12,7 +12,24 @@ const btn: React.CSSProperties = {
 
 export default function ProfileHero({ talent }: { talent: TalentData }) {
   const isMobile = useIsMobile();
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
+  const t = {
+    verified: ar ? "موثّق" : "Verified",
+    fastResponse: ar ? "رد سريع" : "Fast Response",
+    premium: ar ? "بريميوم" : "Premium",
+    memberSince: ar ? "عضو منذ" : "Member since",
+    reviews: ar ? "تقييم" : "reviews",
+    views: ar ? "مشاهدة" : "views",
+    message: ar ? "رسالة" : "Message",
+    bookNow: ar ? "احجز الآن" : "Book Now",
+    favorite: ar ? "المفضلة" : "Favorite",
+    share: ar ? "مشاركة" : "Share",
+    escrowTitle: ar ? "نظام الدفع الآمن (Escrow)" : "Secure Payment System (Escrow)",
+    escrowSteps: ar
+      ? ["الدفع محجوز", "تسليم العمل", "الموافقة", "الإفراج عن الأموال"]
+      : ["Payment Held", "Work Delivery", "Approval", "Fund Release"],
+  };
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -32,9 +49,9 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
       : [];
 
   const badges = [
-    talent.verified    && { icon: <Shield size={11} />, label: "موثّق" },
-    talent.fastResponse && { icon: <Zap size={11} />,    label: "رد سريع" },
-    talent.premium      && { icon: <Crown size={11} />,  label: "بريميوم" },
+    talent.verified    && { icon: <Shield size={11} />, label: t.verified },
+    talent.fastResponse && { icon: <Zap size={11} />,    label: t.fastResponse },
+    talent.premium      && { icon: <Crown size={11} />,  label: t.premium },
   ].filter(Boolean) as { icon: React.ReactNode; label: string }[];
 
   return (
@@ -139,7 +156,7 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
             <MapPin size={13} color={GREEN} />
             <span>{talent.location}</span>
             <span style={{ opacity: 0.4 }}>•</span>
-            <span>عضو منذ {talent.memberSince}</span>
+            <span>{t.memberSince} {talent.memberSince}</span>
           </div>
 
           {/* Rating + views */}
@@ -147,11 +164,11 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <Star size={14} color={GOLD} fill={GOLD} />
               <span style={{ color: TEXT, fontWeight: 800, fontSize: 14 }}>{talent.rating}</span>
-              <span style={{ color: MUTED, fontSize: 12 }}>({talent.reviewCount} تقييم)</span>
+              <span style={{ color: MUTED, fontSize: 12 }}>({talent.reviewCount} {t.reviews})</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 4, color: MUTED, fontSize: 12 }}>
               <Eye size={13} />
-              <span>{talent.views} مشاهدة</span>
+              <span>{talent.views} {t.views}</span>
             </div>
           </div>
 
@@ -182,7 +199,7 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
               color: TEXT, borderRadius: 12, padding: "11px 0",
               fontSize: 13, fontWeight: 600,
             }}>
-              <MessageCircle size={14} color={GREEN} />رسالة
+              <MessageCircle size={14} color={GREEN} />{t.message}
             </motion.button>
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} style={{
               ...btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
@@ -190,7 +207,7 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
               borderRadius: 12, padding: "11px 0",
               fontSize: 13, fontWeight: 900,
             }}>
-              <Calendar size={14} />احجز الآن
+              <Calendar size={14} />{t.bookNow}
             </motion.button>
           </div>
 
@@ -200,14 +217,14 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
               backgroundColor: SURFACE, border: `1px solid ${BORDER}`,
               color: MUTED, borderRadius: 12, padding: "9px 0", fontSize: 13,
             }}>
-              <Heart size={13} />المفضلة
+              <Heart size={13} />{t.favorite}
             </motion.button>
             <motion.button whileHover={{ scale: 1.02 }} style={{
               ...btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
               backgroundColor: SURFACE, border: `1px solid ${BORDER}`,
               color: MUTED, borderRadius: 12, padding: "9px 0", fontSize: 13,
             }}>
-              <Share2 size={13} />مشاركة
+              <Share2 size={13} />{t.share}
             </motion.button>
           </div>
 
@@ -220,10 +237,10 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
               color: MUTED, fontSize: 10, fontWeight: 700,
               marginBottom: 12, letterSpacing: 0.8, margin: "0 0 12px",
             }}>
-              نظام الدفع الآمن (Escrow)
+              {t.escrowTitle}
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {["الدفع محجوز", "تسليم العمل", "الموافقة", "الإفراج عن الأموال"].map((step, i) => (
+              {t.escrowSteps.map((step, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{
                     width: 22, height: 22, borderRadius: "50%", flexShrink: 0,

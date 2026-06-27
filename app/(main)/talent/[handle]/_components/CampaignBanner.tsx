@@ -26,7 +26,17 @@ interface Props {
 
 export default function CampaignBanner({ campaignStats, featuredCampaign }: Props) {
   const isMobile = useIsMobile();
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
+  const t = {
+    featuredCampaign: ar ? "أبرز حملة" : "Featured Campaign",
+    featured: ar ? "مميز" : "Featured",
+    ctrBefore: ar ? "CTR قبل:" : "CTR before:",
+    after: ar ? "بعد:" : "after:",
+    growth: ar ? "نمو" : "Growth",
+    watch: ar ? "مشاهدة" : "Watch",
+    caseStudy: ar ? "دراسة الحالة" : "Case Study",
+  };
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -37,10 +47,10 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
   const campaign = featuredCampaign ?? DEFAULT_CAMPAIGN;
 
   const statItems = [
-    { value: stats.views, label: "مشاهدات الحملات" },
-    { value: stats.ctr, label: "نسبة النقر CTR" },
-    { value: stats.sales_increase, label: "زيادة المبيعات" },
-    { value: stats.repeat, label: "تكرار التعاون" },
+    { value: stats.views, label: ar ? "مشاهدات الحملات" : "Campaign Views" },
+    { value: stats.ctr, label: ar ? "نسبة النقر CTR" : "Click Rate CTR" },
+    { value: stats.sales_increase, label: ar ? "زيادة المبيعات" : "Sales Increase" },
+    { value: stats.repeat, label: ar ? "تكرار التعاون" : "Repeat Clients" },
   ];
 
   return (
@@ -111,7 +121,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
             justifyContent: "space-between",
           }}
         >
-          <span style={{ color: dark ? "#fff" : "#0F172A", fontSize: 14, fontWeight: 700 }}>أبرز حملة</span>
+          <span style={{ color: dark ? "#fff" : "#0F172A", fontSize: 14, fontWeight: 700 }}>{t.featuredCampaign}</span>
           <span
             style={{
               backgroundColor: "rgba(244,183,64,0.15)",
@@ -122,7 +132,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
               border: "1px solid rgba(244,183,64,0.25)",
             }}
           >
-            مميز
+            {t.featured}
           </span>
         </div>
         <div
@@ -157,10 +167,10 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
               }}
             >
               <span style={{ color: MUTED }}>
-                CTR قبل: <strong style={{ color: dark ? "#fff" : "#0F172A" }}>{campaign.ctr_before}</strong>
+                {t.ctrBefore} <strong style={{ color: dark ? "#fff" : "#0F172A" }}>{campaign.ctr_before}</strong>
               </span>
               <span style={{ color: MUTED }}>
-                بعد: <strong style={{ color: GREEN }}>{campaign.ctr_after}</strong>
+                {t.after} <strong style={{ color: GREEN }}>{campaign.ctr_after}</strong>
               </span>
             </div>
             <div
@@ -173,7 +183,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
                 fontWeight: 700,
               }}
             >
-              <TrendingUp size={13} />نمو {campaign.growth}
+              <TrendingUp size={13} />{t.growth} {campaign.growth}
             </div>
           </div>
         </div>
@@ -194,7 +204,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
               fontFamily: "'Cairo',sans-serif",
             }}
           >
-            <Play size={11} />مشاهدة
+            <Play size={11} />{t.watch}
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }}
@@ -212,7 +222,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
               fontFamily: "'Cairo',sans-serif",
             }}
           >
-            <FileText size={11} />دراسة الحالة
+            <FileText size={11} />{t.caseStudy}
           </motion.button>
         </div>
       </div>

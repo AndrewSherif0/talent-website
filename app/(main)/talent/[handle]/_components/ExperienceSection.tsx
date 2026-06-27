@@ -18,7 +18,8 @@ interface Props {
 
 export default function ExperienceSection({ experience }: Props) {
   const isMobile = useIsMobile();
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -52,7 +53,7 @@ export default function ExperienceSection({ experience }: Props) {
             margin: "0 0 16px",
           }}
         >
-          الخبرات السابقة
+          {ar ? "الخبرات السابقة" : "Previous Experience"}
         </h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {projects.map((p, i) => (
@@ -101,7 +102,7 @@ export default function ExperienceSection({ experience }: Props) {
             margin: "0 0 16px",
           }}
         >
-          موثّق على Talents
+          {ar ? "موثّق على Talents" : "Verified on Talents"}
         </h3>
         <div
           style={{
@@ -130,7 +131,7 @@ export default function ExperienceSection({ experience }: Props) {
             <Plus size={24} color={GREEN} />
           </div>
           <p style={{ color: MUTED, fontSize: 13, marginBottom: 16 }}>
-            لا توجد مشاريع مكتملة عبر المنصة بعد
+            {ar ? "لا توجد مشاريع مكتملة عبر المنصة بعد" : "No completed projects on the platform yet"}
           </p>
           <motion.button
             whileHover={{ scale: 1.02, translateY: -2 }}
@@ -146,7 +147,7 @@ export default function ExperienceSection({ experience }: Props) {
               fontFamily: "'Cairo',sans-serif",
             }}
           >
-            احجز أول حملة
+            {ar ? "احجز أول حملة" : "Book First Campaign"}
           </motion.button>
         </div>
       </div>

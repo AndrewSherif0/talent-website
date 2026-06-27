@@ -49,12 +49,25 @@
     background-color: var(--bg-base);
     color: var(--text-primary);
     line-height: 1.5;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-theme="light"] body {
+    background-color: #FFFFFF;
+    color: #0F172A;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg-surface); }
-  ::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-teal); }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #00D26A;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #00ff88; background-clip: padding-box; border: 2px solid transparent; }
 }
 
 .glass-panel {

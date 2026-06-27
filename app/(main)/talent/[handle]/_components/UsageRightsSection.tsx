@@ -6,16 +6,16 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSite } from "@/contexts/SiteContext";
 import type { PackageItem } from "@/features/talent-profile/types";
 
-const addons = [
-  { key: "ads",     label: "حقوق استخدام الإعلانات", price: 1500 },
-  { key: "publish", label: "نشر غير محدود",            price: 2500 },
-  { key: "raw",     label: "الملفات الخام",             price: 500  },
-];
-
 export default function UsageRightsSection({ selectedPackage }: { selectedPackage: PackageItem | null }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const isMobile = useIsMobile();
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
+  const addons = [
+    { key: "ads",     label: ar ? "حقوق استخدام الإعلانات" : "Advertising Usage Rights", price: 1500 },
+    { key: "publish", label: ar ? "نشر غير محدود" : "Unlimited Publishing",              price: 2500 },
+    { key: "raw",     label: ar ? "الملفات الخام" : "Raw Files",                          price: 500  },
+  ];
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -31,7 +31,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
 
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
-      <h2 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 18, fontWeight: 800, marginBottom: 20, margin: "0 0 20px" }}>حقوق الاستخدام والإضافات</h2>
+      <h2 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 18, fontWeight: 800, marginBottom: 20, margin: "0 0 20px" }}>{ar ? "حقوق الاستخدام والإضافات" : "Usage Rights & Add-ons"}</h2>
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr", gap: 20 }}>
         {/* Add-ons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -50,10 +50,10 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
         <div style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 18, display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
             <Shield size={14} color={GREEN} />
-            <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, margin: 0 }}>ملخص الطلب</p>
+            <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, margin: 0 }}>{ar ? "ملخص الطلب" : "Order Summary"}</p>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: MUTED }}>
-            <span>الباقة</span>
+            <span>{ar ? "الباقة" : "Package"}</span>
             <span style={{ color: dark ? "#fff" : "#0F172A", fontWeight: 600 }}>{basePrice > 0 ? `${fmt(basePrice)} EGP` : "—"}</span>
           </div>
           {addons.filter(a => checked[a.key]).map(a => (
@@ -63,11 +63,11 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
             </div>
           ))}
           <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: dark ? "#fff" : "#0F172A", fontWeight: 700, fontSize: 14 }}>الإجمالي</span>
+            <span style={{ color: dark ? "#fff" : "#0F172A", fontWeight: 700, fontSize: 14 }}>{ar ? "الإجمالي" : "Total"}</span>
             <span style={{ color: GREEN, fontWeight: 900, fontSize: 18 }}>{fmt(total)} EGP</span>
           </div>
           <motion.button whileHover={{ scale: 1.02 }} style={{ backgroundColor: GREEN, color: "#000", border: "none", borderRadius: 10, padding: "12px 0", width: "100%", fontSize: 14, fontWeight: 900, cursor: "pointer", fontFamily: "'Cairo',sans-serif", marginTop: 4 }}>
-            احجز الآن
+            {ar ? "احجز الآن" : "Book Now"}
           </motion.button>
         </div>
       </div>

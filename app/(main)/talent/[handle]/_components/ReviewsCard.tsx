@@ -30,7 +30,8 @@ interface Props {
 }
 
 export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -58,7 +59,7 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
           marginBottom: 16,
         }}
       >
-        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>التقييمات</h3>
+        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>{ar ? "التقييمات" : "Reviews"}</h3>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ color: GOLD, fontSize: 22, fontWeight: 900 }}>{rating.toFixed(1)}</span>
           <div style={{ display: "flex" }}>

@@ -6,7 +6,8 @@ import type { BrandItem } from "@/features/talent-profile/types";
 const COLORS = ["#FFB800", "#1565C0", "#D32F2F", "#00D26A", "#9C27B0", "#E91E63"];
 
 export default function BrandsCard({ brands }: { brands: BrandItem[] }) {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
@@ -14,7 +15,7 @@ export default function BrandsCard({ brands }: { brands: BrandItem[] }) {
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22 }}>
       <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: "0 0 16px" }}>
-        براندات تعاونت معها
+        {ar ? "براندات تعاونت معها" : "Collaborated Brands"}
       </h3>
 
       {brands.length === 0 ? (
@@ -22,7 +23,7 @@ export default function BrandsCard({ brands }: { brands: BrandItem[] }) {
           textAlign: "center", padding: "20px 0",
           color: MUTED, fontSize: 13,
         }}>
-          لا توجد براندات مسجلة بعد
+          {ar ? "لا توجد براندات مسجلة بعد" : "No brands registered yet"}
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>

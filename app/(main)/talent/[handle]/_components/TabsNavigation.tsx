@@ -4,12 +4,19 @@ import { motion } from "framer-motion";
 import { useSite } from "@/contexts/SiteContext";
 import type { TalentData } from "@/features/talent-profile/types";
 
-const TABS = [
+const TABS_AR = [
   { key: "about",      label: "نبذة عامة",        sectionId: "section-about" },
   { key: "portfolio",  label: "الصور والفيديو",    sectionId: "section-portfolio" },
   { key: "experience", label: "الخبرات",           sectionId: "section-experience" },
   { key: "packages",   label: "الأسعار والباقات",  sectionId: "section-packages" },
   { key: "history",    label: "حقوق الاستخدام",    sectionId: "section-usage" },
+];
+const TABS_EN = [
+  { key: "about",      label: "Overview",          sectionId: "section-about" },
+  { key: "portfolio",  label: "Photos & Video",    sectionId: "section-portfolio" },
+  { key: "experience", label: "Experience",        sectionId: "section-experience" },
+  { key: "packages",   label: "Packages & Prices", sectionId: "section-packages" },
+  { key: "history",    label: "Usage Rights",      sectionId: "section-usage" },
 ];
 
 export default function TabsNavigation({
@@ -19,7 +26,8 @@ export default function TabsNavigation({
   activeTab?: string;
   onTabChange?: (t: string) => void;
 }) {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const TABS = lang === "en" ? TABS_EN : TABS_AR;
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
   const MUTED = dark ? "#A8B3C2" : "#64748B";

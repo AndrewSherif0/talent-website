@@ -15,7 +15,8 @@ interface Props {
 }
 
 export default function PerformanceSidebar({ performance }: Props) {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -24,10 +25,10 @@ export default function PerformanceSidebar({ performance }: Props) {
   const data = performance ?? DEFAULT;
 
   const metrics = [
-    { label: "الوصول", value: data.reach, bar: 85, color: "#00D26A" },
-    { label: "نسبة التفاعل", value: data.engagement, bar: 72, color: "#F4B740" },
-    { label: "تأثير الحملة", value: data.impact, bar: 90, color: "#00D26A" },
-    { label: "تكرار العملاء", value: data.repeat_clients, bar: parseInt(data.repeat_clients) || 98, color: "#00D26A" },
+    { label: ar ? "الوصول" : "Reach", value: data.reach, bar: 85, color: "#00D26A" },
+    { label: ar ? "نسبة التفاعل" : "Engagement Rate", value: data.engagement, bar: 72, color: "#F4B740" },
+    { label: ar ? "تأثير الحملة" : "Campaign Impact", value: data.impact, bar: 90, color: "#00D26A" },
+    { label: ar ? "تكرار العملاء" : "Repeat Clients", value: data.repeat_clients, bar: parseInt(data.repeat_clients) || 98, color: "#00D26A" },
   ];
 
   return (
@@ -48,7 +49,7 @@ export default function PerformanceSidebar({ performance }: Props) {
           margin: "0 0 18px",
         }}
       >
-        ملخص الأداء
+        {ar ? "ملخص الأداء" : "Performance Summary"}
       </h3>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {metrics.map((m, i) => (

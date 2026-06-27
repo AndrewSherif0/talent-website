@@ -38,7 +38,8 @@ interface Props {
 
 export default function PackagesSection({ onSelect, packages }: Props) {
   const isMobile = useIsMobile();
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -64,7 +65,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
           margin: "0 0 20px",
         }}
       >
-        الباقات والأسعار
+        {ar ? "الباقات والأسعار" : "Packages & Prices"}
       </h2>
       <div
         style={{
@@ -107,7 +108,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
                   whiteSpace: "nowrap",
                 }}
               >
-                الأكثر طلباً
+                {ar ? "الأكثر طلباً" : "Most Popular"}
               </div>
             )}
             <div>
@@ -123,7 +124,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
                 }}
               >
                 {pkg.price}{" "}
-                <span style={{ fontSize: 13, fontWeight: 600, color: MUTED }}>جنيه</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: MUTED }}>{ar ? "جنيه" : "EGP"}</span>
               </p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
@@ -151,7 +152,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
                 transition: "all 0.2s",
               }}
             >
-              اختر الباقة
+              {ar ? "اختر الباقة" : "Choose Package"}
             </motion.button>
           </motion.div>
         ))}

@@ -10,11 +10,12 @@ interface Props {
 }
 
 export default function StickyBookingBar({ talent, selectedPackage }: Props) {
-  const { dark } = useSite();
+  const { dark, lang } = useSite();
+  const ar = lang === "ar";
   const GREEN = "#00D26A";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
-  const pkgLabel = selectedPackage ? `${selectedPackage.name} — ${selectedPackage.price} EGP` : "اختر باقة";
+  const pkgLabel = selectedPackage ? `${selectedPackage.name} — ${selectedPackage.price} EGP` : (ar ? "اختر باقة" : "Choose Package");
   const price = selectedPackage?.price ?? "—";
 
   return (
@@ -33,10 +34,10 @@ export default function StickyBookingBar({ talent, selectedPackage }: Props) {
       <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED, fontSize: 11 }}>
           <ShieldCheck size={13} color={GREEN} />
-          <span>دفع آمن بالضمان</span>
+          <span>{ar ? "دفع آمن بالضمان" : "Secure Escrow Payment"}</span>
         </div>
         <div style={{ textAlign: "center" }}>
-          <p style={{ color: MUTED, fontSize: 10, margin: 0 }}>الإجمالي</p>
+          <p style={{ color: MUTED, fontSize: 10, margin: 0 }}>{ar ? "الإجمالي" : "Total"}</p>
           <p style={{ color: GREEN, fontSize: 22, fontWeight: 900, margin: 0, direction: "ltr" }}>{price} <span style={{ fontSize: 12 }}>EGP</span></p>
         </div>
       </div>
@@ -47,7 +48,7 @@ export default function StickyBookingBar({ talent, selectedPackage }: Props) {
           <Heart size={18} color={MUTED} />
         </motion.button>
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} style={{ display: "flex", alignItems: "center", gap: 8, backgroundColor: GREEN, color: "#000", border: "none", borderRadius: 12, padding: "0 28px", height: 44, fontSize: 15, fontWeight: 900, cursor: "pointer", fontFamily: "'Cairo',sans-serif", boxShadow: "0 0 24px rgba(0,210,106,0.35)" }}>
-          <Calendar size={16} />احجز الآن
+          <Calendar size={16} />{ar ? "احجز الآن" : "Book Now"}
         </motion.button>
       </div>
     </motion.div>
