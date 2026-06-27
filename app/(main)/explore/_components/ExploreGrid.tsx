@@ -56,7 +56,6 @@ function TalentCardItem({ talent, dark, lang, index }: { talent: TalentCard; dar
           background: talent.avatar_url
             ? `url(${talent.avatar_url}) center/cover no-repeat`
             : `linear-gradient(160deg, ${g0}, ${g1})`,
-          backgroundColor: SURFACE,
         }}>
           {!talent.avatar_url && (
             <div style={{

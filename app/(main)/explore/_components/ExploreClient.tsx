@@ -19,15 +19,21 @@ const TALENT_TYPES = [
 
 function matchesType(talent: TalentCard, type: string): boolean {
   if (type === "all") return true;
-  const haystack = [talent.category ?? "", ...(talent.specialties ?? [])].join(" ").toLowerCase();
-  const map: Record<string, string[]> = {
-    ugc:        ["ugc", "content", "محتوى", "مبدع"],
-    influencer: ["influencer", "مؤثر", "تأثير"],
-    host:       ["host", "presenter", "مذيع", "مقدم", "asher"],
-    model:      ["model", "موديل", "fashion", "أزياء"],
-    actor:      ["actor", "ممثل", "acting", "تمثيل"],
+  // Check specialties first (most specific), then category as fallback
+  const specialties = (talent.specialties ?? []).join(" ").toLowerCase();
+  const category = (talent.category ?? "").toLowerCase();
+  const map: Record<string, { specs: string[]; cats: string[] }> = {
+    ugc:        { specs: ["ugc", "content creator", "محتوى", "مبدع", "كونتنت"], cats: ["ugc"] },
+    influencer: { specs: ["مؤثر", "مؤثرة", "influencer", "تأثير"],              cats: [] },
+    host:       { specs: ["مذيع", "مقدم", "مقدمة", "host", "presenter"],        cats: [] },
+    model:      { specs: ["موديل", "model", "أزياء", "فاشن"],                   cats: [] },
+    actor:      { specs: ["ممثل", "ممثلة", "actor", "acting", "تمثيل"],         cats: [] },
   };
-  return (map[type] ?? []).some(kw => haystack.includes(kw));
+  const rule = map[type];
+  if (!rule) return false;
+  if (rule.specs.some(kw => specialties.includes(kw))) return true;
+  if (rule.cats.length && rule.cats.includes(category)) return true;
+  return false;
 }
 
 interface Props { talents: TalentCard[] }

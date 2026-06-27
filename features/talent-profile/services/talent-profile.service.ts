@@ -1,5 +1,5 @@
 import { adminClient } from "@/lib/supabase/admin";
-import type { RawProfile, RawPortfolioItem } from "../types";
+import type { RawProfile, RawPortfolioItem, BrandItem } from "../types";
 
 export async function fetchTalentByHandle(handle: string): Promise<RawProfile | null> {
   const { data, error } = await adminClient
@@ -20,4 +20,21 @@ export async function fetchPortfolioByTalentId(talentProfileId: string): Promise
     .order("sort_order", { ascending: true });
 
   return (data ?? []) as RawPortfolioItem[];
+}
+
+export async function fetchBrandsByTalentProfileId(talentProfileId: string): Promise<BrandItem[]> {
+  const { data } = await adminClient
+    .from("talent_brands")
+    .select("id, brand_name, logo_url, year_collaborated, sort_order")
+    .eq("talent_profile_id", talentProfileId)
+    .order("sort_order", { ascending: true });
+
+  if (!data?.length) return [];
+  return data.map((row) => ({
+    id: row.id,
+    name: row.brand_name,
+    logo_url: row.logo_url ?? null,
+    year_collaborated: row.year_collaborated ?? null,
+    sort_order: row.sort_order ?? 0,
+  }));
 }

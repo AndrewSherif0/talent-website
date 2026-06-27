@@ -14,16 +14,11 @@ import type {
   PortfolioItem,
 } from "../types";
 
+// BrandItem is now fetched separately from talent_brands table
+// and passed in directly — no transformation needed from social_links
+
 // ─── Fallback defaults ────────────────────────────────────────────────────────
 
-const DEFAULT_BRANDS: BrandItem[] = [
-  { id: 1, name: "Noon" },
-  { id: 2, name: "Samsung" },
-  { id: 3, name: "H&M" },
-  { id: 4, name: "L'Oréal" },
-  { id: 5, name: "Adidas" },
-  { id: 6, name: "Shein" },
-];
 
 const DEFAULT_REVIEWS: Review[] = [
   {
@@ -63,11 +58,6 @@ function transformTalentData(profile: RawProfile, tp: RawTalentProfile | null, s
     specialties: tp?.specialties ?? [],
     category: tp?.category ?? null,
   };
-}
-
-function transformBrands(sl: Record<string, unknown>): BrandItem[] {
-  if (!Array.isArray(sl.brands) || sl.brands.length === 0) return DEFAULT_BRANDS;
-  return (sl.brands as string[]).map((name, i) => ({ id: i + 1, name }));
 }
 
 function transformReviews(sl: Record<string, unknown>): Review[] {
@@ -157,13 +147,14 @@ function transformPortfolioItems(raw: RawPortfolioItem[]): PortfolioItem[] {
 export function transformTalentPageData(
   profile: RawProfile,
   tp: RawTalentProfile | null,
-  rawPortfolio: RawPortfolioItem[]
+  rawPortfolio: RawPortfolioItem[],
+  brands: BrandItem[]
 ): TalentPageData {
   const sl = (tp?.social_links ?? {}) as Record<string, unknown>;
 
   return {
     talent: transformTalentData(profile, tp, sl),
-    brands: transformBrands(sl),
+    brands,
     reviews: transformReviews(sl),
     experience: transformExperience(sl),
     packages: transformPackages(tp?.packages),

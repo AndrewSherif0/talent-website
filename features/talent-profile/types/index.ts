@@ -75,8 +75,11 @@ export interface Review {
 }
 
 export interface BrandItem {
-  id: number;
+  id: string;
   name: string;
+  logo_url?: string | null;
+  year_collaborated?: string | null;
+  sort_order: number;
 }
 
 export interface PackageItem {

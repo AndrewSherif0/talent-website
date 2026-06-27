@@ -64,7 +64,6 @@ export default function TalentModelProfile({
   featuredCampaign,
   performance,
 }: Props) {
-  const [activeTab, setActiveTab] = useState("about");
   const [selectedPackage, setSelectedPackage] = useState<PackageItem | null>(null);
   const isMobile = useIsMobile();
 
@@ -81,7 +80,7 @@ export default function TalentModelProfile({
       <div style={{ maxWidth: 1440, margin: "0 auto", padding: "24px 24px" }}>
         <CampaignBanner campaignStats={campaignStats} featuredCampaign={featuredCampaign} />
         <ProfileHero talent={talent} />
-        <TabsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <TabsNavigation talent={talent} />
         <div
           style={{
             display: "grid",
@@ -91,10 +90,11 @@ export default function TalentModelProfile({
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <PortfolioSection portfolioItems={portfolioItems} />
-            <ExperienceSection experience={experience} />
-            <PackagesSection onSelect={setSelectedPackage} packages={packages} />
-            <UsageRightsSection selectedPackage={selectedPackage} />
+            <div id="section-about" />
+            <div id="section-portfolio"><PortfolioSection portfolioItems={portfolioItems} /></div>
+            <div id="section-experience"><ExperienceSection experience={experience} /></div>
+            <div id="section-packages"><PackagesSection onSelect={setSelectedPackage} packages={packages} /></div>
+            <div id="section-usage"><UsageRightsSection selectedPackage={selectedPackage} /></div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <PerformanceSidebar performance={performance} />
