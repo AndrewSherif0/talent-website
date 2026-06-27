@@ -90,6 +90,7 @@ export default function ExploreClient({ talents }: Props) {
         padding: "24px 24px 60px",
         display: "grid",
         gridTemplateColumns: "240px 1fr",
+        alignItems: "start",
         gap: 20,
       }}>
         <ExploreFilters
