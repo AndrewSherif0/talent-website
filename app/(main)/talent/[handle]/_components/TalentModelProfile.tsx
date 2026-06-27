@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type {
   TalentData,
   BrandItem,
@@ -66,13 +67,14 @@ export default function TalentModelProfile({
 }: Props) {
   const [selectedPackage, setSelectedPackage] = useState<PackageItem | null>(null);
   const isMobile = useIsMobile();
+  const { dark } = useSite();
 
   return (
     <main
       dir="rtl"
       style={{
         fontFamily: "'Cairo', sans-serif",
-        backgroundColor: "#050B12",
+        backgroundColor: dark ? "#050B12" : "#F1F5F9",
         minHeight: "100vh",
         paddingBottom: 110,
       }}

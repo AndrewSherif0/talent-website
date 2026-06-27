@@ -1,9 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { Heart, Calendar, ShieldCheck } from "lucide-react";
+import { useSite } from "@/contexts/SiteContext";
 import type { TalentData, PackageItem } from "@/features/talent-profile/types";
-
-const GREEN = "#00D26A", MUTED = "#A8B3C2", BORDER = "rgba(0,255,163,0.15)";
 
 interface Props {
   talent: TalentData;
@@ -11,17 +10,21 @@ interface Props {
 }
 
 export default function StickyBookingBar({ talent, selectedPackage }: Props) {
+  const { dark } = useSite();
+  const GREEN = "#00D26A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const pkgLabel = selectedPackage ? `${selectedPackage.name} — ${selectedPackage.price} EGP` : "اختر باقة";
   const price = selectedPackage?.price ?? "—";
 
   return (
     <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.4, ease: "easeOut" }}
-      style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, backgroundColor: "#0A121C", borderTop: `1px solid ${BORDER}`, backdropFilter: "blur(16px)", height: 90, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", fontFamily: "'Cairo',sans-serif", direction: "rtl" }}>
+      style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, backgroundColor: dark ? "#0A121C" : "#FFFFFF", borderTop: `1px solid ${BORDER}`, backdropFilter: "blur(16px)", height: 90, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", fontFamily: "'Cairo',sans-serif", direction: "rtl" }}>
       {/* Avatar + info */}
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#1e3a5f,#0d2137)", border: "2px solid rgba(0,210,106,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>👩</div>
         <div>
-          <p style={{ color: "#fff", fontSize: 14, fontWeight: 800, margin: 0 }}>{talent?.name ?? "Maya Khaled"}</p>
+          <p style={{ color: dark ? "#fff" : "#0F172A", fontSize: 14, fontWeight: 800, margin: 0 }}>{talent?.name ?? "Maya Khaled"}</p>
           <p style={{ color: MUTED, fontSize: 11, margin: 0 }}>{pkgLabel}</p>
         </div>
       </div>

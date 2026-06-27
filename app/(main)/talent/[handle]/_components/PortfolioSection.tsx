@@ -2,9 +2,8 @@
 import { motion } from "framer-motion";
 import { Play, Image } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { PortfolioItem } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A", MUTED = "#A8B3C2";
 
 const COLORS = [
   ["#1e3a5f", "#0d2137"],
@@ -21,6 +20,11 @@ interface Props {
 
 export default function PortfolioSection({ portfolioItems }: Props) {
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
   const hasReal = portfolioItems && portfolioItems.length > 0;
 
   return (
@@ -40,7 +44,7 @@ export default function PortfolioSection({ portfolioItems }: Props) {
           marginBottom: 20,
         }}
       >
-        <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 800, margin: 0 }}>البورتفوليو</h2>
+        <h2 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 18, fontWeight: 800, margin: 0 }}>البورتفوليو</h2>
         <button
           style={{
             background: "none",

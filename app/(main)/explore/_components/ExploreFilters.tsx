@@ -55,14 +55,14 @@ export default function ExploreFilters({
 
   const sectionTitle = (label: string) => (
     <p style={{
-      color: MUTED, fontSize: 11, fontWeight: 700,
-      letterSpacing: 1, marginBottom: 12,
+      color: MUTED, fontSize: 10, fontWeight: 700,
+      letterSpacing: 1, marginBottom: 8,
       textTransform: "uppercase",
     }}>{label}</p>
   );
 
   const divider = (
-    <div style={{ height: 1, backgroundColor: BORDER, margin: "20px 0" }} />
+    <div style={{ height: 1, backgroundColor: BORDER, margin: "12px 0" }} />
   );
 
   const handleReset = () => {
@@ -78,13 +78,15 @@ export default function ExploreFilters({
       backgroundColor: CARD,
       border: `1px solid ${BORDER}`,
       borderRadius: 16,
-      padding: 20,
+      padding: "14px 16px",
       alignSelf: "start",
       position: "sticky",
-      top: 80,
+      top: 68,
+      maxHeight: "calc(100vh - 80px)",
+      overflowY: "auto",
     }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <SlidersHorizontal size={16} color={GREEN} />
           <span style={{ color: TEXT, fontSize: 15, fontWeight: 800 }}>{t.filters}</span>
@@ -98,7 +100,7 @@ export default function ExploreFilters({
 
       {/* Sort by */}
       {sectionTitle(t.sort_by)}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         {SORT_OPTIONS.map(opt => {
           const active = sort === opt.key;
           const label  = lang === "ar" ? opt.label_ar : opt.label_en;
@@ -108,7 +110,7 @@ export default function ExploreFilters({
               onClick={() => onSort(opt.key)}
               style={{
                 display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 12px", borderRadius: 10,
+                padding: "7px 10px", borderRadius: 8,
                 border: `1px solid ${active ? GREEN : "transparent"}`,
                 backgroundColor: active ? (dark ? "rgba(0,210,106,0.1)" : "rgba(0,210,106,0.06)") : SURFACE,
                 color: active ? GREEN : MUTED,
@@ -135,7 +137,7 @@ export default function ExploreFilters({
 
       {/* Talent type */}
       {sectionTitle(t.type)}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         {types.map(tab => {
           const active = activeType === tab.key;
           const label  = lang === "ar" ? tab.label_ar : tab.label_en;
@@ -145,7 +147,7 @@ export default function ExploreFilters({
               onClick={() => onTypeChange(tab.key)}
               style={{
                 display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 12px", borderRadius: 10,
+                padding: "7px 10px", borderRadius: 8,
                 border: `1px solid ${active ? GOLD : "transparent"}`,
                 backgroundColor: active ? (dark ? "rgba(244,183,64,0.1)" : "rgba(244,183,64,0.06)") : SURFACE,
                 color: active ? GOLD : MUTED,
@@ -168,7 +170,7 @@ export default function ExploreFilters({
 
       {/* Price range */}
       {sectionTitle(t.price)}
-      <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
         {[
           { label: t.min, val: minPrice, set: onMinPrice },
           { label: t.max, val: maxPrice, set: onMaxPrice },
@@ -208,8 +210,8 @@ export default function ExploreFilters({
       <button
         onClick={() => onVerified(!verified)}
         style={{
-          display: "flex", alignItems: "center", gap: 12, width: "100%",
-          padding: "12px 14px", borderRadius: 10,
+          display: "flex", alignItems: "center", gap: 10, width: "100%",
+          padding: "9px 12px", borderRadius: 8,
           border: `1px solid ${verified ? GREEN : BORDER}`,
           backgroundColor: verified ? (dark ? "rgba(0,210,106,0.1)" : "rgba(0,210,106,0.06)") : "transparent",
           cursor: "pointer", fontFamily: "'Cairo',sans-serif",

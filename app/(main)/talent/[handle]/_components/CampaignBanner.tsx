@@ -2,10 +2,8 @@
 import { motion } from "framer-motion";
 import { TrendingUp, Play, FileText } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { CampaignStats, FeaturedCampaign } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A";
-const GOLD = "#F4B740", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 
 const DEFAULT_STATS: CampaignStats = {
   views: "2.1M+",
@@ -28,6 +26,13 @@ interface Props {
 
 export default function CampaignBanner({ campaignStats, featuredCampaign }: Props) {
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const GOLD = "#F4B740";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
   const stats = campaignStats ?? DEFAULT_STATS;
   const campaign = featuredCampaign ?? DEFAULT_CAMPAIGN;
 
@@ -106,7 +111,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
             justifyContent: "space-between",
           }}
         >
-          <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>أبرز حملة</span>
+          <span style={{ color: dark ? "#fff" : "#0F172A", fontSize: 14, fontWeight: 700 }}>أبرز حملة</span>
           <span
             style={{
               backgroundColor: "rgba(244,183,64,0.15)",
@@ -152,7 +157,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
               }}
             >
               <span style={{ color: MUTED }}>
-                CTR قبل: <strong style={{ color: "#fff" }}>{campaign.ctr_before}</strong>
+                CTR قبل: <strong style={{ color: dark ? "#fff" : "#0F172A" }}>{campaign.ctr_before}</strong>
               </span>
               <span style={{ color: MUTED }}>
                 بعد: <strong style={{ color: GREEN }}>{campaign.ctr_after}</strong>

@@ -5,10 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { adminClient } from "@/lib/supabase/admin";
-
-type Lang = "ar" | "en";
-type Mode = "dark" | "light";
+import { useSite } from "@/contexts/SiteContext";
 
 const NAV_LINKS = {
   ar: [
@@ -39,16 +36,14 @@ export default function Navbar({
 }) {
   const pathname  = usePathname();
   const isMobile  = useIsMobile();
+  const { lang, toggleLang, dark, toggleMode } = useSite();
 
-  const [lang,        setLang]      = useState<Lang>("ar");
-  const [mode,        setMode]      = useState<Mode>("dark");
   const [hoveredHref, setHovered]   = useState<string | null>(null);
   const [avatarUrl,    setAvatarUrl]    = useState<string | null>(_initialAvatarUrl ?? null);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
   const [initialLoad,  setInitialLoad]  = useState(!_initialAvatarUrl);
   const [menuOpen,     setMenuOpen]     = useState(false);
 
-  const dark = mode === "dark";
   const dir  = lang === "ar" ? "rtl" : "ltr";
   const t    = TX[lang];
 
@@ -162,7 +157,7 @@ export default function Navbar({
         <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "4px" : "6px" }}>
 
           {/* Lang toggle */}
-          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} style={{
+          <button onClick={toggleLang} style={{
             background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
             padding: "4px 8px", cursor: "pointer",
             color: MUTED, fontSize: "11px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
@@ -171,7 +166,7 @@ export default function Navbar({
           </button>
 
           {/* Mode toggle */}
-          <button onClick={() => setMode(dark ? "light" : "dark")} style={{
+          <button onClick={toggleMode} style={{
             background: SEARCH, border: `1px solid ${BORDER}`, borderRadius: "6px",
             padding: "4px 7px", cursor: "pointer", fontSize: "12px",
           }}>

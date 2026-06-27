@@ -1,14 +1,19 @@
 "use client";
 import { motion } from "framer-motion";
+import { useSite } from "@/contexts/SiteContext";
 import type { BrandItem } from "@/features/talent-profile/types";
 
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 const COLORS = ["#FFB800", "#1565C0", "#D32F2F", "#00D26A", "#9C27B0", "#E91E63"];
 
 export default function BrandsCard({ brands }: { brands: BrandItem[] }) {
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 22 }}>
-      <h3 style={{ color: "#fff", fontSize: 16, fontWeight: 800, margin: "0 0 16px" }}>
+      <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: "0 0 16px" }}>
         براندات تعاونت معها
       </h3>
 

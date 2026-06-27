@@ -2,9 +2,8 @@
 import { motion } from "framer-motion";
 import { CheckCircle, Calendar, Plus } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { ExperienceItem } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 
 const DEFAULT_PROJECTS: ExperienceItem[] = [
   { name: "Fashion Show 2023", year: "2023", verified: true },
@@ -19,6 +18,12 @@ interface Props {
 
 export default function ExperienceSection({ experience }: Props) {
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
   const projects = experience?.length ? experience : DEFAULT_PROJECTS;
 
   return (
@@ -40,7 +45,7 @@ export default function ExperienceSection({ experience }: Props) {
       >
         <h3
           style={{
-            color: "#fff",
+            color: dark ? "#fff" : "#0F172A",
             fontSize: 16,
             fontWeight: 800,
             marginBottom: 16,
@@ -68,7 +73,7 @@ export default function ExperienceSection({ experience }: Props) {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Calendar size={14} color={MUTED} />
-                <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{p.name}</span>
+                <span style={{ color: dark ? "#fff" : "#0F172A", fontSize: 13, fontWeight: 600 }}>{p.name}</span>
               </div>
               {p.verified && (
                 <CheckCircle size={15} color={GREEN} fill="rgba(0,210,106,0.15)" />
@@ -89,7 +94,7 @@ export default function ExperienceSection({ experience }: Props) {
       >
         <h3
           style={{
-            color: "#fff",
+            color: dark ? "#fff" : "#0F172A",
             fontSize: 16,
             fontWeight: 800,
             marginBottom: 16,

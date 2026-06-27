@@ -2,9 +2,8 @@
 import { useState } from "react";
 import { Star, ChevronRight, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSite } from "@/contexts/SiteContext";
 import type { Review } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A", GOLD = "#F4B740", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 
 const DEFAULT_REVIEWS: Review[] = [
   {
@@ -31,6 +30,13 @@ interface Props {
 }
 
 export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const GOLD = "#F4B740";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
   const data = reviews?.length ? reviews : DEFAULT_REVIEWS;
   const [idx, setIdx] = useState(0);
   const review = data[idx];
@@ -52,7 +58,7 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
           marginBottom: 16,
         }}
       >
-        <h3 style={{ color: "#fff", fontSize: 16, fontWeight: 800, margin: 0 }}>التقييمات</h3>
+        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>التقييمات</h3>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ color: GOLD, fontSize: 22, fontWeight: 900 }}>{rating.toFixed(1)}</span>
           <div style={{ display: "flex" }}>
@@ -103,7 +109,7 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
               {review.author[0]}
             </div>
             <div>
-              <p style={{ color: "#fff", fontSize: 13, fontWeight: 700, margin: 0 }}>
+              <p style={{ color: dark ? "#fff" : "#0F172A", fontSize: 13, fontWeight: 700, margin: 0 }}>
                 {review.author}
               </p>
               <p style={{ color: MUTED, fontSize: 11, margin: 0 }}>

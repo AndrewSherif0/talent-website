@@ -3,9 +3,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { PackageItem } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 
 const addons = [
   { key: "ads",     label: "حقوق استخدام الإعلانات", price: 1500 },
@@ -16,6 +15,12 @@ const addons = [
 export default function UsageRightsSection({ selectedPackage }: { selectedPackage: PackageItem | null }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
 
   const toggle = (k: string) => setChecked(p => ({ ...p, [k]: !p[k] }));
   const basePrice = selectedPackage ? (parseInt(selectedPackage.price.replace(/[^\d]/g, ""), 10) || 0) : 0;
@@ -26,7 +31,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
 
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
-      <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 800, marginBottom: 20, margin: "0 0 20px" }}>حقوق الاستخدام والإضافات</h2>
+      <h2 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 18, fontWeight: 800, marginBottom: 20, margin: "0 0 20px" }}>حقوق الاستخدام والإضافات</h2>
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr", gap: 20 }}>
         {/* Add-ons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -35,7 +40,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
               <div style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${checked[a.key] ? GREEN : "rgba(168,179,194,0.4)"}`, backgroundColor: checked[a.key] ? GREEN : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.2s" }}>
                 {checked[a.key] && <svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7L10 1" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
               </div>
-              <span style={{ flex: 1, color: "#fff", fontSize: 13, fontWeight: 600 }}>{a.label}</span>
+              <span style={{ flex: 1, color: dark ? "#fff" : "#0F172A", fontSize: 13, fontWeight: 600 }}>{a.label}</span>
               <span style={{ color: GREEN, fontSize: 13, fontWeight: 800, direction: "ltr" }}>+{fmt(a.price)} EGP</span>
             </label>
           ))}
@@ -49,7 +54,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: MUTED }}>
             <span>الباقة</span>
-            <span style={{ color: "#fff", fontWeight: 600 }}>{basePrice > 0 ? `${fmt(basePrice)} EGP` : "—"}</span>
+            <span style={{ color: dark ? "#fff" : "#0F172A", fontWeight: 600 }}>{basePrice > 0 ? `${fmt(basePrice)} EGP` : "—"}</span>
           </div>
           {addons.filter(a => checked[a.key]).map(a => (
             <div key={a.key} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: MUTED }}>
@@ -58,7 +63,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
             </div>
           ))}
           <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>الإجمالي</span>
+            <span style={{ color: dark ? "#fff" : "#0F172A", fontWeight: 700, fontSize: 14 }}>الإجمالي</span>
             <span style={{ color: GREEN, fontWeight: 900, fontSize: 18 }}>{fmt(total)} EGP</span>
           </div>
           <motion.button whileHover={{ scale: 1.02 }} style={{ backgroundColor: GREEN, color: "#000", border: "none", borderRadius: 10, padding: "12px 0", width: "100%", fontSize: 14, fontWeight: 900, cursor: "pointer", fontFamily: "'Cairo',sans-serif", marginTop: 4 }}>

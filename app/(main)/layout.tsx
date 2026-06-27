@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/Navbar";
+import { SiteProvider } from "@/contexts/SiteContext";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -22,9 +23,9 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <>
+    <SiteProvider>
       <Navbar initialAvatarUrl={initialAvatarUrl} initialFullName={initialFullName} />
       <main style={{ paddingTop: "60px" }}>{children}</main>
-    </>
+    </SiteProvider>
   );
 }

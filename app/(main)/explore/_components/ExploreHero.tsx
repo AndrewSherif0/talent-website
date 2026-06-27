@@ -10,9 +10,6 @@ interface Props {
   lang: "ar" | "en";
   search: string;
   onSearch: (v: string) => void;
-  mode: "dark" | "light";
-  onModeToggle: () => void;
-  onLangToggle: () => void;
   types: TypeTab[];
   activeType: string;
   onTypeChange: (t: string) => void;
@@ -21,14 +18,12 @@ interface Props {
 
 export default function ExploreHero({
   dark, lang, search, onSearch,
-  onModeToggle, onLangToggle,
   types, activeType, onTypeChange, resultCount,
 }: Props) {
   const TEXT   = dark ? "#FFFFFF"   : "#0F172A";
   const MUTED  = dark ? "#A8B3C2"   : "#64748B";
   const CARD   = dark ? "#0D1623"   : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
-  const SURFACE = dark ? "#0A121C"  : "#F8FAFC";
   const GREEN  = "#00D26A";
 
   const title = lang === "ar" ? "استكشف المواهب" : "Explore Talents";
@@ -45,27 +40,10 @@ export default function ExploreHero({
     }}>
       <div style={{ maxWidth: 1440, margin: "0 auto" }}>
 
-        {/* Top row: title + toggles */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
-          <div>
-            <h1 style={{ color: TEXT, fontSize: 28, fontWeight: 900, margin: 0 }}>{title}</h1>
-            <p style={{ color: MUTED, fontSize: 14, margin: "6px 0 0" }}>{sub}</p>
-          </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <button onClick={onLangToggle} style={{
-              background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 8,
-              padding: "7px 14px", cursor: "pointer", color: MUTED, fontSize: 12,
-              fontWeight: 700, fontFamily: "'Cairo',sans-serif",
-            }}>
-              {lang === "ar" ? "EN" : "ع"}
-            </button>
-            <button onClick={onModeToggle} style={{
-              background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 8,
-              padding: "7px 12px", cursor: "pointer", fontSize: 14,
-            }}>
-              {dark ? "☀️" : "🌙"}
-            </button>
-          </div>
+        {/* Title */}
+        <div style={{ marginBottom: 20 }}>
+          <h1 style={{ color: TEXT, fontSize: 28, fontWeight: 900, margin: 0 }}>{title}</h1>
+          <p style={{ color: MUTED, fontSize: 14, margin: "6px 0 0" }}>{sub}</p>
         </div>
 
         {/* Search bar */}
@@ -96,7 +74,7 @@ export default function ExploreHero({
         </div>
 
         {/* Type tab pills */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 0 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {types.map(tab => {
             const active = tab.key === activeType;
             const label  = lang === "ar" ? tab.label_ar : tab.label_en;

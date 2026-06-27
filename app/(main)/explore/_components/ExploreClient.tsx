@@ -4,6 +4,7 @@ import type { TalentCard } from "../page";
 import ExploreHero from "./ExploreHero";
 import ExploreFilters from "./ExploreFilters";
 import ExploreGrid from "./ExploreGrid";
+import { useSite } from "@/contexts/SiteContext";
 
 export type SortOption = "price_asc" | "price_desc" | "rating" | "newest";
 export type ModeOption = "dark" | "light";
@@ -39,11 +40,10 @@ function matchesType(talent: TalentCard, type: string): boolean {
 interface Props { talents: TalentCard[] }
 
 export default function ExploreClient({ talents }: Props) {
+  const { lang, dark } = useSite();
   const [search,   setSearch]   = useState("");
   const [type,     setType]     = useState("all");
   const [sort,     setSort]     = useState<SortOption>("rating");
-  const [mode,     setMode]     = useState<ModeOption>("dark");
-  const [lang,     setLang]     = useState<"ar" | "en">("ar");
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [verified, setVerified] = useState(false);
@@ -72,8 +72,6 @@ export default function ExploreClient({ talents }: Props) {
     return list;
   }, [talents, search, type, sort, minPrice, maxPrice, verified]);
 
-  const dark = mode === "dark";
-
   return (
     <div style={{
       minHeight: "100vh",
@@ -83,8 +81,6 @@ export default function ExploreClient({ talents }: Props) {
     }}>
       <ExploreHero
         dark={dark} lang={lang} search={search} onSearch={setSearch}
-        mode={mode} onModeToggle={() => setMode(m => m === "dark" ? "light" : "dark")}
-        onLangToggle={() => setLang(l => l === "ar" ? "en" : "ar")}
         types={TALENT_TYPES} activeType={type} onTypeChange={setType}
         resultCount={filtered.length}
       />
@@ -93,8 +89,8 @@ export default function ExploreClient({ talents }: Props) {
         maxWidth: 1440, margin: "0 auto",
         padding: "24px 24px 60px",
         display: "grid",
-        gridTemplateColumns: "280px 1fr",
-        gap: 24,
+        gridTemplateColumns: "240px 1fr",
+        gap: 20,
       }}>
         <ExploreFilters
           dark={dark} lang={lang}

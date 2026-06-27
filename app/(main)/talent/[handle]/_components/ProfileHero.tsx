@@ -2,10 +2,9 @@
 import { motion } from "framer-motion";
 import { MapPin, Star, Eye, Shield, Zap, Crown, Heart, Share2, MessageCircle, Calendar } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { TalentData } from "@/features/talent-profile/types";
 
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A";
-const GOLD = "#F4B740", TEXT = "#FFFFFF", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 const btn: React.CSSProperties = {
   cursor: "pointer", fontFamily: "'Cairo',sans-serif",
   border: "none", outline: "none",
@@ -13,6 +12,14 @@ const btn: React.CSSProperties = {
 
 export default function ProfileHero({ talent }: { talent: TalentData }) {
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const GOLD = "#F4B740";
+  const TEXT = dark ? "#FFFFFF" : "#0F172A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
 
   const displayName = talent.name.includes("@")
     ? talent.handle || talent.name.split("@")[0]
@@ -51,9 +58,9 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
             height: isMobile ? 220 : 260,
             borderRadius: 14,
             overflow: "hidden",
-            background: talent.bio
+            background: dark
               ? "linear-gradient(160deg,#1e3a5f,#0d2137,#050B12)"
-              : "linear-gradient(160deg,#1e3a5f,#0d2137,#050B12)",
+              : "linear-gradient(160deg,#dbeafe,#bfdbfe,#93c5fd)",
             display: "flex", alignItems: "center", justifyContent: "center",
             position: "relative",
             border: `1px solid ${BORDER}`,

@@ -2,9 +2,8 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSite } from "@/contexts/SiteContext";
 import type { PackageItem } from "@/features/talent-profile/types";
-
-const CARD = "#0D1623", BORDER = "rgba(0,255,163,0.15)", GREEN = "#00D26A", MUTED = "#A8B3C2", SURFACE = "#0A121C";
 
 type Package = PackageItem;
 
@@ -39,6 +38,12 @@ interface Props {
 
 export default function PackagesSection({ onSelect, packages }: Props) {
   const isMobile = useIsMobile();
+  const { dark } = useSite();
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
+  const GREEN = "#00D26A";
+  const MUTED = dark ? "#A8B3C2" : "#64748B";
+  const SURFACE = dark ? "#0A121C" : "#F8FAFC";
   const data = packages?.length ? packages : DEFAULT_PACKAGES;
 
   return (
@@ -52,7 +57,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
     >
       <h2
         style={{
-          color: "#fff",
+          color: dark ? "#fff" : "#0F172A",
           fontSize: 18,
           fontWeight: 800,
           marginBottom: 20,
@@ -111,7 +116,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
               </p>
               <p
                 style={{
-                  color: pkg.popular ? GREEN : "#fff",
+                  color: pkg.popular ? GREEN : (dark ? "#fff" : "#0F172A"),
                   fontSize: 26,
                   fontWeight: 900,
                   margin: 0,
