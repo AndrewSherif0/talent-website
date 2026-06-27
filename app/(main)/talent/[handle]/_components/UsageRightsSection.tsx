@@ -4,18 +4,19 @@ import { motion } from "framer-motion";
 import { Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSite } from "@/contexts/SiteContext";
-import type { PackageItem } from "@/features/talent-profile/types";
+import type { PackageItem, AddonItem } from "@/features/talent-profile/types";
 
-export default function UsageRightsSection({ selectedPackage }: { selectedPackage: PackageItem | null }) {
+interface Props {
+  selectedPackage: PackageItem | null;
+  addons?: AddonItem[] | null;
+}
+
+export default function UsageRightsSection({ selectedPackage, addons: addonsProp }: Props) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const isMobile = useIsMobile();
   const { dark, lang } = useSite();
   const ar = lang === "ar";
-  const addons = [
-    { key: "ads",     label: ar ? "حقوق استخدام الإعلانات" : "Advertising Usage Rights", price: 1500 },
-    { key: "publish", label: ar ? "نشر غير محدود" : "Unlimited Publishing",              price: 2500 },
-    { key: "raw",     label: ar ? "الملفات الخام" : "Raw Files",                          price: 500  },
-  ];
+  const addons = addonsProp ?? [];
   const CARD = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const GREEN = "#00D26A";
@@ -32,7 +33,12 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
   return (
     <div style={{ backgroundColor: CARD, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 24 }}>
       <h2 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 18, fontWeight: 800, marginBottom: 20, margin: "0 0 20px" }}>{ar ? "حقوق الاستخدام والإضافات" : "Usage Rights & Add-ons"}</h2>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr", gap: 20 }}>
+      {addons.length === 0 && (
+        <p style={{ color: MUTED, fontSize: 14, textAlign: "center", padding: "32px 0" }}>
+          {ar ? "لا توجد إضافات حالياً" : "No add-ons available yet"}
+        </p>
+      )}
+      {addons.length > 0 && <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr", gap: 20 }}>
         {/* Add-ons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {addons.map(a => (
@@ -70,7 +76,7 @@ export default function UsageRightsSection({ selectedPackage }: { selectedPackag
             {ar ? "احجز الآن" : "Book Now"}
           </motion.button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

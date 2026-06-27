@@ -35,6 +35,7 @@ export default async function TalentPage({
       reviews={data.reviews}
       experience={data.experience}
       packages={data.packages}
+      addons={data.addons}
       portfolioItems={data.portfolioItems}
       campaignStats={data.campaignStats}
       featuredCampaign={data.featuredCampaign}

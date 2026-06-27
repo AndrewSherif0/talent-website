@@ -11,6 +11,7 @@ import type {
   Review,
   BrandItem,
   PackageItem,
+  AddonItem,
   PortfolioItem,
 } from "../types";
 
@@ -132,6 +133,19 @@ function transformPerformance(sl: Record<string, unknown>): PerformanceData | nu
   };
 }
 
+function transformAddons(sl: Record<string, unknown>): AddonItem[] | null {
+  const raw = sl.usage_addons;
+  if (!Array.isArray(raw) || raw.length === 0) return null;
+  const parsed: AddonItem[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const r = item as Record<string, unknown>;
+    if (!r.label) continue;
+    parsed.push({ key: String(r.key ?? crypto.randomUUID()), label: String(r.label), price: Number(r.price ?? 0) });
+  }
+  return parsed.length > 0 ? parsed : null;
+}
+
 function transformPortfolioItems(raw: RawPortfolioItem[]): PortfolioItem[] {
   return raw.map((item) => ({
     id: item.id,
@@ -158,6 +172,7 @@ export function transformTalentPageData(
     reviews: transformReviews(sl),
     experience: transformExperience(sl),
     packages: transformPackages(tp?.packages),
+    addons: transformAddons(sl),
     portfolioItems: transformPortfolioItems(rawPortfolio),
     campaignStats: transformCampaignStats(sl),
     featuredCampaign: transformFeaturedCampaign(sl),

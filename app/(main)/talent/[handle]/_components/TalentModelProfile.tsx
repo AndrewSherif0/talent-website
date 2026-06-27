@@ -8,6 +8,7 @@ import type {
   Review,
   ExperienceItem,
   PackageItem,
+  AddonItem,
   PortfolioItem,
   CampaignStats,
   FeaturedCampaign,
@@ -28,14 +29,13 @@ import BriefCard from "./BriefCard";
 import QuestionCard from "./QuestionCard";
 import StickyBookingBar from "./StickyBookingBar";
 
-// Re-export types so existing sibling components can still import from here
-// during incremental migration — remove once all imports point to features/
 export type {
   TalentData,
   BrandItem,
   Review,
   ExperienceItem,
   PackageItem,
+  AddonItem,
   PortfolioItem,
   CampaignStats,
   FeaturedCampaign,
@@ -48,6 +48,7 @@ interface Props {
   reviews: Review[];
   experience?: ExperienceItem[] | null;
   packages?: PackageItem[] | null;
+  addons?: AddonItem[] | null;
   portfolioItems?: PortfolioItem[];
   campaignStats?: CampaignStats | null;
   featuredCampaign?: FeaturedCampaign | null;
@@ -60,6 +61,7 @@ export default function TalentModelProfile({
   reviews,
   experience,
   packages,
+  addons,
   portfolioItems,
   campaignStats,
   featuredCampaign,
@@ -96,7 +98,7 @@ export default function TalentModelProfile({
             <div id="section-portfolio"><PortfolioSection portfolioItems={portfolioItems} /></div>
             <div id="section-experience"><ExperienceSection experience={experience} /></div>
             <div id="section-packages"><PackagesSection onSelect={setSelectedPackage} packages={packages} /></div>
-            <div id="section-usage"><UsageRightsSection selectedPackage={selectedPackage} /></div>
+            <div id="section-usage"><UsageRightsSection selectedPackage={selectedPackage} addons={addons} /></div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <PerformanceSidebar performance={performance} />

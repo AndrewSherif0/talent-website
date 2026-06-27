@@ -7,30 +7,6 @@ import type { PackageItem } from "@/features/talent-profile/types";
 
 type Package = PackageItem;
 
-const DEFAULT_PACKAGES: Package[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: "١٥٠٠",
-    popular: false,
-    features: ["ساعة تصوير واحدة", "حتى ٣٠ صورة", "مراجعة واحدة", "تسليم ٣ أيام", "دعم ٤٨ ساعة"],
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    price: "٤٠٠٠",
-    popular: true,
-    features: ["٣ ساعات تصوير", "حتى ٣ ريلز", "مراجعتان", "تسليم ٥ أيام", "دعم ٧٢ ساعة"],
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: "٧٠٠٠",
-    popular: false,
-    features: ["يوم تصوير كامل", "حتى ٥ ريلز", "٣ مراجعات", "تسليم ٧ أيام", "دعم أولوية"],
-  },
-];
-
 interface Props {
   onSelect: (pkg: Package) => void;
   packages?: Package[] | null;
@@ -45,7 +21,7 @@ export default function PackagesSection({ onSelect, packages }: Props) {
   const GREEN = "#00D26A";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const SURFACE = dark ? "#0A121C" : "#F8FAFC";
-  const data = packages?.length ? packages : DEFAULT_PACKAGES;
+  const data = packages ?? [];
 
   return (
     <div
@@ -67,6 +43,11 @@ export default function PackagesSection({ onSelect, packages }: Props) {
       >
         {ar ? "الباقات والأسعار" : "Packages & Prices"}
       </h2>
+      {data.length === 0 && (
+        <p style={{ color: MUTED, fontSize: 14, textAlign: "center", padding: "32px 0" }}>
+          {ar ? "لا توجد باقات متاحة حالياً" : "No packages available yet"}
+        </p>
+      )}
       <div
         style={{
           display: "grid",

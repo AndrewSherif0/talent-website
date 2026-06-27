@@ -90,6 +90,12 @@ export interface PackageItem {
   features: string[];
 }
 
+export interface AddonItem {
+  key: string;
+  label: string;
+  price: number;
+}
+
 export interface PortfolioItem {
   id: string;
   url: string | null;
@@ -125,6 +131,7 @@ export interface TalentPageData {
   reviews: Review[];
   experience: ExperienceItem[] | null;
   packages: PackageItem[] | null;
+  addons: AddonItem[] | null;
   portfolioItems: PortfolioItem[];
   campaignStats: CampaignStats | null;
   featuredCampaign: FeaturedCampaign | null;
