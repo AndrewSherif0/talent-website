@@ -176,19 +176,11 @@ export default function Footer() {
           {/* Brand column */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{
-                width:           36,
-                height:          36,
-                borderRadius:    10,
-                background:      `linear-gradient(135deg, ${GREEN}, #00a854)`,
-                display:         "flex",
-                alignItems:      "center",
-                justifyContent:  "center",
-                fontWeight:      900,
-                fontSize:        16,
-                color:           "#fff",
-              }}>T</div>
-              <span style={{ color: TEXT, fontWeight: 900, fontSize: 18 }}>Talents</span>
+              <img
+                src={dark ? "/assets/logo-dark.png" : "/assets/logo-light.png"}
+                alt="Talents"
+                style={{ height: 32, width: "auto" }}
+              />
             </div>
 
             <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.7, maxWidth: 220, margin: "0 0 20px" }}>
