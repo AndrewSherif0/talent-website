@@ -57,7 +57,9 @@ const TX = {
   },
 } as const;
 
-const PLATFORM_LINKS = (t: typeof TX["ar"]["links"]) => [
+type LinksMap = { [K in keyof typeof TX["ar"]["links"]]: string };
+
+const PLATFORM_LINKS = (t: LinksMap) => [
   { label: t.explore,   href: "/explore" },
   { label: t.become,    href: "/become-talent" },
   { label: t.brands,    href: "/brands" },
@@ -65,13 +67,13 @@ const PLATFORM_LINKS = (t: typeof TX["ar"]["links"]) => [
   { label: t.jobs,      href: "/jobs" },
 ];
 
-const COMPANY_LINKS = (t: typeof TX["ar"]["links"]) => [
+const COMPANY_LINKS = (t: LinksMap) => [
   { label: t.about,   href: "/about" },
   { label: t.contact, href: "/contact" },
   { label: t.blog,    href: "/blog" },
 ];
 
-const LEGAL_LINKS = (t: typeof TX["ar"]["links"]) => [
+const LEGAL_LINKS = (t: LinksMap) => [
   { label: t.terms,   href: "/terms" },
   { label: t.privacy, href: "/privacy" },
   { label: t.cookies, href: "/cookies" },
