@@ -1,5 +1,5 @@
 import { adminClient } from "@/lib/supabase/admin";
-import type { RawProfile, RawPortfolioItem, BrandItem, RawReview } from "../types";
+import type { RawProfile, RawPortfolioItem, BrandItem, RawReview, BookingStats } from "../types";
 
 export async function fetchTalentByHandle(handle: string): Promise<RawProfile | null> {
   const { data, error } = await adminClient
@@ -30,6 +30,21 @@ export async function fetchReviewsByTalentId(talentProfileId: string): Promise<R
     .order("created_at", { ascending: false });
 
   return (data ?? []) as RawReview[];
+}
+
+export async function fetchBookingStatsByTalentId(talentProfileId: string): Promise<BookingStats> {
+  const { data } = await adminClient
+    .from("bookings")
+    .select("status")
+    .eq("talent_id", talentProfileId);
+
+  const rows = data ?? [];
+  return {
+    total:     rows.length,
+    completed: rows.filter(r => r.status === "completed").length,
+    pending:   rows.filter(r => r.status === "pending").length,
+    cancelled: rows.filter(r => r.status === "cancelled").length,
+  };
 }
 
 export async function fetchBrandsByTalentProfileId(talentProfileId: string): Promise<BrandItem[]> {

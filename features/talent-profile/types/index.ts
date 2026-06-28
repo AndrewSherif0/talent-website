@@ -52,13 +52,6 @@ export interface FeaturedCampaign {
   growth: string;
 }
 
-export interface PerformanceData {
-  reach: string;
-  engagement: string;
-  impact: string;
-  repeat_clients: string;
-}
-
 export interface ExperienceItem {
   name: string;
   year: string;
@@ -134,6 +127,13 @@ export interface TalentData {
   category?: string | null;
 }
 
+export interface BookingStats {
+  total: number;
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
 // ─── Composite page data ──────────────────────────────────────────────────────
 
 export interface TalentPageData {
@@ -146,5 +146,4 @@ export interface TalentPageData {
   portfolioItems: PortfolioItem[];
   campaignStats: CampaignStats | null;
   featuredCampaign: FeaturedCampaign | null;
-  performance: PerformanceData | null;
 }

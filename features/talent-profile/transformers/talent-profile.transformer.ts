@@ -7,7 +7,6 @@ import type {
   TalentData,
   CampaignStats,
   FeaturedCampaign,
-  PerformanceData,
   ExperienceItem,
   Review,
   BrandItem,
@@ -112,17 +111,6 @@ function transformFeaturedCampaign(sl: Record<string, unknown>): FeaturedCampaig
   };
 }
 
-function transformPerformance(sl: Record<string, unknown>): PerformanceData | null {
-  const raw = sl.performance as Record<string, string> | undefined;
-  if (!raw) return null;
-  return {
-    reach: raw.reach ?? "—",
-    engagement: raw.engagement ?? "—",
-    impact: raw.impact ?? "—",
-    repeat_clients: raw.repeat_clients ?? "—",
-  };
-}
-
 function transformAddons(sl: Record<string, unknown>): AddonItem[] | null {
   const raw = sl.usage_addons;
   if (!Array.isArray(raw) || raw.length === 0) return null;
@@ -178,6 +166,5 @@ export function transformTalentPageData(
     portfolioItems: transformPortfolioItems(rawPortfolio),
     campaignStats: transformCampaignStats(sl),
     featuredCampaign: transformFeaturedCampaign(sl),
-    performance: transformPerformance(sl),
   };
 }

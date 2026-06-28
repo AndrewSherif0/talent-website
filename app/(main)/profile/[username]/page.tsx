@@ -3,6 +3,7 @@ import {
   fetchTalentByHandle,
   fetchPortfolioByTalentId,
   fetchReviewsByTalentId,
+  fetchBookingStatsByTalentId,
 } from "@/features/talent-profile/services/talent-profile.service";
 import { transformTalentPageData } from "@/features/talent-profile/transformers/talent-profile.transformer";
 import TalentModelProfile from "@/app/(main)/talent/[handle]/_components/TalentModelProfile";
@@ -21,9 +22,10 @@ export default async function UserProfilePage({
     ? profile.talent_profiles[0]
     : profile.talent_profiles;
 
-  const [rawPortfolio, rawReviews] = await Promise.all([
-    tp?.id ? fetchPortfolioByTalentId(tp.id) : Promise.resolve([]),
-    tp?.id ? fetchReviewsByTalentId(tp.id)   : Promise.resolve([]),
+  const [rawPortfolio, rawReviews, bookingStats] = await Promise.all([
+    tp?.id ? fetchPortfolioByTalentId(tp.id)      : Promise.resolve([]),
+    tp?.id ? fetchReviewsByTalentId(tp.id)         : Promise.resolve([]),
+    tp?.id ? fetchBookingStatsByTalentId(tp.id)    : Promise.resolve({ total: 0, completed: 0, pending: 0, cancelled: 0 }),
   ]);
 
   const data = transformTalentPageData(profile, tp ?? null, rawPortfolio, rawReviews);
@@ -38,7 +40,7 @@ export default async function UserProfilePage({
       portfolioItems={data.portfolioItems}
       campaignStats={data.campaignStats}
       featuredCampaign={data.featuredCampaign}
-      performance={data.performance}
+      bookingStats={bookingStats}
     />
   );
 }

@@ -12,7 +12,7 @@ import type {
   PortfolioItem,
   CampaignStats,
   FeaturedCampaign,
-  PerformanceData,
+  BookingStats,
 } from "@/features/talent-profile/types";
 import CampaignBanner from "./CampaignBanner";
 import ProfileHero from "./ProfileHero";
@@ -39,7 +39,7 @@ export type {
   PortfolioItem,
   CampaignStats,
   FeaturedCampaign,
-  PerformanceData,
+  BookingStats,
 };
 
 interface Props {
@@ -52,7 +52,7 @@ interface Props {
   portfolioItems?: PortfolioItem[];
   campaignStats?: CampaignStats | null;
   featuredCampaign?: FeaturedCampaign | null;
-  performance?: PerformanceData | null;
+  bookingStats?: BookingStats;
 }
 
 export default function TalentModelProfile({
@@ -65,7 +65,7 @@ export default function TalentModelProfile({
   portfolioItems,
   campaignStats,
   featuredCampaign,
-  performance,
+  bookingStats,
 }: Props) {
   const [selectedPackage, setSelectedPackage] = useState<PackageItem | null>(null);
   const isMobile = useIsMobile();
@@ -101,7 +101,7 @@ export default function TalentModelProfile({
             <div id="section-usage"><UsageRightsSection selectedPackage={selectedPackage} addons={addons} /></div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <PerformanceSidebar performance={performance} />
+            <PerformanceSidebar talent={talent} bookingStats={bookingStats} />
             <ReviewsCard reviews={reviews} rating={talent.rating} />
             <BrandsCard brands={brands} />
             <TrustCard />
