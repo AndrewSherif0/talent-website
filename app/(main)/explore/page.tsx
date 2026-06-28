@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { adminClient } from "@/lib/supabase/admin";
 import ExploreClient from "./_components/ExploreClient";
 
@@ -15,6 +17,7 @@ export interface TalentCard {
   verified: boolean;
   fast_response: boolean;
   premium: boolean;
+  gender?: string | null;
 }
 
 export default async function ExplorePage() {
@@ -56,6 +59,7 @@ export default async function ExplorePage() {
       verified: Boolean(sl.verified),
       fast_response: Boolean(sl.fast_response),
       premium: Boolean(sl.premium),
+      gender: (sl.gender as string) ?? null,
     }];
   });
 

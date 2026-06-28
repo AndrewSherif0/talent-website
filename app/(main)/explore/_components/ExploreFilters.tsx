@@ -15,6 +15,8 @@ interface Props {
   onMaxPrice: (n: number) => void;
   verified: boolean;
   onVerified: (v: boolean) => void;
+  sex: string;
+  onSexChange: (s: string) => void;
   types: TypeTab[];
   activeType: string;
   onTypeChange: (t: string) => void;
@@ -31,6 +33,7 @@ export default function ExploreFilters({
   dark, lang, sort, onSort,
   minPrice, maxPrice, onMinPrice, onMaxPrice,
   verified, onVerified,
+  sex, onSexChange,
   types, activeType, onTypeChange,
 }: Props) {
   const CARD   = dark ? "#0D1623" : "#FFFFFF";
@@ -50,6 +53,10 @@ export default function ExploreFilters({
     min:       lang === "ar" ? "الحد الأدنى"    : "Min",
     max:       lang === "ar" ? "الحد الأقصى"    : "Max",
     verified:  lang === "ar" ? "موثّق فقط"      : "Verified Only",
+    sex:       lang === "ar" ? "الجنس"           : "Gender",
+    male:      lang === "ar" ? "ذكر"             : "Male",
+    female:    lang === "ar" ? "أنثى"            : "Female",
+    all:       lang === "ar" ? "الكل"            : "All",
     currency:  lang === "ar" ? "جنيه"           : "EGP",
   };
 
@@ -70,6 +77,7 @@ export default function ExploreFilters({
     onMinPrice(0);
     onMaxPrice(10000);
     onVerified(false);
+    onSexChange("all");
     onTypeChange("all");
   };
 
@@ -203,6 +211,38 @@ export default function ExploreFilters({
       <p style={{ color: MUTED, fontSize: 11, textAlign: "center", margin: "4px 0 0" }}>
         0 — {maxPrice.toLocaleString()} {t.currency}
       </p>
+
+      {divider}
+
+      {/* Gender filter */}
+      {sectionTitle(t.sex)}
+      <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
+        {[
+          { key: "all",    label: t.all },
+          { key: "male",   label: t.male },
+          { key: "female", label: t.female },
+        ].map(({ key, label }) => {
+          const active = sex === key;
+          return (
+            <button
+              key={key}
+              onClick={() => onSexChange(key)}
+              style={{
+                flex: 1,
+                padding: "7px 6px", borderRadius: 8,
+                border: `1px solid ${active ? GREEN : BORDER}`,
+                backgroundColor: active ? (dark ? "rgba(0,210,106,0.1)" : "rgba(0,210,106,0.06)") : SURFACE,
+                color: active ? GREEN : MUTED,
+                fontSize: 12, fontWeight: active ? 700 : 400,
+                cursor: "pointer", fontFamily: "'Cairo',sans-serif",
+                textAlign: "center", transition: "all 0.15s",
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
 
       {divider}
 

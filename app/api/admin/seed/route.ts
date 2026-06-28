@@ -3,7 +3,13 @@ import { adminClient } from "@/lib/supabase/admin";
 
 const PASSWORD = "Test1234!";
 
-const TALENTS = [
+const TALENTS: {
+  email: string; full_name: string; handle: string; city: string; bio: string;
+  category: string; specialties: string[]; availability: string;
+  avg_rating: number; total_reviews: number; profile_views: number; total_bookings: number;
+  packages: { id: string; name: string; price: number; features: string[]; popular?: boolean }[];
+  social_links: Record<string, unknown>;
+}[] = [
   {
     email: "maya.khaled@talents-test.com",
     full_name: "Maya Khaled",
@@ -201,7 +207,7 @@ const TALENTS = [
   },
 ];
 
-const CLIENTS = [
+const CLIENTS: { email: string; full_name: string; handle: string; city: string }[] = [
   { email: "ahmed.brands@talents-test.com",   full_name: "أحمد براندز",    handle: "ahmed-brands",   city: "القاهرة" },
   { email: "sara.marketing@talents-test.com", full_name: "سارة للتسويق",  handle: "sara-marketing", city: "القاهرة" },
   { email: "omar.digital@talents-test.com",   full_name: "عمر ديجيتال",   handle: "omar-digital",   city: "الإسكندرية" },
@@ -220,7 +226,7 @@ export async function GET() {
       });
       if (authErr) {
         const { data: list } = await adminClient.auth.admin.listUsers();
-        const existing = list?.users?.find(u => u.email === t.email);
+        const existing = (list?.users as Array<{ email: string; id: string }> | undefined)?.find(u => u.email === t.email);
         if (!existing) { results[t.handle] = `skip: ${authErr.message}`; continue; }
         userId = existing.id;
       } else {
@@ -254,7 +260,7 @@ export async function GET() {
       });
       if (authErr) {
         const { data: list } = await adminClient.auth.admin.listUsers();
-        const existing = list?.users?.find(u => u.email === c.email);
+        const existing = (list?.users as Array<{ email: string; id: string }> | undefined)?.find(u => u.email === c.email);
         if (!existing) { results[c.handle] = `skip: ${authErr.message}`; continue; }
         userId = existing.id;
       } else {

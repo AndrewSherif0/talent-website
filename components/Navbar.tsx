@@ -173,7 +173,7 @@ export default function Navbar({
             padding: "4px 8px", cursor: "pointer",
             color: MUTED, fontSize: "11px", fontWeight: 600, fontFamily: "'Cairo', sans-serif",
           }}>
-            {lang === "ar" ? "EN" : "ع"}
+            {lang === "ar" ? "Ar" : "En"}
           </button>
 
           {/* Mode toggle */}

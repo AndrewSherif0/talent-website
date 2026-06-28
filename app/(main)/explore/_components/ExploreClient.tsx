@@ -47,6 +47,7 @@ export default function ExploreClient({ talents }: Props) {
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [verified, setVerified] = useState(false);
+  const [sex, setSex] = useState("all");
 
   const filtered = useMemo(() => {
     let list = talents.filter(t => {
@@ -55,6 +56,7 @@ export default function ExploreClient({ talents }: Props) {
         if (!t.name.toLowerCase().includes(q) && !(t.category ?? "").toLowerCase().includes(q)) return false;
       }
       if (!matchesType(t, type)) return false;
+      if (sex !== "all" && t.gender !== sex) return false;
       if (verified && !t.verified) return false;
       if (t.starting_price !== null) {
         if (t.starting_price < minPrice || t.starting_price > maxPrice) return false;
@@ -70,7 +72,7 @@ export default function ExploreClient({ talents }: Props) {
     });
 
     return list;
-  }, [talents, search, type, sort, minPrice, maxPrice, verified]);
+  }, [talents, search, type, sort, minPrice, maxPrice, verified, sex]);
 
   return (
     <div style={{
@@ -99,6 +101,7 @@ export default function ExploreClient({ talents }: Props) {
           minPrice={minPrice} maxPrice={maxPrice}
           onMinPrice={setMinPrice} onMaxPrice={setMaxPrice}
           verified={verified} onVerified={setVerified}
+          sex={sex} onSexChange={setSex}
           types={TALENT_TYPES} activeType={type} onTypeChange={setType}
         />
         <ExploreGrid dark={dark} lang={lang} talents={filtered} />

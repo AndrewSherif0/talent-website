@@ -37,7 +37,7 @@ function transformTalentData(profile: RawProfile, tp: RawTalentProfile | null, s
     title: (sl.title as string) ?? "Gold Model",
     location: profile.city ? `${profile.city}، مصر` : "القاهرة، مصر",
     memberSince: (sl.member_since as string) ?? profile.created_at?.slice(0, 4) ?? "2022",
-    rating: tp?.avg_rating ?? 4.9,
+    rating: tp?.avg_rating ?? 0,
     reviewCount: tp?.total_reviews ?? 0,
     views: (sl.views_display as string) ?? formatViews(tp?.profile_views ?? 0),
     verified: Boolean(sl.verified),

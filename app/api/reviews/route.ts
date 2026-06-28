@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { adminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -82,7 +83,19 @@ export async function POST(req: NextRequest) {
 
     if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 });
 
-    // avg_rating + total_reviews are updated automatically by DB trigger
+    // Revalidate the talent's public profile page so the new review is reflected immediately.
+    // avg_rating + total_reviews are updated automatically by the DB trigger.
+    const { data: talentProfile } = await adminClient
+      .from("talent_profiles")
+      .select("profiles(handle)")
+      .eq("id", booking.talent_id)
+      .maybeSingle();
+
+    const handleRaw = talentProfile?.profiles;
+    const handle = Array.isArray(handleRaw) ? handleRaw[0]?.handle : (handleRaw as { handle?: string } | null)?.handle;
+    if (handle) revalidatePath(`/talent/${handle}`);
+    revalidatePath("/explore");
+
     return NextResponse.json({ review }, { status: 201 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
