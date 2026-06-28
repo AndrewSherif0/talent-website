@@ -16,42 +16,46 @@ interface SiteContextValue {
 
 const SiteContext = createContext<SiteContextValue | null>(null);
 
+function getTimeBasedMode(): Mode {
+  const h = new Date().getHours();
+  return h >= 6 && h < 18 ? "light" : "dark";
+}
+
 export function SiteProvider({ children }: { children: ReactNode }) {
+  // SSR-safe defaults — the blocking inline script in <head> has already
+  // applied the real values to the DOM before React hydrates, preventing flash.
   const [lang, setLangState] = useState<Lang>("ar");
   const [mode, setModeState] = useState<Mode>("dark");
 
-  // Hydrate from localStorage after mount
   useEffect(() => {
-    const storedLang = localStorage.getItem("site_lang") as Lang | null;
-    const storedMode = localStorage.getItem("site_mode") as Mode | null;
-    if (storedLang === "ar" || storedLang === "en") setLangState(storedLang);
-    if (storedMode === "dark" || storedMode === "light") setModeState(storedMode);
+    const storedLang = localStorage.getItem("site_language") as Lang | null;
+    const storedMode = localStorage.getItem("site_theme") as Mode | null;
+    const resolvedLang: Lang = storedLang === "ar" || storedLang === "en" ? storedLang : "ar";
+    const resolvedMode: Mode = storedMode === "dark" || storedMode === "light" ? storedMode : getTimeBasedMode();
+    setLangState(resolvedLang);
+    setModeState(resolvedMode);
   }, []);
 
   function setLang(l: Lang) {
     setLangState(l);
-    localStorage.setItem("site_lang", l);
-    // Update html dir attribute
-    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
-    document.documentElement.lang = l;
+    localStorage.setItem("site_language", l);
+    document.documentElement.setAttribute("lang", l);
+    document.documentElement.setAttribute("dir", l === "ar" ? "rtl" : "ltr");
   }
 
   function setMode(m: Mode) {
     setModeState(m);
-    localStorage.setItem("site_mode", m);
-    // Apply dark/light class for potential CSS usage
+    localStorage.setItem("site_theme", m);
     document.documentElement.setAttribute("data-theme", m);
   }
-
-  function toggleLang() { setLang(lang === "ar" ? "en" : "ar"); }
-  function toggleMode() { setMode(mode === "dark" ? "light" : "dark"); }
 
   return (
     <SiteContext.Provider value={{
       lang, setLang,
       mode, setMode,
       dark: mode === "dark",
-      toggleLang, toggleMode,
+      toggleLang: () => setLang(lang === "ar" ? "en" : "ar"),
+      toggleMode: () => setMode(mode === "dark" ? "light" : "dark"),
     }}>
       {children}
     </SiteContext.Provider>

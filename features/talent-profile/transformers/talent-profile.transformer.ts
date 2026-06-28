@@ -2,6 +2,7 @@ import type {
   RawProfile,
   RawTalentProfile,
   RawPortfolioItem,
+  RawReview,
   TalentPageData,
   TalentData,
   CampaignStats,
@@ -18,19 +19,6 @@ import type {
 // BrandItem is now fetched separately from talent_brands table
 // and passed in directly — no transformation needed from social_links
 
-// ─── Fallback defaults ────────────────────────────────────────────────────────
-
-
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: 1,
-    author: "أحمد الشامي",
-    brand: "Noon",
-    rating: 5,
-    text: "تعاون رائع! أبدعت في تصوير حملتنا وزادت مبيعاتنا بشكل ملحوظ.",
-    date: "مارس 2024",
-  },
-];
 
 // ─── Individual field transformers ────────────────────────────────────────────
 
@@ -61,16 +49,18 @@ function transformTalentData(profile: RawProfile, tp: RawTalentProfile | null, s
   };
 }
 
-function transformReviews(sl: Record<string, unknown>): Review[] {
-  if (!Array.isArray(sl.reviews) || sl.reviews.length === 0) return DEFAULT_REVIEWS;
-  return (sl.reviews as Array<Record<string, unknown>>).map((r, i) => ({
-    id: i + 1,
-    author: String(r.author ?? ""),
-    brand: String(r.brand ?? ""),
-    rating: Number(r.rating ?? 5),
-    text: String(r.text ?? ""),
-    date: String(r.date ?? ""),
-  }));
+function transformReviews(raw: RawReview[]): Review[] {
+  return raw.map((r) => {
+    const profile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+    return {
+      id: r.id,
+      author: profile?.full_name ?? "Client",
+      brand: "",
+      rating: r.rating,
+      text: r.comment ?? "",
+      date: new Date(r.created_at).toLocaleDateString("ar-EG", { month: "long", year: "numeric" }),
+    };
+  });
 }
 
 function transformExperience(sl: Record<string, unknown>): ExperienceItem[] | null {
@@ -173,14 +163,15 @@ function transformBrands(sl: Record<string, unknown>): BrandItem[] {
 export function transformTalentPageData(
   profile: RawProfile,
   tp: RawTalentProfile | null,
-  rawPortfolio: RawPortfolioItem[]
+  rawPortfolio: RawPortfolioItem[],
+  rawReviews: RawReview[] = []
 ): TalentPageData {
   const sl = (tp?.social_links ?? {}) as Record<string, unknown>;
 
   return {
     talent: transformTalentData(profile, tp, sl),
     brands: transformBrands(sl),
-    reviews: transformReviews(sl),
+    reviews: transformReviews(rawReviews),
     experience: transformExperience(sl),
     packages: transformPackages(tp?.packages),
     addons: transformAddons(sl),

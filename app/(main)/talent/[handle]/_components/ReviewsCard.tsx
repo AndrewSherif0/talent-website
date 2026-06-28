@@ -5,31 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSite } from "@/contexts/SiteContext";
 import type { Review } from "@/features/talent-profile/types";
 
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: 1,
-    author: "أحمد الشامي",
-    brand: "Noon",
-    rating: 5,
-    text: "تعاون رائع! Maya أبدعت في تصوير حملتنا وزادت مبيعاتنا بشكل ملحوظ.",
-    date: "مارس 2024",
-  },
-  {
-    id: 2,
-    author: "سارة التميمي",
-    brand: "Samsung",
-    rating: 5,
-    text: "احترافية عالية وإبداع لافت. نتوقع التعاون معها مجدداً في حملاتنا القادمة.",
-    date: "فبراير 2024",
-  },
-];
-
 interface Props {
   reviews: Review[];
   rating?: number;
 }
 
-export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
+export default function ReviewsCard({ reviews, rating = 0 }: Props) {
   const { dark, lang } = useSite();
   const ar = lang === "ar";
   const CARD = dark ? "#0D1623" : "#FFFFFF";
@@ -38,9 +19,8 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
   const GOLD = "#F4B740";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const SURFACE = dark ? "#0A121C" : "#F8FAFC";
-  const data = reviews?.length ? reviews : DEFAULT_REVIEWS;
   const [idx, setIdx] = useState(0);
-  const review = data[idx];
+  const review = reviews[idx];
 
   return (
     <div
@@ -51,26 +31,37 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
         padding: 22,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 16,
-        }}
-      >
-        <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: 0 }}>{ar ? "التقييمات" : "Reviews"}</h3>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ color: GOLD, fontSize: 22, fontWeight: 900 }}>{rating.toFixed(1)}</span>
-          <div style={{ display: "flex" }}>
-            {[1, 2, 3, 4, 5].map(s => (
-              <Star key={s} size={13} color={GOLD} fill={GOLD} />
-            ))}
-          </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div>
+          <h3 style={{ color: dark ? "#fff" : "#0F172A", fontSize: 16, fontWeight: 800, margin: "0 0 2px" }}>
+            {ar ? "التقييمات" : "Reviews"}
+          </h3>
+          <span style={{ color: MUTED, fontSize: 12 }}>
+            {reviews.length} {ar ? "تقييم" : "reviews"}
+          </span>
         </div>
+        {reviews.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ color: GOLD, fontSize: 22, fontWeight: 900 }}>{rating.toFixed(1)}</span>
+            <div style={{ display: "flex" }}>
+              {[1, 2, 3, 4, 5].map(s => (
+                <Star key={s} size={13} color={GOLD}
+                  fill={s <= Math.floor(rating) ? GOLD : s - 0.5 <= rating ? GOLD : "transparent"}
+                  opacity={s - 0.5 <= rating && s > Math.floor(rating) ? 0.5 : 1}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <AnimatePresence mode="wait">
+      {reviews.length === 0 && (
+        <div style={{ textAlign: "center", padding: "28px 0", color: MUTED, fontSize: 13 }}>
+          {ar ? "لا توجد تقييمات بعد" : "No reviews yet"}
+        </div>
+      )}
+
+      {reviews.length > 0 && <AnimatePresence mode="wait">
         <motion.div
           key={idx}
           initial={{ opacity: 0, x: 20 }}
@@ -132,9 +123,10 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
             &quot;{review.text}&quot;
           </p>
         </motion.div>
-      </AnimatePresence>
+      </AnimatePresence>}
 
       {/* Carousel nav */}
+      {reviews.length > 1 &&
       <div
         style={{
           display: "flex",
@@ -158,7 +150,7 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
           <ChevronRight size={18} />
         </button>
         <div style={{ display: "flex", gap: 6 }}>
-          {data.map((_, i) => (
+          {reviews.map((_, i) => (
             <button
               key={i}
               onClick={() => setIdx(i)}
@@ -175,19 +167,19 @@ export default function ReviewsCard({ reviews, rating = 4.9 }: Props) {
           ))}
         </div>
         <button
-          onClick={() => setIdx(i => Math.min(data.length - 1, i + 1))}
-          disabled={idx === data.length - 1}
+          onClick={() => setIdx(i => Math.min(reviews.length - 1, i + 1))}
+          disabled={idx === reviews.length - 1}
           style={{
             background: "none",
             border: "none",
-            color: idx === data.length - 1 ? MUTED : GREEN,
-            cursor: idx === data.length - 1 ? "default" : "pointer",
-            opacity: idx === data.length - 1 ? 0.4 : 1,
+            color: idx === reviews.length - 1 ? MUTED : GREEN,
+            cursor: idx === reviews.length - 1 ? "default" : "pointer",
+            opacity: idx === reviews.length - 1 ? 0.4 : 1,
           }}
         >
           <ChevronLeft size={18} />
         </button>
-      </div>
+      </div>}
     </div>
   );
 }

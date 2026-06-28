@@ -1,10 +1,10 @@
 import { adminClient } from "@/lib/supabase/admin";
-import type { RawProfile, RawPortfolioItem, BrandItem } from "../types";
+import type { RawProfile, RawPortfolioItem, BrandItem, RawReview } from "../types";
 
 export async function fetchTalentByHandle(handle: string): Promise<RawProfile | null> {
   const { data, error } = await adminClient
     .from("profiles")
-    .select("*, talent_profiles(*)")
+    .select("*, talent_profiles(id,user_id,category,specialties,bio,availability,packages,social_links,profile_views,avg_rating,total_reviews,total_bookings,is_featured)")
     .eq("handle", handle)
     .single();
 
@@ -20,6 +20,16 @@ export async function fetchPortfolioByTalentId(talentProfileId: string): Promise
     .order("sort_order", { ascending: true });
 
   return (data ?? []) as RawPortfolioItem[];
+}
+
+export async function fetchReviewsByTalentId(talentProfileId: string): Promise<RawReview[]> {
+  const { data } = await adminClient
+    .from("reviews")
+    .select("id, booking_id, talent_id, brand_id, rating, comment, created_at, profiles(full_name)")
+    .eq("talent_id", talentProfileId)
+    .order("created_at", { ascending: false });
+
+  return (data ?? []) as RawReview[];
 }
 
 export async function fetchBrandsByTalentProfileId(talentProfileId: string): Promise<BrandItem[]> {

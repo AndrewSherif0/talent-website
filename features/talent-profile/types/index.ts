@@ -66,12 +66,23 @@ export interface ExperienceItem {
 }
 
 export interface Review {
-  id: number;
+  id: string;
   author: string;
   brand: string;
   rating: number;
   text: string;
   date: string;
+}
+
+export interface RawReview {
+  id: string;
+  booking_id: string;
+  talent_id: string;
+  brand_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
 }
 
 export interface BrandItem {
