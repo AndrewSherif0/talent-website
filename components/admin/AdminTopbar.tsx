@@ -60,8 +60,12 @@ export default function AdminTopbar({ title, onMenuClick }: Props) {
         <Menu size={22} />
       </button>
 
-      {/* Page title */}
-      <h1 style={{ color: TEXT, fontSize: 18, fontWeight: 800, margin: 0, flex: "none" }}>
+      {/* Page title — centered absolutely so it stays in the middle regardless of left/right content */}
+      <h1 style={{
+        color: TEXT, fontSize: 18, fontWeight: 800, margin: 0,
+        position: "absolute", left: "50%", transform: "translateX(-50%)",
+        pointerEvents: "none", whiteSpace: "nowrap",
+      }}>
         {title}
       </h1>
 
