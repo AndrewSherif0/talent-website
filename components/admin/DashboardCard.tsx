@@ -19,13 +19,15 @@ export default function DashboardCard({ label, value, color = "#00D26A", icon }:
     <div
       style={{
         backgroundColor: CARD,
-        border: `1px solid ${BORDER}`,
+        borderLeft: `1px solid ${BORDER}`,
+        borderRight: `1px solid ${BORDER}`,
+        borderBottom: `1px solid ${BORDER}`,
+        borderTop: `3px solid ${color}`,
         borderRadius: 16,
         padding: "20px 24px",
         display: "flex",
         flexDirection: "column",
         gap: 8,
-        borderTop: `3px solid ${color}`,
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
