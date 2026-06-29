@@ -42,7 +42,8 @@ export default function AdminTopbar({ title, onMenuClick }: Props) {
         padding: "14px 24px",
         display: "flex",
         alignItems: "center",
-        gap: 16,
+        justifyContent: "center", /* هنا تم توسيط كل العناصر في المنتصف */
+        gap: 24, /* زيادة المسافة بين العناصر الكبيرة لتناسق أفضل */
         position: "sticky",
         top: 0,
         zIndex: 30,
@@ -60,17 +61,8 @@ export default function AdminTopbar({ title, onMenuClick }: Props) {
         <Menu size={22} />
       </button>
 
-      {/* Page title — centered absolutely so it stays in the middle regardless of left/right content */}
-      <h1 style={{
-        color: TEXT, fontSize: 18, fontWeight: 800, margin: 0,
-        position: "absolute", left: "50%", transform: "translateX(-50%)",
-        pointerEvents: "none", whiteSpace: "nowrap",
-      }}>
-        {title}
-      </h1>
-
       {/* Search */}
-      <div style={{ flex: 1, maxWidth: 360, position: "relative" }}>
+      <div style={{ width: "100%", maxWidth: 280, position: "relative" }}>
         <Search
           size={16}
           style={{
@@ -98,7 +90,16 @@ export default function AdminTopbar({ title, onMenuClick }: Props) {
         />
       </div>
 
-      <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+      {/* Page title — تم إلغاء الـ absolute ليتناسق في السطر مع بقية العناصر */}
+      <h1 style={{
+        color: TEXT, fontSize: 18, fontWeight: 800, margin: 0,
+        whiteSpace: "nowrap",
+      }}>
+        {title}
+      </h1>
+
+      {/* Action Buttons — تم حذف marginLeft: "auto" ليتحرك للمنتصف */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         {iconBtn(toggleLang, <Globe size={18} />, ar ? "English" : "عربي")}
         {iconBtn(toggleMode, dark ? <Sun size={18} /> : <Moon size={18} />, ar ? "تبديل المظهر" : "Toggle theme")}
         {iconBtn(() => {}, <Bell size={18} />, ar ? "الإشعارات" : "Notifications")}
