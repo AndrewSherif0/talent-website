@@ -159,10 +159,13 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
           {!collapsed && (
             <div style={{
               display: "flex", flexDirection: "column", overflow: "hidden",
-              flex: 1, marginLeft: ar ? 0 : 12, marginRight: ar ? 12 : 0,
+              flex: 1,
+              marginLeft: ar ? 20 : 12,
+              marginRight: ar ? 12 : 20,
+              marginTop: 0,
+              marginBottom: 0,
               opacity: collapsed ? 0 : 1,
               transition: "opacity 0.2s",
-              margin:" 0 20px",
             }}>
               <span style={{
                 color: "#fff", fontWeight: 700, fontSize: 13,
