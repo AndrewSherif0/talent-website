@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSite } from "@/contexts/SiteContext";
 import {
   LayoutDashboard, Users, Building2, CalendarCheck,
-  Star, ShieldCheck, Settings, LogOut, X,
+  Star, ShieldCheck, Settings, LogOut, X, User,
 } from "lucide-react";
 
 const TX = {
@@ -31,9 +32,9 @@ const TX = {
 };
 
 const NAV_ITEMS = [
-  { key: "dashboard",     href: "/admin",               icon: LayoutDashboard },
+  { key: "dashboard",     href: "/admin",                icon: LayoutDashboard },
   { key: "talents",       href: "/admin/talents",        icon: Users },
-  { key: "brands",        href: "/admin/brands",         icon: Building2 },
+  { key: "brands",        href: "/admin/brands",          icon: Building2 },
   { key: "bookings",      href: "/admin/bookings",       icon: CalendarCheck },
   { key: "reviews",       href: "/admin/reviews",        icon: Star },
   { key: "verifications", href: "/admin/verifications",  icon: ShieldCheck },
@@ -50,6 +51,21 @@ export default function AdminSidebar({ open, onClose }: Props) {
   const { dark, lang } = useSite();
   const t = TX[lang];
   const ar = lang === "ar";
+
+  const [adminName, setAdminName]     = useState<string | null>(null);
+  const [adminAvatar, setAdminAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/me")
+      .then(r => r.json())
+      .then(({ profile }) => {
+        if (profile) {
+          setAdminName(profile.full_name ?? null);
+          setAdminAvatar(profile.avatar_url ?? null);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const BG     = dark ? "#060c18" : "#0f172a";
   const ACTIVE = dark ? "#00D26A" : "#00D26A";
@@ -90,16 +106,51 @@ export default function AdminSidebar({ open, onClose }: Props) {
         }}
         className={`admin-sidebar${open ? " admin-sidebar-open" : ""}`}
       >
-        {/* Logo */}
+        {/* Logo Section with Profile Image */}
         <div style={{ padding: "0 20px 28px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: ACTIVE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <ShieldCheck size={18} color="#fff" />
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            
+            {/* Avatar */}
+            <div style={{
+              width: 40, height: 40, borderRadius: "50%", position: "relative",
+              flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <div style={{
+                position: "absolute", inset: -2, borderRadius: "50%",
+                boxShadow: `0 0 10px 1px ${ACTIVE}`,
+                border: `2px solid ${ACTIVE}`, opacity: 0.8,
+              }} />
+              {adminAvatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={adminAvatar}
+                  alt="Admin"
+                  style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", position: "relative", zIndex: 1 }}
+                />
+              ) : (
+                <div style={{
+                  width: 40, height: 40, borderRadius: "50%", backgroundColor: "rgba(0,210,106,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1,
+                }}>
+                  <User size={18} color={ACTIVE} />
+                </div>
+              )}
             </div>
-            <span style={{ color: "#fff", fontWeight: 800, fontSize: 16 }}>
-              {ar ? "الإدارة" : "Admin"}
-            </span>
+
+            <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <span style={{
+                color: "#fff", fontWeight: 700, fontSize: 13,
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                maxWidth: 120,
+              }}>
+                {adminName ?? (ar ? "المسؤول" : "Admin")}
+              </span>
+              <span style={{ color: ACTIVE, fontWeight: 500, fontSize: 11, marginTop: 1 }}>
+                {ar ? "مسؤول النظام" : "System Admin"}
+              </span>
+            </div>
           </div>
+          
           <button onClick={onClose} className="admin-close-btn" style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, display: "none" }}>
             <X size={20} />
           </button>
