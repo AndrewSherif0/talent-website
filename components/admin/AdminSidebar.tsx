@@ -100,7 +100,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
       <aside
         style={{
           width: w,
-          minHeight: "100vh",
+          height: "100vh",
           backgroundColor: BG,
           display: "flex",
           flexDirection: "column",
@@ -110,7 +110,8 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
           flexShrink: 0,
           transition: "width 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)",
           zIndex: 40,
-          overflow: "hidden",
+          overflowX: "hidden",
+          overflowY: "auto",
         }}
         className={`admin-sidebar${open ? " admin-sidebar-open" : ""}`}
       >
@@ -163,7 +164,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
                 color: "#fff", fontWeight: 700, fontSize: 13,
                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               }}>
-                {adminName ?? (ar ? "المسؤول" : "Admin")}
+                {adminName }
               </span>
               <span style={{ color: ACTIVE, fontWeight: 500, fontSize: 11, marginTop: 1 }}>
                 {ar ? "مسؤول النظام" : "System Admin"}
@@ -184,7 +185,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2, padding: "0 8px" }}>
+        <nav style={{  display: "flex", flexDirection: "column", gap: 2, padding: "0 8px" }}>
           {NAV_ITEMS.map(({ key, href, icon: Icon }) => {
             const active = isActive(href);
             return (
@@ -283,13 +284,14 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
           .admin-overlay { display: block !important; }
           .admin-close-btn { display: flex !important; }
           .admin-collapse-btn { display: none !important; }
-        }
-        [dir="rtl"] .admin-sidebar {
-          left: auto; right: 0;
-          transform: translateX(100%);
-        }
-        [dir="rtl"] .admin-sidebar.admin-sidebar-open {
-          transform: translateX(0);
+
+          [dir="rtl"] .admin-sidebar {
+            left: auto; right: 0;
+            transform: translateX(100%);
+          }
+          [dir="rtl"] .admin-sidebar.admin-sidebar-open {
+            transform: translateX(0) !important;
+          }
         }
       `}</style>
     </>
