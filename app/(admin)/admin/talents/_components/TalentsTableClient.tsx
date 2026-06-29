@@ -10,7 +10,7 @@ import ConfirmationModal from "@/components/admin/ConfirmationModal";
 import EmptyState from "@/components/admin/EmptyState";
 import Pagination from "@/components/admin/Pagination";
 import type { AdminTalent, TalentStatus } from "@/features/admin/types";
-import { Eye, CheckCircle, XCircle, PauseCircle, Trash2, RotateCcw } from "lucide-react";
+import { Eye, CheckCircle, XCircle, PauseCircle, Trash2, RotateCcw, Pencil } from "lucide-react";
 
 const PAGE_SIZE = 15;
 
@@ -214,6 +214,9 @@ export default function TalentsTableClient({ talents }: { talents: AdminTalent[]
                     </td>
                     <td style={cellStyle}>
                       <div style={{ display: "flex", gap: 4 }}>
+                        <Link href={`/admin/talents/${talent.talentProfileId}`} style={{ color: MUTED, display: "flex" }}>
+                          {actionBtn(() => {}, <Pencil size={16} />, ar ? "تعديل" : "Edit", "#60A5FA")}
+                        </Link>
                         {talent.handle && (
                           <Link href={`/talent/${talent.handle}`} target="_blank" style={{ color: MUTED, display: "flex" }}>
                             {actionBtn(() => {}, <Eye size={16} />, t.view)}

@@ -5,19 +5,6 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSite } from "@/contexts/SiteContext";
 import type { CampaignStats, FeaturedCampaign } from "@/features/talent-profile/types";
 
-const DEFAULT_STATS: CampaignStats = {
-  views: "2.1M+",
-  ctr: "4.8%",
-  sales_increase: "+176%",
-  repeat: "98%",
-};
-
-const DEFAULT_CAMPAIGN: FeaturedCampaign = {
-  name: "Summer Collection",
-  ctr_before: "1.2%",
-  ctr_after: "4.8%",
-  growth: "+300%",
-};
 
 interface Props {
   campaignStats?: CampaignStats | null;
@@ -43,15 +30,16 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
   const GOLD = "#F4B740";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const SURFACE = dark ? "#0A121C" : "#F8FAFC";
-  const stats = campaignStats ?? DEFAULT_STATS;
-  const campaign = featuredCampaign ?? DEFAULT_CAMPAIGN;
+  if (!campaignStats && !featuredCampaign) return null;
+  const stats = campaignStats;
+  const campaign = featuredCampaign;
 
-  const statItems = [
+  const statItems = stats ? [
     { value: stats.views, label: ar ? "مشاهدات الحملات" : "Campaign Views" },
     { value: stats.ctr, label: ar ? "نسبة النقر CTR" : "Click Rate CTR" },
     { value: stats.sales_increase, label: ar ? "زيادة المبيعات" : "Sales Increase" },
     { value: stats.repeat, label: ar ? "تكرار التعاون" : "Repeat Clients" },
-  ];
+  ] : [];
 
   return (
     <div
@@ -103,7 +91,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
       </div>
 
       {/* Featured campaign */}
-      <div
+      {campaign && <div
         style={{
           backgroundColor: CARD,
           border: `1px solid ${BORDER}`,
@@ -225,7 +213,7 @@ export default function CampaignBanner({ campaignStats, featuredCampaign }: Prop
             <FileText size={11} />{t.caseStudy}
           </motion.button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

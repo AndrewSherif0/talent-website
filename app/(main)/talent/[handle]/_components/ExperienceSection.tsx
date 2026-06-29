@@ -5,12 +5,6 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSite } from "@/contexts/SiteContext";
 import type { ExperienceItem } from "@/features/talent-profile/types";
 
-const DEFAULT_PROJECTS: ExperienceItem[] = [
-  { name: "Fashion Show 2023", year: "2023", verified: true },
-  { name: "Editorial 2023", year: "2023", verified: true },
-  { name: "Brand Campaign 2022", year: "2022", verified: false },
-  { name: "Lookbook 2022", year: "2022", verified: false },
-];
 
 interface Props {
   experience?: ExperienceItem[] | null;
@@ -25,7 +19,8 @@ export default function ExperienceSection({ experience }: Props) {
   const GREEN = "#00D26A";
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const SURFACE = dark ? "#0A121C" : "#F8FAFC";
-  const projects = experience?.length ? experience : DEFAULT_PROJECTS;
+  const projects = experience ?? [];
+  if (!projects.length) return null;
 
   return (
     <div
