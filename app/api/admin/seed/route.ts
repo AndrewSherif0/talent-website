@@ -268,7 +268,7 @@ export async function GET() {
       }
 
       await adminClient.from("profiles").upsert(
-        { id: userId, handle: c.handle, full_name: c.full_name, city: c.city, role: "client" },
+        { id: userId, handle: c.handle, full_name: c.full_name, city: c.city, role: "brand" },
         { onConflict: "id" }
       );
 

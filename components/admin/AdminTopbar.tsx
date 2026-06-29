@@ -49,16 +49,17 @@ export default function AdminTopbar({ title, onMenuClick }: Props) {
         zIndex: 30,
       }}
     >
-      {/* Mobile menu toggle */}
+      {/* Menu toggle — desktop: always visible, mobile: hamburger */}
       <button
         onClick={onMenuClick}
-        className="admin-menu-btn"
+        title={ar ? "القائمة" : "Menu"}
         style={{
-          background: "none", border: "none", cursor: "pointer",
-          color: MUTED, display: "none", alignItems: "center",
+          background: "none", border: `1px solid ${BORDER}`, borderRadius: 8,
+          padding: 8, cursor: "pointer", color: MUTED,
+          display: "flex", alignItems: "center", justifyContent: "center",
         }}
       >
-        <Menu size={22} />
+        <Menu size={20} />
       </button>
 
       {/* Search */}

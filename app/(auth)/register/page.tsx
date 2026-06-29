@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TalentType = "ugc" | "influencer" | "model" | "host" | "";
-type Role       = "talent" | "client";
+type Role       = "talent" | "brand";
 type Step       = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 interface FormData {
@@ -87,7 +87,7 @@ const TX = {
   ar: {
     haveAccount: "عندك حساب؟", login: "سجل دخول",
     steps: ["الأكونت","نوعك","بياناتك","تخصصك","مظهرك","سوشيال","صورتك"],
-    talent: "✦ موهبة / كريتور", client: "🏢 براند / عميل",
+    talent: "✦ موهبة / كريتور", brand: "🏢 براند / عميل",
     step1Title: "إنشاء حسابك 🔐", step1Sub: "ابدأ رحلتك على منصة Talents",
     step2Title: "إنت مين؟ 🎯",    step2Sub: "اختار النوع الأقرب لشغلك",
     step3Title: "معلوماتك الأساسية 📝", step3Sub: "دي البيانات اللي هتتعرف بيها على المنصة",
@@ -119,7 +119,7 @@ const TX = {
   en: {
     haveAccount: "Have an account?", login: "Sign in",
     steps: ["Account","Type","Info","Specialty","Appearance","Social","Photo"],
-    talent: "✦ Talent / Creator", client: "🏢 Brand / Client",
+    talent: "✦ Talent / Creator", brand: "🏢 Brand / Client",
     step1Title: "Create your account 🔐", step1Sub: "Start your journey on Talents",
     step2Title: "Who are you? 🎯",         step2Sub: "Choose the type closest to your work",
     step3Title: "Basic information 📝",    step3Sub: "This is how brands will find you",
@@ -207,7 +207,7 @@ export default function RegisterPage() {
 
   const canProceed = (): boolean => {
     if (step === 1) return form.email.includes("@") && form.password.length >= 8;
-    if (step === 2) return form.role === "client" || !!form.talentType;
+    if (step === 2) return form.role === "brand" || !!form.talentType;
     if (step === 3) return form.fullName.trim().length > 1 && form.handle.trim().length > 2 && !!form.gender;
     if (step === 4) return !!form.category;
     return true;
@@ -251,12 +251,12 @@ export default function RegisterPage() {
       if (!id) { setError(tx.sessionExpired); setLoading(false); return; }
 
       // Client: save minimal profile and go
-      if (form.role === "client") {
+      if (form.role === "brand") {
         await fetch("/api/profile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: id, role: "client",
+            userId: id, role: "brand",
             profileData: {
               handle:    form.email.split("@")[0].toLowerCase(),
               full_name: form.email.split("@")[0],
@@ -434,7 +434,7 @@ export default function RegisterPage() {
             <p style={{ color: MUTED, fontSize: "14px", marginBottom: "28px" }}>{tx.step1Sub}</p>
 
             <div style={{ display: "flex", borderRadius: "10px", overflow: "hidden", border: `1px solid ${BORDER}`, marginBottom: "24px" }}>
-              {([["talent", tx.talent], ["client", tx.client]] as [Role, string][]).map(([r, l]) => (
+              {([["talent", tx.talent], ["brand", tx.brand]] as [Role, string][]).map(([r, l]) => (
                 <button key={r} onClick={() => set("role", r)} style={{
                   flex: 1, padding: "11px",
                   backgroundColor: form.role === r ? GOLD : "transparent",

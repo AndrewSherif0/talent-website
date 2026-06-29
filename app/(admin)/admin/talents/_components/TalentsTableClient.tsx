@@ -10,7 +10,7 @@ import ConfirmationModal from "@/components/admin/ConfirmationModal";
 import EmptyState from "@/components/admin/EmptyState";
 import Pagination from "@/components/admin/Pagination";
 import type { AdminTalent, TalentStatus } from "@/features/admin/types";
-import { Eye, CheckCircle, XCircle, PauseCircle, Trash2, RotateCcw, Pencil } from "lucide-react";
+import { Eye, CheckCircle, XCircle, PauseCircle, Trash2, RotateCcw, Pencil, ShieldCheck } from "lucide-react";
 
 const PAGE_SIZE = 15;
 
@@ -199,6 +199,9 @@ export default function TalentsTableClient({ talents }: { talents: AdminTalent[]
                           )}
                         </div>
                         <span style={{ fontWeight: 600 }}>{talent.fullName ?? "—"}</span>
+                        {talent.isVerified && (
+                          <ShieldCheck size={13} color="#00D26A" title={ar ? "موثق" : "Verified"} />
+                        )}
                       </div>
                     </td>
                     <td style={{ ...cellStyle, color: MUTED }}>
