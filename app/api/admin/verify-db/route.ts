@@ -26,6 +26,18 @@ export async function GET() {
     .from("talent_verifications")
     .select("id, status, talent_id");
 
+  // Check is_verified sync: approved verifications vs profiles.is_verified
+  const approvedTalentIds = (verifications ?? [])
+    .filter(v => v.status === "approved")
+    .map(v => v.talent_id);
+
+  const { data: verifiedProfiles, error: vpErr } = approvedTalentIds.length
+    ? await adminClient
+        .from("profiles")
+        .select("id, handle, is_verified")
+        .in("id", approvedTalentIds)
+    : { data: [], error: null };
+
   return NextResponse.json({
     role_counts:         roleCounts,
     role_samples:        samples,
@@ -33,5 +45,11 @@ export async function GET() {
     total_verifications: verifications?.length ?? 0,
     verifications_error: vErr?.message ?? null,
     verifications_sample: verifications?.slice(0, 3),
+    // Sync check: approved in talent_verifications vs is_verified in profiles
+    approved_verifications: approvedTalentIds.length,
+    profiles_is_verified_true: (verifiedProfiles ?? []).filter(p => p.is_verified).length,
+    profiles_is_verified_false: (verifiedProfiles ?? []).filter(p => !p.is_verified).length,
+    verified_profiles_error: vpErr?.message ?? null,
+    sample_verified_profiles: (verifiedProfiles ?? []).slice(0, 5),
   });
 }

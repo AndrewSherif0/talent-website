@@ -51,10 +51,18 @@ export async function PATCH(
 
   // If approved → mark talent profile as verified
   if (action === "approve") {
-    await adminClient
+    const { error: profErr } = await adminClient
       .from("profiles")
       .update({ is_verified: true, verified_at: new Date().toISOString() })
       .eq("id", verification.talent_id);
+
+    // Fallback: try without verified_at if column doesn't exist yet
+    if (profErr) {
+      await adminClient
+        .from("profiles")
+        .update({ is_verified: true })
+        .eq("id", verification.talent_id);
+    }
   }
 
   // If rejected → ensure is_verified stays false

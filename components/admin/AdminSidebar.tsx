@@ -127,18 +127,20 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
           <div style={{
             width: 40, height: 40, borderRadius: "50%", position: "relative",
             flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            
           }}>
             <div style={{
               position: "absolute", inset: -2, borderRadius: "50%",
               boxShadow: `0 0 10px 1px ${ACTIVE}`,
               border: `2px solid ${ACTIVE}`, opacity: 0.8,
+              
             }} />
             {adminAvatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={adminAvatar}
                 alt="Admin"
-                style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", position: "relative", zIndex: 1 }}
+                style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", position: "relative", zIndex: 1, }}
               />
             ) : (
               <div style={{
@@ -146,6 +148,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
                 backgroundColor: "rgba(0,210,106,0.15)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 position: "relative", zIndex: 1,
+                
               }}>
                 <User size={18} color={ACTIVE} />
               </div>
@@ -159,6 +162,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
               flex: 1, marginLeft: ar ? 0 : 12, marginRight: ar ? 12 : 0,
               opacity: collapsed ? 0 : 1,
               transition: "opacity 0.2s",
+              margin:" 0 20px",
             }}>
               <span style={{
                 color: "#fff", fontWeight: 700, fontSize: 13,
@@ -223,7 +227,7 @@ export default function AdminSidebar({ open, collapsed, onClose, onToggle }: Pro
         {/* Logout */}
         <div style={{ padding: "8px 8px 0" }}>
           <Link
-            href="/api/auth/logout"
+            href="/login"
             title={collapsed ? t.logout : undefined}
             style={{
               display: "flex", alignItems: "center", justifyContent: collapsed ? "center" : "flex-start",
