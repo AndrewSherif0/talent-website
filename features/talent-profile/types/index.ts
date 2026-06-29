@@ -12,6 +12,8 @@ export interface RawProfile {
   talent_profiles: RawTalentProfile | RawTalentProfile[] | null;
 }
 
+export type TalentStatus = "pending" | "approved" | "rejected" | "suspended";
+
 export interface RawTalentProfile {
   id: string;
   user_id: string;
@@ -25,6 +27,11 @@ export interface RawTalentProfile {
   avg_rating: number | null;
   total_reviews: number | null;
   total_bookings: number | null;
+  is_featured: boolean | null;
+  status: TalentStatus | null;
+  approved_at: string | null;
+  approved_by: string | null;
+  rejection_reason: string | null;
 }
 
 export interface RawPortfolioItem {
@@ -146,4 +153,12 @@ export interface TalentPageData {
   portfolioItems: PortfolioItem[];
   campaignStats: CampaignStats | null;
   featuredCampaign: FeaturedCampaign | null;
+}
+
+// Legacy — kept for transformer compatibility, not used in UI
+export interface PerformanceData {
+  reach: string;
+  engagement: string;
+  impact: string;
+  repeat_clients: string;
 }

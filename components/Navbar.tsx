@@ -103,8 +103,7 @@ export default function Navbar({
               width={110}
               height={32}
               style={{
-                height: "28px",
-                width: "auto",
+                
                 objectFit: "contain",
               }}
               priority

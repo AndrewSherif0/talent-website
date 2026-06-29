@@ -24,6 +24,8 @@ export default async function TalentPage({
     ? profile.talent_profiles[0]
     : profile.talent_profiles;
 
+  if (!tp) notFound();
+
   const [rawPortfolio, rawReviews, bookingStats] = await Promise.all([
     tp?.id ? fetchPortfolioByTalentId(tp.id)      : Promise.resolve([]),
     tp?.id ? fetchReviewsByTalentId(tp.id)         : Promise.resolve([]),

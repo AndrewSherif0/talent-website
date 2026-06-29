@@ -4,7 +4,7 @@ import type { RawProfile, RawPortfolioItem, BrandItem, RawReview, BookingStats }
 export async function fetchTalentByHandle(handle: string): Promise<RawProfile | null> {
   const { data, error } = await adminClient
     .from("profiles")
-    .select("*, talent_profiles(id,user_id,category,specialties,bio,availability,packages,social_links,profile_views,avg_rating,total_reviews,total_bookings,is_featured)")
+    .select("*, talent_profiles(id,user_id,category,specialties,bio,availability,packages,social_links,profile_views,avg_rating,total_reviews,total_bookings,is_featured,status,approved_at,approved_by,rejection_reason)")
     .eq("handle", handle)
     .single();
 
