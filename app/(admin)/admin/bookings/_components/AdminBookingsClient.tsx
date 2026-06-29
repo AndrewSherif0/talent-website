@@ -42,6 +42,8 @@ const TX = {
   en: { title: "Bookings", brand: "Brand",   talent: "Talent",  status: "Status", date: "Date",    amount: "Amount", actions: "Actions",    all: "All",   cancel: "Cancel", noBookings: "No bookings", moveNext: "Next Stage", movePrev: "Prev Stage" },
 };
 
+const PAGE_SIZE = 10;
+
 export default function AdminBookingsClient({ bookings }: { bookings: AdminBooking[] }) {
   const { dark, lang } = useSite();
   const router = useRouter();
@@ -49,18 +51,29 @@ export default function AdminBookingsClient({ bookings }: { bookings: AdminBooki
   const ar = lang === "ar";
 
   const [filter,  setFilter]  = useState<typeof FILTERS[number]>("all");
-  const [loading, setLoading] = useState<string | null>(null); // booking id being mutated
+  const [loading, setLoading] = useState<string | null>(null);
+  const [page,    setPage]    = useState(1);
 
   const CARD   = dark ? "#0D1623" : "#FFFFFF";
   const BORDER = dark ? "#1e293b" : "#E2E8F0";
   const TEXT   = dark ? "#f1f5f9" : "#0f172a";
   const MUTED  = dark ? "#94a3b8" : "#64748b";
   const TH     = dark ? "#0a121c" : "#f8fafc";
+  const GREEN  = "#00D26A";
 
-  const filtered = useMemo(
-    () => filter === "all" ? bookings : bookings.filter(b => b.status === filter),
-    [bookings, filter]
-  );
+  const filtered = useMemo(() => {
+    const list = filter === "all" ? bookings : bookings.filter(b => b.status === filter);
+    return list;
+  }, [bookings, filter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // reset to page 1 when filter changes
+  function changeFilter(f: typeof FILTERS[number]) {
+    setFilter(f);
+    setPage(1);
+  }
 
   async function move(booking: AdminBooking, direction: "next" | "prev" | "cancel") {
     const idx = PIPELINE.indexOf(booking.status as typeof PIPELINE[number]);
@@ -93,7 +106,7 @@ export default function AdminBookingsClient({ bookings }: { bookings: AdminBooki
           return (
             <button
               key={s}
-              onClick={() => setFilter(s)}
+              onClick={() => changeFilter(s)}
               style={{
                 padding: "6px 14px", borderRadius: 20, cursor: "pointer",
                 border: `1px solid ${active ? color : BORDER}`,
@@ -126,7 +139,7 @@ export default function AdminBookingsClient({ bookings }: { bookings: AdminBooki
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(b => {
+                {paginated.map(b => {
                   const brand  = Array.isArray(b.brand)  ? b.brand[0]  : b.brand;
                   const talent = Array.isArray(b.talent) ? b.talent[0] : b.talent;
                   const col    = STATUS_COLOR[b.status] ?? { bg: "rgba(148,163,184,0.1)", text: MUTED };
@@ -200,6 +213,69 @@ export default function AdminBookingsClient({ bookings }: { bookings: AdminBooki
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: 6, marginTop: 20,
+        }}>
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            style={{
+              padding: "6px 14px", borderRadius: 8, cursor: page === 1 ? "default" : "pointer",
+              border: `1px solid ${BORDER}`, background: "none",
+              color: page === 1 ? MUTED : TEXT, opacity: page === 1 ? 0.4 : 1, fontSize: 13,
+            }}
+          >
+            {ar ? "السابق" : "Prev"}
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+            .reduce<(number | "…")[]>((acc, p, i, arr) => {
+              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("…");
+              acc.push(p);
+              return acc;
+            }, [])
+            .map((p, i) =>
+              p === "…" ? (
+                <span key={`ellipsis-${i}`} style={{ color: MUTED, fontSize: 13, padding: "0 4px" }}>…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p as number)}
+                  style={{
+                    width: 34, height: 34, borderRadius: 8, cursor: "pointer",
+                    border: `1px solid ${page === p ? GREEN : BORDER}`,
+                    backgroundColor: page === p ? `${GREEN}22` : "transparent",
+                    color: page === p ? GREEN : TEXT,
+                    fontSize: 13, fontWeight: page === p ? 700 : 400,
+                  }}
+                >
+                  {p}
+                </button>
+              )
+            )}
+
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            style={{
+              padding: "6px 14px", borderRadius: 8, cursor: page === totalPages ? "default" : "pointer",
+              border: `1px solid ${BORDER}`, background: "none",
+              color: page === totalPages ? MUTED : TEXT, opacity: page === totalPages ? 0.4 : 1, fontSize: 13,
+            }}
+          >
+            {ar ? "التالي" : "Next"}
+          </button>
+
+          <span style={{ color: MUTED, fontSize: 12, marginRight: ar ? 0 : 8, marginLeft: ar ? 8 : 0 }}>
+            {ar ? `صفحة ${page} من ${totalPages}` : `Page ${page} of ${totalPages}`}
+          </span>
+        </div>
+      )}
     </AdminShell>
   );
 }

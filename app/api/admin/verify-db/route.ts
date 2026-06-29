@@ -56,6 +56,17 @@ export async function GET() {
 
   const finalReviews = reviews ?? reviewsBasic ?? [];
 
+  // Bookings status distribution
+  const { data: allBookings } = await adminClient
+    .from("bookings")
+    .select("status");
+
+  const bookingStatusCounts: Record<string, number> = {};
+  for (const b of allBookings ?? []) {
+    const s = String(b.status);
+    bookingStatusCounts[s] = (bookingStatusCounts[s] ?? 0) + 1;
+  }
+
   // talent_brands check
   const { data: talentBrands, error: tbErr } = await adminClient
     .from("talent_brands")
@@ -79,5 +90,7 @@ export async function GET() {
     reviews_error: revErr?.message ?? null,
     reviews_columns_available: !revErr,
     reviews_sample: finalReviews.slice(0, 5),
+    booking_total: allBookings?.length ?? 0,
+    booking_status_counts: bookingStatusCounts,
   });
 }

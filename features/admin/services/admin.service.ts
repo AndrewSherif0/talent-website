@@ -71,17 +71,46 @@ export async function fetchAdminTalents(statusFilter?: string): Promise<AdminTal
 }
 
 export async function fetchAdminBookings(): Promise<AdminBooking[]> {
-  const { data } = await adminClient
+  // Step 1: fetch raw bookings
+  const { data: bookings, error } = await adminClient
     .from("bookings")
-    .select(`
-      id, status, created_at, amount, notes, brief_url, paid_at, completed_at,
-      brand:brand_id ( full_name, handle ),
-      talent:talent_id ( full_name, handle )
-    `)
+    .select("id, status, created_at, amount, notes, brief_url, paid_at, completed_at, brand_id, talent_id")
     .order("created_at", { ascending: false })
     .limit(200);
 
-  return (data ?? []) as AdminBooking[];
+  if (error || !bookings?.length) return [];
+
+  // Step 2: brand_id → profiles.id
+  const brandIds  = [...new Set(bookings.map(b => b.brand_id).filter(Boolean))];
+  // Step 3: talent_id → talent_profiles.id → profiles.user_id → profiles
+  const talentTpIds = [...new Set(bookings.map(b => b.talent_id).filter(Boolean))];
+
+  const [{ data: brandProfiles }, { data: tpRows }] = await Promise.all([
+    brandIds.length
+      ? adminClient.from("profiles").select("id, full_name, handle").in("id", brandIds)
+      : Promise.resolve({ data: [] }),
+    talentTpIds.length
+      ? adminClient.from("talent_profiles").select("id, user_id").in("id", talentTpIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const userIds = (tpRows ?? []).map((tp: Record<string, unknown>) => tp.user_id as string).filter(Boolean);
+  const { data: talentProfiles } = userIds.length
+    ? await adminClient.from("profiles").select("id, full_name, handle").in("id", userIds)
+    : { data: [] };
+
+  const brandMap   = Object.fromEntries((brandProfiles  ?? []).map(p => [p.id, p]));
+  const tpMap      = Object.fromEntries((tpRows         ?? []).map((tp: Record<string, unknown>) => [tp.id as string, tp.user_id as string]));
+  const talentMap  = Object.fromEntries((talentProfiles ?? []).map(p => [p.id, p]));
+
+  return bookings.map(b => {
+    const userId = tpMap[b.talent_id];
+    return {
+      ...b,
+      brand:  brandMap[b.brand_id]  ?? null,
+      talent: userId ? talentMap[userId] : null,
+    };
+  }) as AdminBooking[];
 }
 
 export async function fetchAdminReviews(): Promise<AdminReview[]> {
