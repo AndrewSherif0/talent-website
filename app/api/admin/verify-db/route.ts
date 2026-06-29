@@ -38,18 +38,46 @@ export async function GET() {
         .in("id", approvedTalentIds)
     : { data: [], error: null };
 
+  // Reviews check
+  const { data: reviews, error: revErr } = await adminClient
+    .from("reviews")
+    .select("id, rating, comment, status, review_type, brand_id, talent_id, created_at")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  // Fallback without new columns
+  const { data: reviewsBasic, error: revErrBasic } = revErr
+    ? await adminClient
+        .from("reviews")
+        .select("id, rating, comment, created_at")
+        .order("created_at", { ascending: false })
+        .limit(10)
+    : { data: null, error: null };
+
+  const finalReviews = reviews ?? reviewsBasic ?? [];
+
+  // talent_brands check
+  const { data: talentBrands, error: tbErr } = await adminClient
+    .from("talent_brands")
+    .select("id, talent_profile_id, brand_name")
+    .limit(20);
+
   return NextResponse.json({
+    talent_brands_count: talentBrands?.length ?? 0,
+    talent_brands_error: tbErr?.message ?? null,
+    talent_brands_sample: (talentBrands ?? []).slice(0, 5),
     role_counts:         roleCounts,
     role_samples:        samples,
     total_profiles:      allProfiles?.length ?? 0,
     total_verifications: verifications?.length ?? 0,
     verifications_error: vErr?.message ?? null,
-    verifications_sample: verifications?.slice(0, 3),
-    // Sync check: approved in talent_verifications vs is_verified in profiles
     approved_verifications: approvedTalentIds.length,
     profiles_is_verified_true: (verifiedProfiles ?? []).filter(p => p.is_verified).length,
     profiles_is_verified_false: (verifiedProfiles ?? []).filter(p => !p.is_verified).length,
-    verified_profiles_error: vpErr?.message ?? null,
-    sample_verified_profiles: (verifiedProfiles ?? []).slice(0, 5),
+    // Reviews
+    total_reviews: finalReviews.length,
+    reviews_error: revErr?.message ?? null,
+    reviews_columns_available: !revErr,
+    reviews_sample: finalReviews.slice(0, 5),
   });
 }

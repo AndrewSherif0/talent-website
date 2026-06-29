@@ -23,13 +23,27 @@ export async function fetchPortfolioByTalentId(talentProfileId: string): Promise
 }
 
 export async function fetchReviewsByTalentId(talentProfileId: string): Promise<RawReview[]> {
-  const { data } = await adminClient
+  const { data: reviews } = await adminClient
     .from("reviews")
-    .select("id, booking_id, talent_id, brand_id, rating, comment, created_at, profiles(full_name)")
+    .select("id, booking_id, talent_id, brand_id, rating, comment, created_at")
     .eq("talent_id", talentProfileId)
+    .eq("status", "approved")
     .order("created_at", { ascending: false });
 
-  return (data ?? []) as RawReview[];
+  if (!reviews?.length) return [];
+
+  // Fetch brand names separately (brand_id → profiles.id)
+  const brandIds = [...new Set(reviews.map(r => r.brand_id).filter(Boolean))];
+  const { data: brandProfiles } = brandIds.length
+    ? await adminClient.from("profiles").select("id, full_name").in("id", brandIds)
+    : { data: [] };
+
+  const brandMap = Object.fromEntries((brandProfiles ?? []).map(p => [p.id, p.full_name]));
+
+  return reviews.map(r => ({
+    ...r,
+    profiles: { full_name: brandMap[r.brand_id] ?? null },
+  })) as RawReview[];
 }
 
 export async function fetchBookingStatsByTalentId(talentProfileId: string): Promise<BookingStats> {

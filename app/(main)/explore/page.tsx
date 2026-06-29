@@ -24,13 +24,14 @@ export default async function ExplorePage() {
   const { data } = await adminClient
     .from("profiles")
     .select(`
-      id, handle, full_name, avatar_url, city,
+      id, handle, full_name, avatar_url, city, is_verified, is_suspended,
       talent_profiles (
         id, category, specialties, avg_rating, total_reviews,
         packages, social_links
       )
     `)
     .eq("role", "talent")
+    .eq("is_suspended", false)
     .not("handle", "is", null);
 
   const talents: TalentCard[] = (data ?? []).flatMap((p) => {
@@ -56,7 +57,7 @@ export default async function ExplorePage() {
       rating: tp.avg_rating ?? 0,
       review_count: tp.total_reviews ?? 0,
       starting_price: startingPrice,
-      verified: Boolean(sl.verified),
+      verified: Boolean((p as Record<string, unknown>).is_verified),
       fast_response: Boolean(sl.fast_response),
       premium: Boolean(sl.premium),
       gender: (sl.gender as string) ?? null,

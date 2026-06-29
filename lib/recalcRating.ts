@@ -21,7 +21,8 @@ export async function recalcRating(talentProfileId: string): Promise<{
   const { data: rows, error: fetchErr } = await adminClient
     .from("reviews")
     .select("rating")
-    .eq("talent_id", talentProfileId);
+    .eq("talent_id", talentProfileId)
+    .eq("status", "approved");
 
   if (fetchErr) {
     console.error("[recalcRating] ✗ fetch reviews failed:", fetchErr.message);

@@ -39,7 +39,7 @@ function transformTalentData(profile: RawProfile, tp: RawTalentProfile | null, s
     rating: tp?.avg_rating ?? 0,
     reviewCount: tp?.total_reviews ?? 0,
     views: (sl.views_display as string) ?? formatViews(tp?.profile_views ?? 0),
-    verified: Boolean(sl.verified),
+    verified: Boolean(profile.is_verified),
     fastResponse: Boolean(sl.fast_response),
     premium: Boolean(sl.premium),
     bio: profile.bio ?? tp?.bio ?? null,

@@ -9,6 +9,7 @@ export interface RawProfile {
   bio: string | null;
   role: string;
   created_at: string;
+  is_verified?: boolean | null;
   talent_profiles: RawTalentProfile | RawTalentProfile[] | null;
 }
 

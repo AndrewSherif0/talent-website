@@ -14,7 +14,8 @@ export async function POST() {
   // ── 1. Aggregate ratings per talent from reviews table ───────────────────
   const { data: agg, error: aggErr } = await adminClient
     .from("reviews")
-    .select("talent_id, rating");
+    .select("talent_id, rating")
+    .eq("status", "approved");
 
   if (aggErr) {
     return NextResponse.json({ error: aggErr.message }, { status: 500 });

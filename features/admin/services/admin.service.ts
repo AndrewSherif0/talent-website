@@ -30,7 +30,7 @@ export async function fetchAdminTalents(statusFilter?: string): Promise<AdminTal
     .from("profiles")
     .select(`
       id, handle, full_name, avatar_url, city, created_at,
-      account_status, block_reason, is_verified, balance,
+      is_approved, is_suspended, is_verified, balance,
       talent_profiles (
         id, category, avg_rating, total_reviews
       )
@@ -42,6 +42,9 @@ export async function fetchAdminTalents(statusFilter?: string): Promise<AdminTal
     const tp = Array.isArray(p.talent_profiles) ? p.talent_profiles[0] : p.talent_profiles;
     if (!tp) return [];
 
+    const isApproved   = (p as Record<string, unknown>).is_approved   as boolean ?? true;
+    const isSuspended  = (p as Record<string, unknown>).is_suspended  as boolean ?? false;
+    const accountStatus = isSuspended ? "suspended" : isApproved ? "active" : "pending";
     const status: AdminTalent["status"] = "approved";
     if (statusFilter && statusFilter !== "all" && status !== statusFilter) return [];
 
@@ -59,8 +62,8 @@ export async function fetchAdminTalents(statusFilter?: string): Promise<AdminTal
       rejectionReason: null,
       avgRating:       tp.avg_rating    ?? null,
       totalReviews:    tp.total_reviews ?? null,
-      accountStatus:   (p as Record<string, unknown>).account_status as string  ?? "active",
-      blockReason:     (p as Record<string, unknown>).block_reason   as string  ?? null,
+      accountStatus,
+      blockReason:     null,
       isVerified:      (p as Record<string, unknown>).is_verified    as boolean ?? false,
       balance:         (p as Record<string, unknown>).balance        as number  ?? 0,
     }];
@@ -82,36 +85,63 @@ export async function fetchAdminBookings(): Promise<AdminBooking[]> {
 }
 
 export async function fetchAdminReviews(): Promise<AdminReview[]> {
-  // Try with new columns first (requires 002 migration)
+  // Step 1: fetch reviews (try with new columns first)
+  let reviews: Record<string, unknown>[] = [];
   const { data, error } = await adminClient
     .from("reviews")
-    .select(`
-      id, rating, comment, status, proof_link, review_type, created_at,
-      brand:brand_id ( full_name ),
-      talent:talent_id ( full_name, handle )
-    `)
+    .select("id, rating, comment, status, proof_link, review_type, created_at, brand_id, talent_id")
     .order("created_at", { ascending: false })
     .limit(200);
 
-  if (!error) return (data ?? []) as AdminReview[];
+  if (!error && data) {
+    reviews = data as Record<string, unknown>[];
+  } else {
+    // Fallback without new columns
+    const { data: basic } = await adminClient
+      .from("reviews")
+      .select("id, rating, comment, created_at, brand_id, talent_id")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    reviews = (basic ?? []).map(r => ({ ...r, status: "approved", proof_link: null, review_type: "brand" }));
+  }
 
-  // Fallback: select without migration columns
-  const { data: basic } = await adminClient
-    .from("reviews")
-    .select(`
-      id, rating, comment, created_at,
-      brand:brand_id ( full_name ),
-      talent:talent_id ( full_name, handle )
-    `)
-    .order("created_at", { ascending: false })
-    .limit(200);
+  if (!reviews.length) return [];
 
-  return (basic ?? []).map((r) => ({
-    ...r,
-    status:      "approved" as const,
-    proof_link:  null,
-    review_type: "brand",
-  })) as AdminReview[];
+  // Step 2: fetch brand names from profiles (brand_id → profiles.id)
+  const brandIds  = [...new Set(reviews.map(r => r.brand_id as string).filter(Boolean))];
+  const talentIds = [...new Set(reviews.map(r => r.talent_id as string).filter(Boolean))];
+
+  const [{ data: brandProfiles }, { data: talentProfilesData }] = await Promise.all([
+    brandIds.length
+      ? adminClient.from("profiles").select("id, full_name, handle").in("id", brandIds)
+      : Promise.resolve({ data: [] }),
+    // talent_id may reference talent_profiles.id OR profiles.id — try talent_profiles first
+    talentIds.length
+      ? adminClient.from("talent_profiles").select("id, user_id").in("id", talentIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  // Get profiles for talents via user_id
+  const userIds = (talentProfilesData ?? []).map((tp: Record<string, unknown>) => tp.user_id as string).filter(Boolean);
+  const { data: talentUserProfiles } = userIds.length
+    ? await adminClient.from("profiles").select("id, full_name, handle").in("id", userIds)
+    : { data: [] };
+
+  const brandMap  = Object.fromEntries((brandProfiles ?? []).map(p => [p.id, p]));
+  const tpMap     = Object.fromEntries((talentProfilesData ?? []).map((tp: Record<string, unknown>) => [tp.id as string, tp.user_id as string]));
+  const profileMap = Object.fromEntries((talentUserProfiles ?? []).map(p => [p.id, p]));
+
+  return reviews.map(r => {
+    const brand   = brandMap[r.brand_id as string] ?? null;
+    const userId  = tpMap[r.talent_id as string];
+    // Fallback: if talent_id is directly a profiles.id (old seed data)
+    const talent  = userId ? profileMap[userId] : (brandMap[r.talent_id as string] ?? null);
+    return {
+      ...r,
+      brand:  brand  ? { full_name: brand.full_name }  : null,
+      talent: talent ? { full_name: talent.full_name, handle: talent.handle } : null,
+    };
+  }) as AdminReview[];
 }
 
 // ─── Verification requests ────────────────────────────────────────────────────
@@ -187,21 +217,26 @@ export async function fetchAdminBrands(): Promise<AdminBrand[]> {
     .select(`
       id, full_name, handle, city, created_at,
       brand_status, tax_document_url, brand_rejection_reason,
-      account_status, block_reason
+      is_approved, is_suspended
     `)
     .eq("role", "brand")
     .order("created_at", { ascending: false });
 
-  return (data ?? []).map((b) => ({
-    id:              b.id,
-    fullName:        b.full_name,
-    handle:          b.handle,
-    city:            b.city,
-    createdAt:       b.created_at,
-    brandStatus:     (b as Record<string, unknown>).brand_status           as string ?? "approved",
-    taxDocumentUrl:  (b as Record<string, unknown>).tax_document_url       as string ?? null,
-    rejectionReason: (b as Record<string, unknown>).brand_rejection_reason as string ?? null,
-    accountStatus:   (b as Record<string, unknown>).account_status         as string ?? "active",
-    blockReason:     (b as Record<string, unknown>).block_reason           as string ?? null,
-  }));
+  return (data ?? []).map((b) => {
+    const isApproved  = (b as Record<string, unknown>).is_approved  as boolean ?? true;
+    const isSuspended = (b as Record<string, unknown>).is_suspended as boolean ?? false;
+    const accountStatus = isSuspended ? "suspended" : isApproved ? "active" : "pending";
+    return {
+      id:              b.id,
+      fullName:        b.full_name,
+      handle:          b.handle,
+      city:            b.city,
+      createdAt:       b.created_at,
+      brandStatus:     (b as Record<string, unknown>).brand_status           as string ?? "approved",
+      taxDocumentUrl:  (b as Record<string, unknown>).tax_document_url       as string ?? null,
+      rejectionReason: (b as Record<string, unknown>).brand_rejection_reason as string ?? null,
+      accountStatus,
+      blockReason:     null,
+    };
+  });
 }
