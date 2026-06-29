@@ -37,7 +37,7 @@ export default function Pagination({ page, totalPages, onPage }: Props) {
   return (
     <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
       {btn(t.prev, false, page === 1, () => onPage(page - 1))}
-      {pages.map(p => btn(String(p), p === page, false, () => onPage(p)))}
+      {pages.map(p => <span key={p}>{btn(String(p), p === page, false, () => onPage(p))}</span>)}
       {btn(t.next, false, page === totalPages, () => onPage(page + 1))}
     </div>
   );
