@@ -56,6 +56,7 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
   const realtimeCh = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  const globalCh   = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
 
   // ─── colours ─────────────────────────────────────────────────────────────
   const GOLD   = "#FFB800";
@@ -83,7 +84,10 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
     const res = await fetch("/api/chat/conversations");
     if (res.ok) {
       const { conversations } = await res.json();
-      setConvs(conversations ?? []);
+      // Deduplicate by id in case of race conditions
+      const seen = new Set<string>();
+      const deduped = (conversations ?? []).filter((c: { id: string }) => seen.has(c.id) ? false : (seen.add(c.id), true));
+      setConvs(deduped);
     }
     setLoadingConvs(false);
   }, []);
@@ -91,6 +95,38 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
   useEffect(() => {
     if (open) loadConvs();
   }, [open, loadConvs]);
+
+  // ─── global realtime: listen to ALL my messages for list-view notifications ─
+  useEffect(() => {
+    if (!myId) return;
+    const supabase = createClient();
+    const ch = supabase
+      .channel("fw:global")
+      .on("postgres_changes", {
+        event: "INSERT", schema: "public", table: "messages",
+      }, (p) => {
+        const m = p.new as Message;
+        if (m.sender_id === myId) return;
+        if (m.conversation_id === activeConvId) return;
+        // Read latest convs snapshot outside updater to avoid calling side-effects inside setState
+        setConvs((prev) => {
+          const idx = prev.findIndex((c) => c.id === m.conversation_id);
+          if (idx === -1) return prev; // unknown conv — will appear on next open
+          const updated = {
+            ...prev[idx],
+            unread_count: prev[idx].unread_count + 1,
+            last_message: m.content,
+            last_message_at: m.created_at,
+          };
+          const next = prev.filter((_, i) => i !== idx);
+          return [updated, ...next];
+        });
+      })
+      .subscribe();
+    globalCh.current = ch;
+    return () => { supabase.removeChannel(ch); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myId]);
 
   // ─── load messages ───────────────────────────────────────────────────────
   const loadMessages = useCallback(async (convId: string) => {
@@ -205,6 +241,8 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
     setActiveOther(c.other_user);
     setView("chat");
     loadMessages(c.id);
+    // Clear unread count optimistically
+    setConvs((prev) => prev.map((x) => x.id === c.id ? { ...x, unread_count: 0 } : x));
   }
 
   // ─── send message ─────────────────────────────────────────────────────────
@@ -245,6 +283,7 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
   }
 
   // ─── render ───────────────────────────────────────────────────────────────
+  const totalUnread = convs.reduce((s, c) => s + (c.unread_count ?? 0), 0);
   const panelW = 360;
   const panelH = 520;
 
@@ -493,7 +532,7 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
         style={{
           position: "fixed", bottom: 24, insetInlineEnd: 24, zIndex: 9999,
           width: 56, height: 56, borderRadius: "50%", border: "none",
-          backgroundColor: GOLD, cursor: "pointer",
+          backgroundColor: GOLD, cursor: "pointer", overflow: "visible",
           boxShadow: "0 8px 24px rgba(255,184,0,0.45)",
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "transform 0.2s, box-shadow 0.2s",
@@ -510,6 +549,19 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
         title={ar ? "فتح المحادثات" : "Open Messages"}
       >
         {open ? "✕" : "💬"}
+        {!open && totalUnread > 0 && (
+          <span style={{
+            position: "absolute", top: -4, right: -4,
+            minWidth: 18, height: 18, borderRadius: 9,
+            backgroundColor: "#EF4444", color: "#fff",
+            fontSize: 10, fontWeight: 800,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "0 4px",
+            border: "2px solid " + (dark ? "#0D1623" : "#fff"),
+          }}>
+            {totalUnread > 99 ? "99+" : totalUnread}
+          </span>
+        )}
       </button>
     </>
   );
