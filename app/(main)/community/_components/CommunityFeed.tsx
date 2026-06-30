@@ -1,7 +1,34 @@
-// src/app/community/_components/CommunityFeed.tsx
 "use client";
 
 import { useState } from "react";
+
+interface Props {
+  dark: boolean;
+  lang: "ar" | "en";
+}
+
+const TX = {
+  ar: {
+    all: "كل الأسئلة",
+    popular: "الأكثر تفاعلاً",
+    search: "ابحث عن سؤال أو تاق...",
+    answers: "أجوبة",
+    views: "مشاهدة",
+    brand: "براند",
+    talent: "موهبة",
+    pinned: "مُثبت",
+  },
+  en: {
+    all: "All Questions",
+    popular: "Most Active",
+    search: "Search for a question or tag...",
+    answers: "Answers",
+    views: "views",
+    brand: "Brand",
+    talent: "Talent",
+    pinned: "Pinned",
+  }
+};
 
 const MOCK_QUESTIONS = [
   {
@@ -28,85 +55,231 @@ const MOCK_QUESTIONS = [
   }
 ];
 
-export default function CommunityFeed() {
+export default function CommunityFeed({ dark, lang }: Props) {
   const [activeTab, setActiveTab] = useState("all");
+  const t = TX[lang];
+  const ar = lang === "ar";
+  const TEAL = "#00D26A";
+
+  const CARD = dark ? "#0D1623" : "#FFFFFF";
+  const BORDER = dark ? "rgba(0,255,163,0.1)" : "#E2E8F0";
+  const TEXT = dark ? "#FFFFFF" : "#0F172A";
+  const MUTED = dark ? "#94A3B8" : "#64748B";
+  const TAB_BG = dark ? "#0d1527" : "#e2e8f0";
+  const TAG_BG = dark ? "rgba(13,21,39,0.6)" : "rgba(241,245,249,0.8)";
+  const TAG_BORDER = dark ? "rgba(30,41,59,0.6)" : "#cbd5e1";
+  const INPUT_BG = dark ? "#0d1527" : "#ffffff";
+  const INPUT_BORDER = dark ? "rgba(0,255,163,0.15)" : "#cbd5e1";
+  const COUNTER_BG = dark ? "#111c35" : "#e2e8f0";
+  const COUNTER_BORDER = dark ? "rgba(0,255,163,0.1)" : "#cbd5e1";
+  const VERIFY_BORDER = dark ? CARD : "#ffffff";
 
   return (
-    <section className="max-w-6xl mx-auto px-6 py-12">
-      {/* الفلترة والبحث مع مسافات حقيقية */}
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between mb-10">
-        {/* التابس */}
-        <div className="flex bg-slate-950/60 p-1.5 rounded-xl border border-slate-850 w-full md:w-auto">
-          <button 
+    <section style={{
+      maxWidth: "1152px",
+      margin: "0 auto",
+      padding: "48px 24px",
+      direction: ar ? "rtl" : "ltr",
+    }}>
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "40px",
+      }} className="md:flex-row">
+        <div style={{
+          display: "flex",
+          backgroundColor: TAB_BG,
+          padding: "6px",
+          borderRadius: "12px",
+          border: `1px solid ${BORDER}`,
+          width: "100%",
+        }} className="md:w-auto">
+          <button
             onClick={() => setActiveTab("all")}
-            className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer ${activeTab === "all" ? "btn-primary text-black" : "text-(--text-secondary) hover:text-(--text-primary)"}`}
+            style={{
+              padding: "10px 24px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontWeight: 700,
+              transition: "all 0.2s",
+              cursor: "pointer",
+              border: "none",
+              backgroundColor: activeTab === "all" ? TEAL : "transparent",
+              color: activeTab === "all" ? "#000" : MUTED,
+            }}
           >
-            كل الأسئلة
+            {t.all}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab("popular")}
-            className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer ${activeTab === "popular" ? "btn-primary text-black" : "text-(--text-secondary) hover:text-(--text-primary)"}`}
+            style={{
+              padding: "10px 24px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontWeight: 700,
+              transition: "all 0.2s",
+              cursor: "pointer",
+              border: "none",
+              backgroundColor: activeTab === "popular" ? TEAL : "transparent",
+              color: activeTab === "popular" ? "#000" : MUTED,
+            }}
           >
-            الأكثر تفاعلاً
+            {t.popular}
           </button>
         </div>
 
-        {/* بار البحث */}
-        <div className="relative w-full md:w-80">
-          <input 
-            type="text" 
-            placeholder="ابحث عن سؤال أو تاق..." 
-            className="w-full border text-sm rounded-xl px-4 py-3 focus:outline-none transition-colors"
-            style={{ 
-              backgroundColor: "var(--bg-card)", 
-              borderColor: "var(--bg-border)",
-              color: "var(--text-primary)"
+        <div style={{
+          position: "relative",
+          width: "100%",
+        }} className="md:w-80">
+          <input
+            type="text"
+            placeholder={t.search}
+            style={{
+              width: "100%",
+              border: `1px solid ${INPUT_BORDER}`,
+              fontSize: "14px",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              outline: "none",
+              backgroundColor: INPUT_BG,
+              color: TEXT,
+              fontFamily: "'Cairo', sans-serif",
+              transition: "border-color 0.2s",
             }}
           />
         </div>
       </div>
 
-      {/* قائمة الأسئلة بالـ Glass Panel و الـ Card Hover */}
-      <div className="space-y-6">
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         {MOCK_QUESTIONS.map((q) => (
-          <article 
-            key={q.id} 
-            className="glass-panel glass-panel-hover card-hover rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 cursor-pointer"
+          <article
+            key={q.id}
+            style={{
+              backgroundColor: CARD,
+              border: `1px solid ${BORDER}`,
+              borderRadius: "16px",
+              padding: "24px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: "24px",
+              cursor: "pointer",
+              transition: "all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }} className="flex-col md:flex-row md:items-center"
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = "scale(1.035) translateY(-4px)";
+              e.currentTarget.style.boxShadow = dark
+                ? "0 20px 40px -12px rgba(0,0,0,0.45), 0 0 0 1px rgba(249,115,22,0.15)"
+                : "0 12px 24px -8px rgba(0,0,0,0.1)";
+              e.currentTarget.style.borderColor = "rgba(249,115,22,0.35)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = "none";
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.borderColor = BORDER;
+            }}
           >
-            <div className="flex items-start gap-4 flex-1">
-              {/* الصورة والتوثيق */}
-              <div className="relative shrink-0 w-12 h-12">
-                <img src={q.user.avatar} alt={q.user.name} className="w-full h-full rounded-full border border-slate-800 bg-slate-900" />
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", flex: 1 }}>
+              <div style={{ position: "relative", flexShrink: 0, width: "48px", height: "48px" }}>
+                <img src={q.user.avatar} alt={q.user.name} style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  border: `1px solid ${BORDER}`,
+                  backgroundColor: dark ? "#0f172a" : "#e2e8f0",
+                }} />
                 {q.user.is_verified && (
-                  <span className="absolute bottom-0 right-0 w-4 h-4 bg-[#00D26A] rounded-full border-2 flex items-center justify-center text-[9px] text-white" style={{ borderColor: "var(--bg-card)" }}>✓</span>
+                  <span style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    width: "16px",
+                    height: "16px",
+                    backgroundColor: "#00D26A",
+                    borderRadius: "50%",
+                    border: `2px solid ${VERIFY_BORDER}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "9px",
+                    color: "#ffffff",
+                    lineHeight: 1,
+                  }}>✓</span>
                 )}
               </div>
 
-              {/* تفاصيل السؤال والمسافات */}
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-3 flex-wrap text-xs">
-                  <span className="font-bold text-(--text-secondary)">{q.user.name}</span>
-                  <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase ${q.user.role === 'brand' ? 'badge-purple' : 'badge-teal'}`}>
-                    {q.user.role === 'brand' ? 'براند' : 'موهبة'}
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", fontSize: "12px" }}>
+                  <span style={{ fontWeight: 700, color: MUTED }}>{q.user.name}</span>
+                  <span style={{
+                    fontSize: "10px",
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    backgroundColor: q.user.role === "brand"
+                      ? "rgba(139,47,201,0.12)"
+                      : "rgba(0,201,177,0.12)",
+                    color: q.user.role === "brand" ? "#A855F7" : TEAL,
+                    border: `1px solid ${q.user.role === "brand" ? "rgba(139,47,201,0.25)" : "rgba(0,201,177,0.25)"}`,
+                  }}>
+                    {q.user.role === "brand" ? t.brand : t.talent}
                   </span>
-                  {q.status === 'pinned' && (
-                    <span className="badge-gold text-[10px] px-2.5 py-1 rounded-md font-bold">مُثبت 📌</span>
+                  {q.status === "pinned" && (
+                    <span style={{
+                      fontSize: "10px",
+                      padding: "4px 10px",
+                      borderRadius: "6px",
+                      fontWeight: 700,
+                      backgroundColor: "rgba(255,184,0,0.15)",
+                      color: "#FFB800",
+                      border: "1px solid rgba(255,184,0,0.3)",
+                    }}>
+                      {t.pinned} 📌
+                    </span>
                   )}
-                  <span className="text-(--text-secondary) opacity-60">{q.created_at}</span>
+                  <span style={{ color: MUTED, opacity: 0.6 }}>{q.created_at}</span>
                 </div>
 
-                <h3 className="text-lg md:text-xl font-bold text-(--text-primary) hover:text-(--color-teal) transition-colors">
-                  {q.title}
-                </h3>
-                
-                <p className="text-sm text-(--text-secondary) line-clamp-2 leading-relaxed">
+                <h3 style={{
+                  fontSize: ar ? "18px" : "20px",
+                  fontWeight: 800,
+                  color: TEXT,
+                  margin: 0,
+                  transition: "color 0.2s",
+                  cursor: "pointer",
+                  fontFamily: "'Cairo', sans-serif",
+                }} className="md:text-xl">{q.title}</h3>
+
+                <p style={{
+                  fontSize: "14px",
+                  color: MUTED,
+                  margin: 0,
+                  lineHeight: 1.7,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  fontFamily: "'Cairo', sans-serif",
+                }}>
                   {q.content}
                 </p>
 
-                {/* التاقات */}
-                <div className="flex gap-2 pt-2 flex-wrap">
+                <div style={{ display: "flex", gap: "8px", paddingTop: "8px", flexWrap: "wrap" }}>
                   {q.tags.map(tag => (
-                    <span key={tag} className="text-xs bg-slate-950/60 text-(--text-secondary) px-3 py-1.5 rounded-md border border-slate-850">
+                    <span key={tag} style={{
+                      fontSize: "12px",
+                      backgroundColor: TAG_BG,
+                      color: MUTED,
+                      padding: "6px 12px",
+                      borderRadius: "6px",
+                      border: `1px solid ${TAG_BORDER}`,
+                      fontFamily: "'Cairo', sans-serif",
+                    }}>
                       #{tag}
                     </span>
                   ))}
@@ -114,14 +287,31 @@ export default function CommunityFeed() {
               </div>
             </div>
 
-            {/* العدادات على اليمين مع خلفية البانل المرتفع */}
-            <div className="flex md:flex-col gap-4 md:gap-2 justify-between w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 items-center text-center" style={{ borderColor: "var(--bg-border)" }}>
-              <div className="rounded-xl px-5 py-3 border flex flex-col items-center justify-center" style={{ backgroundColor: "var(--bg-elevated)", borderColor: "var(--bg-border)", minWidth: "85px" }}>
-                <span className="block text-xl font-black" style={{ color: "var(--color-teal)" }}>{q.answers_count}</span>
-                <span className="text-xs text-(--text-secondary)">أجوبة</span>
+            <div style={{
+              display: "flex",
+              gap: "16px",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textAlign: "center",
+              paddingTop: "16px",
+              borderTop: `1px solid ${BORDER}`,
+            }} className="md:flex-col md:gap-2 md:pt-0 md:border-t-0 w-full md:w-auto">
+              <div style={{
+                borderRadius: "12px",
+                padding: "12px 20px",
+                border: `1px solid ${COUNTER_BORDER}`,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: COUNTER_BG,
+                minWidth: "85px",
+              }}>
+                <span style={{ display: "block", fontSize: "20px", fontWeight: 900, color: TEAL }}>{q.answers_count}</span>
+                <span style={{ fontSize: "12px", color: MUTED }}>{t.answers}</span>
               </div>
-              <div className="text-xs text-(--text-secondary) opacity-50 px-2">
-                <span>{q.views} مشاهدة</span>
+              <div style={{ fontSize: "12px", color: MUTED, opacity: 0.5, padding: "0 8px" }}>
+                <span>{q.views} {t.views}</span>
               </div>
             </div>
           </article>

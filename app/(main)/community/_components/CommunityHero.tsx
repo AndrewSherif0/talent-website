@@ -33,16 +33,17 @@ export default function CommunityHero({ dark, lang }: Props) {
   const GOLD = "#FFB800";
   const ORANGE = "#FF6B2B";
 
+  const CARD = dark ? "#090e1a" : "#ffffff";
+
   return (
     <section style={{
       position: "relative",
       padding: "64px 24px",
       borderBottom: `1px solid ${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}`,
-      backgroundColor: dark ? "#090e1a" : "#ffffff",
+      backgroundColor: CARD,
       overflow: "hidden",
       direction: ar ? "rtl" : "ltr",
     }}>
-      {/* Light/Glow Orbs */}
       <div className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none pulse-glow" style={{ background: "rgba(0, 201, 177, 0.12)", filter: "blur(120px)", transform: "translate(30%, -30%)" }} />
       <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full pointer-events-none" style={{ background: "rgba(139, 47, 201, 0.1)", filter: "blur(100px)", transform: "translate(-20%, 20%)" }} />
 
@@ -54,6 +55,7 @@ export default function CommunityHero({ dark, lang }: Props) {
         gap: "32px",
         position: "relative",
         zIndex: 10,
+        alignItems: "flex-start",
       }} className="md:flex-row md:items-center md:justify-between">
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <h1 style={{
@@ -80,8 +82,7 @@ export default function CommunityHero({ dark, lang }: Props) {
           }}>
             {t.sub}
           </p>
-          
-          {/* Stats */}
+
           <div style={{
             display: "flex",
             gap: "24px",
@@ -101,7 +102,6 @@ export default function CommunityHero({ dark, lang }: Props) {
           </div>
         </div>
 
-        {/* CTA Button */}
         <div style={{ flexShrink: 0 }}>
           <button style={{
             backgroundColor: ORANGE,
@@ -119,7 +119,7 @@ export default function CommunityHero({ dark, lang }: Props) {
             boxShadow: `0 4px 16px ${dark ? "rgba(255, 107, 43, 0.25)" : "rgba(255, 107, 43, 0.15)"}`,
             transition: "transform 0.2s, box-shadow 0.2s",
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(255, 107, 43, 0.4)`; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(255, 107, 43, 0.4)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 16px ${dark ? "rgba(255, 107, 43, 0.25)" : "rgba(255, 107, 43, 0.15)"}`; }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: "20px", height: "20px" }}>
