@@ -193,12 +193,15 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {/* CTA buttons */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} style={{
-              ...btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              backgroundColor: SURFACE, border: `1px solid ${BORDER}`,
-              color: TEXT, borderRadius: 12, padding: "11px 0",
-              fontSize: 13, fontWeight: 600,
-            }}>
+            <motion.button
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+              onClick={() => window.dispatchEvent(new CustomEvent("open-chat-widget"))}
+              style={{
+                ...btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                backgroundColor: SURFACE, border: `1px solid ${BORDER}`,
+                color: TEXT, borderRadius: 12, padding: "11px 0",
+                fontSize: 13, fontWeight: 600,
+              }}>
               <MessageCircle size={14} color={GREEN} />{t.message}
             </motion.button>
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} style={{

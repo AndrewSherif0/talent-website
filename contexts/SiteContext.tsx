@@ -22,19 +22,21 @@ function getTimeBasedMode(): Mode {
 }
 
 export function SiteProvider({ children }: { children: ReactNode }) {
-  // Read directly from DOM attributes that the blocking <head> script already set.
-  // This runs synchronously in the lazy initializer (client-only) so React state
-  // matches the DOM from the very first render — no flash, no useEffect delay.
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "ar";
-    const attr = document.documentElement.getAttribute("lang");
-    return attr === "ar" || attr === "en" ? attr : "ar";
-  });
-  const [mode, setModeState] = useState<Mode>(() => {
-    if (typeof window === "undefined") return "dark";
-    const attr = document.documentElement.getAttribute("data-theme");
-    return attr === "dark" || attr === "light" ? attr : getTimeBasedMode();
-  });
+  // SSR defaults must match server render to avoid hydration mismatch.
+  // useEffect runs after hydration and syncs from localStorage — one silent re-render,
+  // no console errors. The blocking <head> script handles CSS/DOM side instantly.
+  const [lang, setLangState] = useState<Lang>("ar");
+  const [mode, setModeState] = useState<Mode>("dark");
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("site_language") as Lang | null;
+    const storedMode = localStorage.getItem("site_theme") as Mode | null;
+    const resolvedLang: Lang = storedLang === "ar" || storedLang === "en" ? storedLang : "ar";
+    const resolvedMode: Mode =
+      storedMode === "dark" || storedMode === "light" ? storedMode : getTimeBasedMode();
+    setLangState(resolvedLang);
+    setModeState(resolvedMode);
+  }, []);
 
   function setLang(l: Lang) {
     setLangState(l);
@@ -50,13 +52,15 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SiteContext.Provider value={{
-      lang, setLang,
-      mode, setMode,
-      dark: mode === "dark",
-      toggleLang: () => setLang(lang === "ar" ? "en" : "ar"),
-      toggleMode: () => setMode(mode === "dark" ? "light" : "dark"),
-    }}>
+    <SiteContext.Provider
+      value={{
+        lang, setLang,
+        mode, setMode,
+        dark: mode === "dark",
+        toggleLang: () => setLang(lang === "ar" ? "en" : "ar"),
+        toggleMode: () => setMode(mode === "dark" ? "light" : "dark"),
+      }}
+    >
       {children}
     </SiteContext.Provider>
   );

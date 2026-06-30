@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Script from "next/script";
 import { SiteProvider } from "@/contexts/SiteContext";
 
 export const metadata: Metadata = {
@@ -21,10 +22,9 @@ const INIT_SCRIPT = `(function(){try{
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }} />
-      </head>
+      <head />
       <body suppressHydrationWarning>
+        <Script id="site-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }} />
         <SiteProvider>{children}</SiteProvider>
       </body>
     </html>
