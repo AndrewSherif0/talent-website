@@ -444,8 +444,8 @@ export default function CommunityFeed({ dark, lang }: Props) {
                       </p>
 
                       <div style={{ display: "flex", gap: "8px", paddingTop: "8px", flexWrap: "wrap" }}>
-                        {q.tags?.map(tag => (
-                          <span key={tag} style={{
+                        {q.tags?.map((tag, i) => (
+                          <span key={`${tag}-${i}`} style={{
                             fontSize: "12px",
                             backgroundColor: TAG_BG,
                             color: MUTED,
