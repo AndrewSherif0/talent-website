@@ -4,8 +4,9 @@ import { adminClient } from "@/lib/supabase/admin";
 export async function GET() {
   const { data, error } = await adminClient
     .from("profiles")
-    .select("id, handle, full_name, role, is_approved")
-    .eq("role", "brand");
+    .select("id, handle, full_name, avatar_url, city, bio, is_verified, is_approved")
+    .eq("role", "brand")
+    .not("handle", "is", null);
 
-  return NextResponse.json({ count: data?.length ?? 0, error: error?.message, brands: data?.slice(0, 5) });
+  return NextResponse.json({ count: data?.length ?? 0, error: error?.message ?? null, brands: data?.slice(0, 2) });
 }

@@ -4,16 +4,16 @@ import Footer from "@/components/Footer";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   let initialAvatarUrl: string | null = null;
   let initialFullName: string | null = null;
 
-  if (session?.user) {
+  if (user?.id) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url, full_name")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .maybeSingle();
 
     if (profile) {

@@ -9,12 +9,14 @@ import { useSite } from "@/contexts/SiteContext";
 
 const NAV_LINKS = {
   ar: [
-    { label: "استكشاف", href: "/explore" },
-    { label: "المجتمع", href: "/community" },
-    { label: "وظائف",   href: "/jobs" },
-    { label: "للشركات", href: "/brands" },
+    { label: "الرئيسية", href: "/home" },
+    { label: "استكشاف",  href: "/explore" },
+    { label: "المجتمع",  href: "/community" },
+    { label: "وظائف",    href: "/jobs" },
+    { label: "للشركات",  href: "/brands" },
   ],
   en: [
+    { label: "Home",      href: "/home" },
     { label: "Explore",   href: "/explore" },
     { label: "Community", href: "/community" },
     { label: "Jobs",      href: "/jobs" },
@@ -96,17 +98,14 @@ export default function Navbar({
 
         {/* Logo + Search */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <Link href="/explore" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <Link href="/home" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
              <Image
               // تم تعديل الشرط هنا مباشرة داخل الـ src ليتم تحديث الصورة فور تغير قيمة dark بشكل ديناميكي
               src={dark ? "/assets/logo-dark.png" : "/assets/logo-light.png"}
               alt="Talents"
               width={110}
               height={32}
-              style={{
-                
-                objectFit: "contain",
-              }}
+              style={{ objectFit: "contain", width: "auto", height: 32 }}
               priority
             />
           </Link>

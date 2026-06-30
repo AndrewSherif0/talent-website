@@ -1,5 +1,7 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+
+const PAGE_SIZE = 12;
 import type { TalentCard } from "../page";
 import ExploreHero from "./ExploreHero";
 import ExploreFilters from "./ExploreFilters";
@@ -48,6 +50,9 @@ export default function ExploreClient({ talents }: Props) {
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [verified, setVerified] = useState(false);
   const [sex, setSex] = useState("all");
+  const [page, setPage] = useState(1);
+
+  useEffect(() => { setPage(1); }, [search, type, sort, minPrice, maxPrice, verified, sex]);
 
   const filtered = useMemo(() => {
     let list = talents.filter(t => {
@@ -73,6 +78,12 @@ export default function ExploreClient({ talents }: Props) {
 
     return list;
   }, [talents, search, type, sort, minPrice, maxPrice, verified, sex]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const GREEN  = "#00D26A";
+  const BORDER = dark ? "rgba(0,255,163,0.1)" : "#e2e8f0";
 
   return (
     <div style={{
@@ -104,7 +115,66 @@ export default function ExploreClient({ talents }: Props) {
           sex={sex} onSexChange={setSex}
           types={TALENT_TYPES} activeType={type} onTypeChange={setType}
         />
-        <ExploreGrid dark={dark} lang={lang} talents={filtered} />
+        <div>
+          <ExploreGrid dark={dark} lang={lang} talents={paginated} />
+
+          {totalPages > 1 && (
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 8, marginTop: 32, flexWrap: "wrap",
+            }}>
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                style={{
+                  padding: "8px 18px", borderRadius: 10,
+                  border: `1px solid ${BORDER}`,
+                  backgroundColor: "transparent",
+                  color: page === 1 ? "#64748b" : (dark ? "#fff" : "#0f172a"),
+                  fontSize: 13, fontWeight: 700,
+                  cursor: page === 1 ? "default" : "pointer",
+                  fontFamily: "'Cairo',sans-serif", opacity: page === 1 ? 0.4 : 1,
+                }}
+              >
+                {lang === "ar" ? "→ السابق" : "← Prev"}
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  style={{
+                    width: 36, height: 36, borderRadius: 8,
+                    border: `1px solid ${p === page ? GREEN : BORDER}`,
+                    backgroundColor: p === page ? GREEN : "transparent",
+                    color: p === page ? "#000" : (dark ? "#94a3b8" : "#64748b"),
+                    fontSize: 13, fontWeight: p === page ? 900 : 400,
+                    cursor: "pointer", fontFamily: "'Cairo',sans-serif",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  {p}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                style={{
+                  padding: "8px 18px", borderRadius: 10,
+                  border: `1px solid ${BORDER}`,
+                  backgroundColor: "transparent",
+                  color: page === totalPages ? "#64748b" : (dark ? "#fff" : "#0f172a"),
+                  fontSize: 13, fontWeight: 700,
+                  cursor: page === totalPages ? "default" : "pointer",
+                  fontFamily: "'Cairo',sans-serif", opacity: page === totalPages ? 0.4 : 1,
+                }}
+              >
+                {lang === "ar" ? "← التالي" : "Next →"}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

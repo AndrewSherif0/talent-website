@@ -15,6 +15,7 @@ const TX = {
       legal:    "قانوني",
     },
     links: {
+      home:      "الرئيسية",
       explore:   "استكشف المواهب",
       become:    "كن موهوباً",
       brands:    "للشركات",
@@ -39,6 +40,7 @@ const TX = {
       legal:    "Legal",
     },
     links: {
+      home:      "Home",
       explore:   "Explore Talents",
       become:    "Become a Talent",
       brands:    "For Brands",
@@ -57,9 +59,10 @@ const TX = {
   },
 } as const;
 
-type LinksMap = { [K in keyof typeof TX["ar"]["links"]]: string };
+type LinksMap = { [K in keyof (typeof TX)["ar"]["links"]]: string };
 
 const PLATFORM_LINKS = (t: LinksMap) => [
+  { label: t.home,      href: "/home" },
   { label: t.explore,   href: "/explore" },
   { label: t.become,    href: "/become-talent" },
   { label: t.brands,    href: "/brands" },
@@ -181,7 +184,7 @@ export default function Footer() {
               <img
                 src={dark ? "/assets/logo-dark.png" : "/assets/logo-light.png"}
                 alt="Talents"
-                style={{ height: 32, width: "auto" }}
+                style={{ height: 32, width: "auto", display: "block" }}
               />
             </div>
 
@@ -236,7 +239,7 @@ export default function Footer() {
             links={PLATFORM_LINKS(t.links)}
             titleStyle={sectionTitle}
             linkStyle={linkStyle}
-            hoverColor={LINK_HOV}
+            hoverColor={GREEN}
             accent={GREEN}
           />
 
@@ -246,7 +249,7 @@ export default function Footer() {
             links={COMPANY_LINKS(t.links)}
             titleStyle={sectionTitle}
             linkStyle={linkStyle}
-            hoverColor={LINK_HOV}
+            hoverColor={GREEN}
             accent={GREEN}
           />
 
@@ -256,7 +259,7 @@ export default function Footer() {
             links={LEGAL_LINKS(t.links)}
             titleStyle={sectionTitle}
             linkStyle={linkStyle}
-            hoverColor={LINK_HOV}
+            hoverColor={GREEN}
             accent={GREEN}
           />
         </div>
@@ -287,7 +290,7 @@ export default function Footer() {
                 key={href}
                 href={href}
                 style={{ color: MUTED, fontSize: 12, textDecoration: "none" }}
-                onMouseEnter={e => ((e.target as HTMLElement).style.color = LINK_HOV)}
+                onMouseEnter={e => ((e.target as HTMLElement).style.color = GREEN)}
                 onMouseLeave={e => ((e.target as HTMLElement).style.color = MUTED)}
               >
                 {label}

@@ -272,8 +272,8 @@ export default function DashboardPage() {
   const handleSave = async () => {
     setSaving(true);
     const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) { setSaving(false); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); return; }
     const social_links = {
       ...(tp?.social_links ?? {}),
       instagram: form.instagram, tiktok: form.tiktok,
@@ -288,7 +288,7 @@ export default function DashboardPage() {
     const res = await fetch("/api/profile", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId: session.user.id,
+        userId: user.id,
         role: profile.role ?? "talent",
         profileData: { full_name: form.full_name, handle: form.handle, city: form.city, bio: form.bio, avatar_url: form.avatar_url || null },
         ...(tp ? { talentProfileData: { category: tp.category, specialties: tp.specialties ?? [], social_links, bio: form.bio, availability: form.availability, packages, profile_views: tp.profile_views ?? 0 } } : {}),
