@@ -200,7 +200,7 @@ export default function TalentsTableClient({ talents }: { talents: AdminTalent[]
                         </div>
                         <span style={{ fontWeight: 600 }}>{talent.fullName ?? "—"}</span>
                         {talent.isVerified && (
-                          <ShieldCheck size={13} color="#00D26A" title={ar ? "موثق" : "Verified"} />
+                          <ShieldCheck size={13} color="#00D26A" aria-label={ar ? "موثق" : "Verified"} />
                         )}
                       </div>
                     </td>

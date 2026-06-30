@@ -11,7 +11,8 @@ export async function GET(req: Request) {
   let authUser: { id: string; email?: string } | null = null;
   if (email) {
     const { data: users } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
-    authUser = users?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase()) ?? null;
+    const userList = (users as { users?: { id: string; email?: string }[] } | null)?.users ?? [];
+    authUser = userList.find(u => u.email?.toLowerCase() === email.toLowerCase()) ?? null;
   }
 
   const profileId = id ?? authUser?.id ?? null;
@@ -21,14 +22,14 @@ export async function GET(req: Request) {
   if (profileId) {
     const { data } = await adminClient
       .from("profiles")
-      .select("id, handle, full_name, role, is_verified, account_status, created_at")
+      .select("id, handle, full_name, role, is_verified, is_approved, is_suspended, created_at")
       .eq("id", profileId)
       .single();
     profile = data ?? null;
   } else if (handle) {
     const { data } = await adminClient
       .from("profiles")
-      .select("id, handle, full_name, role, is_verified, account_status, created_at")
+      .select("id, handle, full_name, role, is_verified, is_approved, is_suspended, created_at")
       .eq("handle", handle)
       .single();
     profile = data ?? null;

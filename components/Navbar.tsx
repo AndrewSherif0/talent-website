@@ -40,8 +40,8 @@ export default function Navbar({
 
   const [hoveredHref, setHovered]   = useState<string | null>(null);
   const [avatarUrl,    setAvatarUrl]    = useState<string | null>(_initialAvatarUrl ?? null);
-  const [avatarLoaded, setAvatarLoaded] = useState(false);
-  const [initialLoad,  setInitialLoad]  = useState(!_initialAvatarUrl);
+  const [avatarLoaded, setAvatarLoaded] = useState(!!_initialAvatarUrl);
+  const [initialLoad,  setInitialLoad]  = useState(false);
   const [menuOpen,     setMenuOpen]     = useState(false);
 
   const dir  = lang === "ar" ? "rtl" : "ltr";
@@ -56,17 +56,18 @@ export default function Navbar({
   const GOLD   = "#FFB800";
 
   useEffect(() => {
+    // Server already passed avatar via props — no need to re-fetch.
+    if (_initialAvatarUrl) return;
     (async () => {
       try {
         const res = await fetch("/api/me");
-        if (!res.ok) return;
+        if (!res.ok) { setAvatarLoaded(true); return; }
         const { profile } = await res.json();
         if (profile?.avatar_url) { setAvatarUrl(profile.avatar_url); }
-        else                    { setAvatarLoaded(true); }
-        setInitialLoad(false);
-      } catch { setInitialLoad(false); setAvatarLoaded(true); }
+        else                     { setAvatarLoaded(true); }
+      } catch { setAvatarLoaded(true); }
     })();
-  }, []);
+  }, [_initialAvatarUrl]);
 
   // Close mobile menu on route change
   useEffect(() => { setMenuOpen(false); }, [pathname]);
@@ -198,32 +199,62 @@ export default function Navbar({
             </button>
           )}
 
-          {/* Avatar */}
-          <Link href="/profile/me" style={{
-            width: "32px", height: "32px", borderRadius: "50%",
-            border: `2px solid ${GOLD}`,
-            backgroundColor: dark ? "#111c35" : "#fff8e1",
-            color: GOLD, fontSize: "12px", fontWeight: 700,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            overflow: "hidden", textDecoration: "none", flexShrink: 0,
-            transition: "box-shadow 0.2s",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.boxShadow = `0 0 0 3px rgba(255,184,0,0.35)`)}
-            onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
-          >
-            {(initialLoad || !avatarLoaded) && (
-              <div style={{ width: "14px", height: "14px", borderRadius: "50%", border: `2px solid ${GOLD}44`, borderTopColor: GOLD, animation: "navSpin 0.7s linear infinite" }} />
-            )}
-            {avatarUrl && (
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                onLoad={() => setAvatarLoaded(true)}
-                onError={() => setAvatarLoaded(true)}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: avatarLoaded ? "block" : "none" }}
-              />
-            )}
-          </Link>
+         {/* Avatar */}
+<Link
+  href="/profile/me"
+  prefetch={false}
+  style={{
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    border: `2px solid ${GOLD}`,
+    backgroundColor: dark ? "#111c35" : "#fff8e1",
+    color: GOLD,
+    fontSize: "12px",
+    fontWeight: 700,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    textDecoration: "none",
+    flexShrink: 0,
+    transition: "box-shadow 0.2s",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,184,0,0.35)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.boxShadow = "none";
+  }}
+>
+  {(initialLoad || !avatarLoaded) && (
+    <div
+      style={{
+        width: "14px",
+        height: "14px",
+        borderRadius: "50%",
+        border: `2px solid ${GOLD}44`,
+        borderTopColor: GOLD,
+        animation: "navSpin 0.7s linear infinite",
+      }}
+    />
+  )}
+
+  {avatarUrl && (
+    <img
+      src={avatarUrl}
+      alt="avatar"
+      onLoad={() => setAvatarLoaded(true)}
+      onError={() => setAvatarLoaded(true)}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        display: avatarLoaded ? "block" : "none",
+      }}
+    />
+  )}
+</Link>
 
           {/* Book CTA — desktop only */}
           {!isMobile && (

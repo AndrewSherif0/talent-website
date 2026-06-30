@@ -22,19 +22,19 @@ function getTimeBasedMode(): Mode {
 }
 
 export function SiteProvider({ children }: { children: ReactNode }) {
-  // SSR-safe defaults — the blocking inline script in <head> has already
-  // applied the real values to the DOM before React hydrates, preventing flash.
-  const [lang, setLangState] = useState<Lang>("ar");
-  const [mode, setModeState] = useState<Mode>("dark");
-
-  useEffect(() => {
-    const storedLang = localStorage.getItem("site_language") as Lang | null;
-    const storedMode = localStorage.getItem("site_theme") as Mode | null;
-    const resolvedLang: Lang = storedLang === "ar" || storedLang === "en" ? storedLang : "ar";
-    const resolvedMode: Mode = storedMode === "dark" || storedMode === "light" ? storedMode : getTimeBasedMode();
-    setLangState(resolvedLang);
-    setModeState(resolvedMode);
-  }, []);
+  // Read directly from DOM attributes that the blocking <head> script already set.
+  // This runs synchronously in the lazy initializer (client-only) so React state
+  // matches the DOM from the very first render — no flash, no useEffect delay.
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "ar";
+    const attr = document.documentElement.getAttribute("lang");
+    return attr === "ar" || attr === "en" ? attr : "ar";
+  });
+  const [mode, setModeState] = useState<Mode>(() => {
+    if (typeof window === "undefined") return "dark";
+    const attr = document.documentElement.getAttribute("data-theme");
+    return attr === "dark" || attr === "light" ? attr : getTimeBasedMode();
+  });
 
   function setLang(l: Lang) {
     setLangState(l);

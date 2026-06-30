@@ -398,7 +398,7 @@ export default function DashboardPage() {
           <h1 style={{ color: TEXT, fontSize: 20, fontWeight: 900, margin: 0 }}>{t.dashboard}</h1>
           <div style={{ display: "flex", gap: 10 }}>
             {profile.handle && (
-              <a href={`/talent/${profile.handle}`} target="_blank" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", backgroundColor: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 8, color: MUTED, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+              <a href={`/talent/${profile.handle}`} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", backgroundColor: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 8, color: MUTED, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
                 <Eye size={14} />{t.viewPublic}
               </a>
             )}
