@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const PAGE_SIZE = 12;
 import type { TalentCard } from "../page";
@@ -7,6 +8,8 @@ import ExploreHero from "./ExploreHero";
 import ExploreFilters from "./ExploreFilters";
 import ExploreGrid from "./ExploreGrid";
 import { useSite } from "@/contexts/SiteContext";
+import { createClient } from "@/lib/supabase/client";
+import DirectBriefModal from "@/components/DirectBriefModal";
 
 export type SortOption = "price_asc" | "price_desc" | "rating" | "newest";
 export type ModeOption = "dark" | "light";
@@ -43,11 +46,25 @@ interface Props { talents: TalentCard[] }
 
 export default function ExploreClient({ talents }: Props) {
   const { lang, dark } = useSite();
+  const router = useRouter();
   const [search,   setSearch]   = useState("");
   const [type,     setType]     = useState("all");
   const [sort,     setSort]     = useState<SortOption>("rating");
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
+  const [myRole,   setMyRole]   = useState<string | null>(null);
+  const [myId,     setMyId]     = useState<string | null>(null);
+  const [briefTarget, setBriefTarget] = useState<TalentCard | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await createClient().auth.getUser();
+      if (!data.user) return;
+      setMyId(data.user.id);
+      const res = await fetch("/api/me/role");
+      if (res.ok) { const d = await res.json(); setMyRole(d.role); }
+    })();
+  }, []);
   const [verified, setVerified] = useState(false);
   const [sex, setSex] = useState("all");
   const [page, setPage] = useState(1);
@@ -116,7 +133,22 @@ export default function ExploreClient({ talents }: Props) {
           types={TALENT_TYPES} activeType={type} onTypeChange={setType}
         />
         <div>
-          <ExploreGrid dark={dark} lang={lang} talents={paginated} />
+          <ExploreGrid
+            dark={dark} lang={lang} talents={paginated}
+            myRole={myRole} myId={myId}
+            onSendBrief={(t) => setBriefTarget(t)}
+          />
+          {briefTarget && (
+            <DirectBriefModal
+              talentUserId={briefTarget.id}
+              talentName={briefTarget.name}
+              talentAvatar={briefTarget.avatar_url}
+              talentCategory={briefTarget.category}
+              dark={dark} lang={lang}
+              onClose={() => setBriefTarget(null)}
+              onSuccess={(bookingId) => { setBriefTarget(null); router.push(`/bookings/${bookingId}`); }}
+            />
+          )}
 
           {totalPages > 1 && (
             <div style={{

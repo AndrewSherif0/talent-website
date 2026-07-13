@@ -53,27 +53,30 @@ export async function PATCH(
       .eq("user_id", app.talent_id)
       .maybeSingle();
 
-    // 3. Create booking if talent_profile exists
+    // 3. Determine service_type from job category
+    const { data: fullJob } = await adminClient
+      .from("jobs").select("category").eq("id", jobId).single();
+    const service_type = fullJob?.category ?? null;
+
+    // 4. Create booking
     let bookingId: string | null = null;
     if (talentProfile) {
       const { data: booking, error: bookErr } = await adminClient
         .from("bookings")
         .insert({
-          brand_id:  user.id,
-          talent_id: talentProfile.id,
-          status:    "contacting",
-          // amount column may not exist in all schemas — skip if error
+          brand_id:           user.id,
+          talent_id:          talentProfile.id,
+          talent_user_id:     app.talent_id,
+          job_id:             jobId,
+          job_application_id: appId,
+          service_type,
+          status:             "contacting",
+          amount:             app.proposed_price ?? null,
         })
         .select("id")
         .single();
 
-      if (!bookErr && booking) {
-        bookingId = booking.id;
-        // Try to set amount if column exists
-        await adminClient.from("bookings")
-          .update({ amount: app.proposed_price ?? null } as never)
-          .eq("id", bookingId!);
-      }
+      if (!bookErr && booking) bookingId = booking.id;
     }
 
     // 4. Create / get conversation between brand and talent

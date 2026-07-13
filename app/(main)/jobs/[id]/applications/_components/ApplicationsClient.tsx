@@ -138,7 +138,9 @@ export default function ApplicationsClient({
       const data = await res.json();
       if (res.ok) {
         setApps((prev) => prev.map((a) => a.id === appId ? { ...a, status: "accepted" } : a));
-        if (data.conversation_id) {
+        if (data.booking_id) {
+          router.push(`/bookings/${data.booking_id}`);
+        } else if (data.conversation_id) {
           window.dispatchEvent(new CustomEvent("open-chat-widget", { detail: { conversationId: data.conversation_id } }));
         }
       }

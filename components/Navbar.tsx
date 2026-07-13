@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSite } from "@/contexts/SiteContext";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV_LINKS = {
   ar: [
@@ -14,6 +15,7 @@ const NAV_LINKS = {
     { label: "المجتمع",  href: "/community" },
     { label: "وظائف",    href: "/jobs" },
     { label: "للشركات",  href: "/brands" },
+    { label: "مشاريعي",  href: "/bookings" },
   ],
   en: [
     { label: "Home",      href: "/home" },
@@ -21,6 +23,7 @@ const NAV_LINKS = {
     { label: "Community", href: "/community" },
     { label: "Jobs",      href: "/jobs" },
     { label: "Brands",    href: "/brands" },
+    { label: "Projects",  href: "/bookings" },
   ],
 };
 
@@ -37,14 +40,32 @@ export default function Navbar({
   initialFullName?: string | null;
 }) {
   const pathname  = usePathname();
+  const router    = useRouter();
   const isMobile  = useIsMobile();
   const { lang, toggleLang, dark, toggleMode } = useSite();
 
-  const [hoveredHref, setHovered]   = useState<string | null>(null);
-  const [avatarUrl,    setAvatarUrl]    = useState<string | null>(_initialAvatarUrl ?? null);
-  const [avatarLoaded, setAvatarLoaded] = useState(!!_initialAvatarUrl);
-  const [initialLoad,  setInitialLoad]  = useState(false);
-  const [menuOpen,     setMenuOpen]     = useState(false);
+  const [hoveredHref,    setHovered]      = useState<string | null>(null);
+  const [avatarUrl,      setAvatarUrl]    = useState<string | null>(_initialAvatarUrl ?? null);
+  const [avatarLoaded,   setAvatarLoaded] = useState(!!_initialAvatarUrl);
+  const [initialLoad,    setInitialLoad]  = useState(false);
+  const [menuOpen,       setMenuOpen]     = useState(false);
+  const [dropdownOpen,   setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
+
+  async function handleLogout() {
+    await createClient().auth.signOut();
+    router.push("/login");
+  }
 
   const dir  = lang === "ar" ? "rtl" : "ltr";
   const t    = TX[lang];
@@ -198,62 +219,94 @@ export default function Navbar({
             </button>
           )}
 
-         {/* Avatar */}
-<Link
-  href="/profile/me"
-  prefetch={false}
-  style={{
-    width: "32px",
-    height: "32px",
-    borderRadius: "50%",
-    border: `2px solid ${GOLD}`,
-    backgroundColor: dark ? "#111c35" : "#fff8e1",
-    color: GOLD,
-    fontSize: "12px",
-    fontWeight: 700,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-    textDecoration: "none",
-    flexShrink: 0,
-    transition: "box-shadow 0.2s",
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,184,0,0.35)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.boxShadow = "none";
-  }}
->
-  {(initialLoad || !avatarLoaded) && (
-    <div
-      style={{
-        width: "14px",
-        height: "14px",
-        borderRadius: "50%",
-        border: `2px solid ${GOLD}44`,
-        borderTopColor: GOLD,
-        animation: "navSpin 0.7s linear infinite",
-      }}
-    />
-  )}
+         {/* Avatar + Dropdown */}
+<div ref={dropdownRef} style={{ position: "relative", flexShrink: 0 }}>
+  <button
+    onClick={() => setDropdownOpen((o) => !o)}
+    style={{
+      width: "32px",
+      height: "32px",
+      borderRadius: "50%",
+      border: `2px solid ${dropdownOpen ? GOLD : GOLD}`,
+      backgroundColor: dark ? "#111c35" : "#fff8e1",
+      color: GOLD,
+      fontSize: "12px",
+      fontWeight: 700,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      cursor: "pointer",
+      padding: 0,
+      flexShrink: 0,
+      boxShadow: dropdownOpen ? "0 0 0 3px rgba(255,184,0,0.35)" : "none",
+      transition: "box-shadow 0.2s",
+    }}
+  >
+    {(initialLoad || !avatarLoaded) && (
+      <div style={{ width: "14px", height: "14px", borderRadius: "50%", border: `2px solid ${GOLD}44`, borderTopColor: GOLD, animation: "navSpin 0.7s linear infinite" }} />
+    )}
+    {avatarUrl && (
+      <img src={avatarUrl} alt="avatar" onLoad={() => setAvatarLoaded(true)} onError={() => setAvatarLoaded(true)}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: avatarLoaded ? "block" : "none" }} />
+    )}
+  </button>
 
-  {avatarUrl && (
-    <img
-      src={avatarUrl}
-      alt="avatar"
-      onLoad={() => setAvatarLoaded(true)}
-      onError={() => setAvatarLoaded(true)}
-      style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        display: avatarLoaded ? "block" : "none",
-      }}
-    />
+  {dropdownOpen && (
+    <div style={{
+      position: "absolute",
+      top: "calc(100% + 10px)",
+      [lang === "ar" ? "left" : "right"]: 0,
+      backgroundColor: dark ? "#0d1527" : "#ffffff",
+      border: `1px solid ${BORDER}`,
+      borderRadius: "12px",
+      boxShadow: dark ? "0 12px 40px rgba(0,0,0,0.6)" : "0 8px 32px rgba(0,0,0,0.12)",
+      minWidth: "180px",
+      overflow: "hidden",
+      zIndex: 999,
+      animation: "slideDown 0.15s ease",
+      fontFamily: "'Cairo',sans-serif",
+      direction: lang === "ar" ? "rtl" : "ltr",
+    }}>
+      <Link
+        href="/profile/me"
+        onClick={() => setDropdownOpen(false)}
+        style={{
+          display: "flex", alignItems: "center", gap: "10px",
+          padding: "12px 16px", textDecoration: "none",
+          color: TEXT, fontSize: "13px", fontWeight: 700,
+          borderBottom: `1px solid ${BORDER}`,
+          transition: "background 0.15s",
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = dark ? "rgba(255,184,0,0.06)" : "rgba(255,184,0,0.04)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+      >
+        <svg width="15" height="15" fill="none" stroke={GOLD} strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        {lang === "ar" ? "تعديل الملف الشخصي" : "Edit Profile"}
+      </Link>
+      <button
+        onClick={handleLogout}
+        style={{
+          display: "flex", alignItems: "center", gap: "10px",
+          padding: "12px 16px", width: "100%", textAlign: lang === "ar" ? "right" : "left",
+          background: "none", border: "none", cursor: "pointer",
+          color: "#ef4444", fontSize: "13px", fontWeight: 700,
+          fontFamily: "'Cairo',sans-serif",
+          transition: "background 0.15s",
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.06)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+      >
+        <svg width="15" height="15" fill="none" stroke="#ef4444" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        {lang === "ar" ? "تسجيل الخروج" : "Log Out"}
+      </button>
+    </div>
   )}
-</Link>
+</div>
 
           {/* Book CTA — desktop only */}
           {!isMobile && (

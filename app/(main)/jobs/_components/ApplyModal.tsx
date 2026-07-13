@@ -55,7 +55,6 @@ const TX = {
 export default function ApplyModal({ job, dark, lang, onClose, onSuccess }: Props) {
   const t  = TX[lang];
   const ar = lang === "ar";
-
   const GREEN  = "#00D26A";
   const GOLD   = "#FFB800";
   const BG     = dark ? "#0D1623" : "#FFFFFF";
@@ -64,7 +63,6 @@ export default function ApplyModal({ job, dark, lang, onClose, onSuccess }: Prop
   const MUTED  = dark ? "#A8B3C2" : "#64748B";
   const INPUT  = dark ? "#060d18" : "#F8FAFC";
   const INBDR  = dark ? "#1e293b" : "#CBD5E1";
-
   const [price,     setPrice]     = useState("");
   const [days,      setDays]      = useState("");
   const [message,   setMessage]   = useState("");

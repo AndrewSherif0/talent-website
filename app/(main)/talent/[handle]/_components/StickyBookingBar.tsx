@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Calendar, ShieldCheck, MessageCircle } from "lucide-react";
+import { Heart, Calendar, ShieldCheck, MessageCircle, Send } from "lucide-react";
 import { useSite } from "@/contexts/SiteContext";
 import { createClient } from "@/lib/supabase/client";
 import type { TalentData, PackageItem } from "@/features/talent-profile/types";
+import DirectBriefModal from "@/components/DirectBriefModal";
 
 interface Props {
   talent: TalentData;
@@ -24,6 +25,7 @@ export default function StickyBookingBar({ talent, selectedPackage }: Props) {
 
   const [userRole, setUserRole] = useState<string | null>(null);
   const [contactLoading, setContactLoading] = useState(false);
+  const [showBrief, setShowBrief] = useState(false);
 
   useEffect(() => {
     createClient().auth.getUser().then(async ({ data }) => {
@@ -62,6 +64,7 @@ export default function StickyBookingBar({ talent, selectedPackage }: Props) {
   }
 
   return (
+    <>
     <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.4, ease: "easeOut" }}
       style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, backgroundColor: dark ? "#0A121C" : "#FFFFFF", borderTop: `1px solid ${BORDER}`, backdropFilter: "blur(16px)", height: 90, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", fontFamily: "'Cairo',sans-serif", direction: "rtl" }}>
       {/* Avatar + info */}
@@ -114,10 +117,45 @@ export default function StickyBookingBar({ talent, selectedPackage }: Props) {
           </motion.button>
         )}
 
+        {/* Send Brief — brands only */}
+        {userRole === "brand" && (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setShowBrief(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              backgroundColor: "transparent",
+              color: "#FFB800",
+              border: "1.5px solid #FFB800",
+              borderRadius: 12, padding: "0 20px", height: 44,
+              fontSize: 14, fontWeight: 800, cursor: "pointer",
+              fontFamily: "'Cairo',sans-serif",
+            }}
+          >
+            <Send size={15} />
+            {ar ? "إرسال ملخص" : "Send Brief"}
+          </motion.button>
+        )}
+
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} style={{ display: "flex", alignItems: "center", gap: 8, backgroundColor: GREEN, color: "#000", border: "none", borderRadius: 12, padding: "0 28px", height: 44, fontSize: 15, fontWeight: 900, cursor: "pointer", fontFamily: "'Cairo',sans-serif", boxShadow: "0 0 24px rgba(0,210,106,0.35)" }}>
           <Calendar size={16} />{ar ? "احجز الآن" : "Book Now"}
         </motion.button>
       </div>
     </motion.div>
+
+    {showBrief && (
+      <DirectBriefModal
+        talentUserId={talent.id}
+        talentName={talent.name ?? ""}
+        talentAvatar={talent.avatar_url ?? null}
+        talentCategory={talent.category ?? null}
+        dark={dark}
+        lang={lang}
+        onClose={() => setShowBrief(false)}
+        onSuccess={(bookingId) => { setShowBrief(false); router.push(`/bookings/${bookingId}`); }}
+      />
+    )}
+    </>
   );
 }

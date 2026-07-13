@@ -342,7 +342,7 @@ export default function FloatingChatWidget() {
               ) : convs.length === 0 ? (
                 <div style={{ padding: 32, textAlign: "center", color: MUTED, fontSize: 13 }}>{TX.empty}</div>
               ) : (
-                convs.map((c) => {
+                convs.filter((c, i, arr) => arr.findIndex((x) => x.id === c.id) === i).map((c) => {
                   const hasUnread = c.unread_count > 0;
                   return (
                     <button key={c.id} onClick={() => openConv(c)} style={{

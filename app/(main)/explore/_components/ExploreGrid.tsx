@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Star, MapPin, BadgeCheck, Zap, Crown } from "lucide-react";
+import { Star, MapPin, BadgeCheck, Zap, Crown, Send } from "lucide-react";
 import Link from "next/link";
 import type { TalentCard } from "../page";
 
@@ -17,9 +17,12 @@ interface Props {
   dark: boolean;
   lang: "ar" | "en";
   talents: TalentCard[];
+  myRole?: string | null;
+  myId?: string | null;
+  onSendBrief?: (talent: TalentCard) => void;
 }
 
-function TalentCardItem({ talent, dark, lang, index }: { talent: TalentCard; dark: boolean; lang: "ar" | "en"; index: number }) {
+function TalentCardItem({ talent, dark, lang, index, myRole, onSendBrief }: { talent: TalentCard; dark: boolean; lang: "ar" | "en"; index: number; myRole?: string | null; onSendBrief?: (t: TalentCard) => void }) {
   const CARD    = dark ? "#0D1623" : "#FFFFFF";
   const BORDER  = dark ? "rgba(0,255,163,0.15)" : "#E2E8F0";
   const TEXT    = dark ? "#FFFFFF" : "#0F172A";
@@ -179,32 +182,45 @@ function TalentCardItem({ talent, dark, lang, index }: { talent: TalentCard; dar
                 }
               </p>
             </div>
-            <div style={{
-              backgroundColor: GREEN, color: "#000",
-              fontSize: 12, fontWeight: 800, padding: "8px 14px",
-              borderRadius: 10,
-            }}>
+            <div style={{ backgroundColor: GREEN, color: "#000", fontSize: 12, fontWeight: 800, padding: "8px 14px", borderRadius: 10 }}>
               {lang === "ar" ? "احجز" : "Book"}
             </div>
           </div>
+
+          {/* Send Brief — brands only */}
+          {myRole === "brand" && onSendBrief && (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSendBrief(talent); }}
+              style={{
+                width: "100%", marginTop: 8,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                backgroundColor: "transparent",
+                border: `1.5px solid ${GOLD}`,
+                color: GOLD, borderRadius: 10,
+                padding: "8px 0", fontSize: 12, fontWeight: 800,
+                cursor: "pointer", fontFamily: "'Cairo',sans-serif",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${GOLD}15`; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
+            >
+              <Send size={12} />
+              {lang === "ar" ? "إرسال ملخص" : "Send Brief"}
+            </button>
+          )}
         </div>
       </Link>
     </motion.div>
   );
 }
 
-export default function ExploreGrid({ dark, lang, talents }: Props) {
+export default function ExploreGrid({ dark, lang, talents, myRole, myId, onSendBrief }: Props) {
   const MUTED = dark ? "#A8B3C2" : "#64748B";
   const GREEN = "#00D26A";
 
   if (talents.length === 0) {
     return (
-      <div style={{
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        padding: "80px 24px", textAlign: "center",
-        gap: 12,
-      }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center", gap: 12 }}>
         <span style={{ fontSize: 48 }}>🔍</span>
         <p style={{ color: MUTED, fontSize: 16, margin: 0 }}>
           {lang === "ar" ? "لا توجد نتائج مطابقة للفلاتر المختارة" : "No talents match your filters"}
@@ -217,11 +233,7 @@ export default function ExploreGrid({ dark, lang, talents }: Props) {
   }
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-      gap: 20,
-    }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 20 }}>
       {talents.map((talent, i) => (
         <TalentCardItem
           key={talent.id}
@@ -229,6 +241,8 @@ export default function ExploreGrid({ dark, lang, talents }: Props) {
           dark={dark}
           lang={lang}
           index={i}
+          myRole={myRole}
+          onSendBrief={onSendBrief}
         />
       ))}
     </div>
