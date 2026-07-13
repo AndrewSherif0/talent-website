@@ -24,15 +24,8 @@ function initials(name: string | null) {
 }
 
 // ─── types ────────────────────────────────────────────────────────────────────
-interface Props {
-  /** profile.id of the talent being viewed — used to open a chat directly */
-  talentProfileId?: string;
-  talentName?: string;
-  talentAvatar?: string | null;
-}
-
 // ─── component ────────────────────────────────────────────────────────────────
-export default function FloatingChatWidget({ talentProfileId, talentName, talentAvatar }: Props) {
+export default function FloatingChatWidget() {
   const { dark, lang } = useSite();
   const ar = lang === "ar";
 
@@ -74,9 +67,6 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => setMyId(data.user?.id ?? null));
   }, []);
-
-  // ─── listen for "Message" button click from ProfileHero (wired after openTalentChat is declared below) ──
-  const openTalentChatRef = useRef<() => void>(() => {});
 
   // ─── load conversations ──────────────────────────────────────────────────
   const loadConvs = useCallback(async () => {
@@ -175,65 +165,49 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ─── open chat with talent ───────────────────────────────────────────────
-  const openTalentChat = useCallback(async () => {
-    if (!talentProfileId) return;
-    setApiError(null);
-    setOpeningChat(true);
-    try {
-      const res = await fetch("/api/chat/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ other_user_id: talentProfileId }),
-      });
-      const body = await res.json();
-      if (!res.ok) {
-        setApiError(body?.error ?? `Error ${res.status}`);
-        setOpeningChat(false);
+
+  // listen for "open-chat-widget" fired from any page
+  useEffect(() => {
+    async function handler(e: Event) {
+      const detail = (e as CustomEvent<{ otherUserId?: string; conversationId?: string }>).detail;
+      setOpen(true);
+
+      if (detail?.conversationId) {
+        // direct open by conversation id
+        const convId = detail.conversationId;
+        setActiveConvId(convId);
+        setView("chat");
+        loadMessages(convId);
         return;
       }
-      const { conversation } = body;
-      setActiveConvId(conversation.id);
-      setActiveOther({
-        id: talentProfileId,
-        full_name: talentName ?? null,
-        handle: null,
-        avatar_url: talentAvatar ?? null,
-        role: "talent",
-      });
-      setView("chat");
-      loadMessages(conversation.id);
-    } catch (e: unknown) {
-      setApiError(e instanceof Error ? e.message : "Network error");
-    } finally {
-      setOpeningChat(false);
-    }
-  }, [talentProfileId, talentName, talentAvatar, loadMessages]);
 
-  // keep ref in sync so event listener always calls the latest version
-  useEffect(() => { openTalentChatRef.current = openTalentChat; }, [openTalentChat]);
-
-  // listen for "Message" button dispatched from ProfileHero
-  useEffect(() => {
-    function handler() {
-      setOpen(true);
-      if (talentProfileId) setTimeout(() => openTalentChatRef.current(), 0);
+      const targetId = detail?.otherUserId;
+      if (targetId) {
+        setOpeningChat(true);
+        try {
+          const res = await fetch("/api/chat/conversations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ other_user_id: targetId }),
+          });
+          const body = await res.json();
+          if (res.ok && body.conversation) {
+            const conv = body.conversation;
+            setActiveConvId(conv.id);
+            setView("chat");
+            loadMessages(conv.id);
+          }
+        } finally {
+          setOpeningChat(false);
+        }
+      }
     }
     window.addEventListener("open-chat-widget", handler);
     return () => window.removeEventListener("open-chat-widget", handler);
-  }, [talentProfileId]);
+  }, [loadMessages]);
 
-  // open talent chat directly when FAB is clicked on profile page
   function handleFabClick() {
-    if (!open) {
-      setOpen(true);
-      if (talentProfileId) {
-        // auto-open talent conversation
-        setTimeout(() => openTalentChat(), 0);
-      }
-    } else {
-      setOpen(false);
-    }
+    setOpen((prev) => !prev);
   }
 
   function openConv(c: Conversation) {
@@ -355,35 +329,10 @@ export default function FloatingChatWidget({ talentProfileId, talentName, talent
           {view === "list" ? (
             // Conversation list
             <div style={{ flex: 1, overflowY: "auto" }}>
-              {/* Start chat with current talent */}
               {apiError && (
                 <div style={{ padding: "10px 16px", backgroundColor: "rgba(239,68,68,0.1)", borderBottom: `1px solid ${BORDER}` }}>
                   <p style={{ margin: 0, fontSize: 12, color: "#EF4444" }}>❌ {apiError}</p>
                 </div>
-              )}
-              {talentProfileId && myId && (
-                <button onClick={openTalentChat} disabled={openingChat} style={{
-                  width: "100%", padding: "12px 16px", border: "none",
-                  borderBottom: `1px solid ${BORDER}`, cursor: "pointer",
-                  backgroundColor: "transparent", display: "flex", alignItems: "center", gap: 10,
-                  direction: ar ? "rtl" : "ltr", textAlign: ar ? "right" : "left",
-                  transition: "background 0.15s",
-                }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = dark ? "#0f1e2e" : "#f0fdf4")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                >
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "rgba(0,210,106,0.15)", border: `1px solid ${GREEN}33`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-                    {openingChat
-                      ? <div style={{ width: 14, height: 14, borderRadius: "50%", border: `2px solid ${GREEN}44`, borderTopColor: GREEN, animation: "fw-spin 0.7s linear infinite" }} />
-                      : talentAvatar
-                        ? <img src={talentAvatar} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : <span style={{ fontSize: 16, color: GREEN }}>+</span>}
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 700, fontSize: 13, color: GREEN }}>{openingChat ? "…" : TX.startNew}</p>
-                    {talentName && <p style={{ margin: 0, fontSize: 11, color: MUTED }}>{talentName}</p>}
-                  </div>
-                </button>
               )}
 
               {loadingConvs ? (

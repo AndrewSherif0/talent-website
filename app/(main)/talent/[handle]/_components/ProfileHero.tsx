@@ -98,13 +98,6 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
                 {displayName.charAt(0).toUpperCase()}
               </div>
             )}
-            <div style={{
-              position: "absolute", bottom: 8, right: 8,
-              backgroundColor: "rgba(0,0,0,0.75)",
-              borderRadius: 8, padding: "2px 8px",
-            }}>
-              <span style={{ color: TEXT, fontSize: 11 }}>1/12</span>
-            </div>
           </div>
         </div>
 
@@ -195,7 +188,7 @@ export default function ProfileHero({ talent }: { talent: TalentData }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <motion.button
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              onClick={() => window.dispatchEvent(new CustomEvent("open-chat-widget"))}
+              onClick={() => window.dispatchEvent(new CustomEvent("open-chat-widget", { detail: { otherUserId: talent.id } }))}
               style={{
                 ...btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                 backgroundColor: SURFACE, border: `1px solid ${BORDER}`,

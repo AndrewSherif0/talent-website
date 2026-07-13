@@ -177,7 +177,7 @@ function BrandCardItem({ brand, dark, lang, index }: { brand: BrandCard; dark: b
           <button
             onClick={(e) => {
               e.stopPropagation();
-              window.dispatchEvent(new CustomEvent("open-chat-widget"));
+              window.dispatchEvent(new CustomEvent("open-chat-widget", { detail: { otherUserId: brand.id } }));
             }}
             style={{
               display: "flex", alignItems: "center", gap: 5,

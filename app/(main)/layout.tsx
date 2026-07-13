@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GlobalChat from "@/components/chat/GlobalChat";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -27,6 +28,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       <Navbar initialAvatarUrl={initialAvatarUrl} initialFullName={initialFullName} />
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
+      <GlobalChat />
     </>
   );
 }

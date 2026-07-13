@@ -28,7 +28,6 @@ import TrustCard from "./TrustCard";
 import BriefCard from "./BriefCard";
 import QuestionCard from "./QuestionCard";
 import StickyBookingBar from "./StickyBookingBar";
-import FloatingChatWidget from "@/components/chat/FloatingChatWidget";
 
 export type {
   TalentData,
@@ -112,11 +111,6 @@ export default function TalentModelProfile({
         </div>
       </div>
       <StickyBookingBar talent={talent} selectedPackage={selectedPackage} />
-      <FloatingChatWidget
-        talentProfileId={talent.id}
-        talentName={talent.name}
-        talentAvatar={talent.avatarUrl}
-      />
     </main>
   );
 }

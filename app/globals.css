@@ -265,6 +265,8 @@
 
 #talents-app-root.light-mode #talents-hero-banner .text-orange-400 { color: #fed7aa !important; }
 
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
 /* ===== LOADING SCREEN KEYFRAMES ===== */
 @keyframes loadingFadeOut { to { opacity: 0; pointer-events: none; } }
 @keyframes loadingLogoIn { from { opacity: 0; transform: scale(0.6) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }

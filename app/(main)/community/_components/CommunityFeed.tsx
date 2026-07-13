@@ -319,9 +319,9 @@ export default function CommunityFeed({ dark, lang }: Props) {
           {questions.length === 0 ? (
             <div style={{ textAlign: "center", color: MUTED, padding: "40px" }}>{t.noQuestions}</div>
           ) : (
-            questions.map((q) => (
+            questions.map((q, qIdx) => (
               <article
-                key={q.id}
+                key={q.id ?? qIdx}
                 style={{
                   backgroundColor: CARD,
                   border: `1px solid ${BORDER}`,
@@ -500,8 +500,8 @@ export default function CommunityFeed({ dark, lang }: Props) {
                     backgroundColor: dark ? "rgba(0,255,163,0.02)" : "rgba(0,255,163,0.01)",
                   }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "12px" }}>
-                      {q.community_answers.slice(0, 2).map(comment => (
-                        <div key={comment.id} style={{
+                      {q.community_answers.slice(0, 2).map((comment, cIdx) => (
+                        <div key={comment.id ?? cIdx} style={{
                           display: "flex",
                           gap: "10px",
                           fontSize: "13px",
